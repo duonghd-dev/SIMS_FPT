@@ -55,7 +55,8 @@
                                                                 alt="Avatar"
                                                                 onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
                                                         </a>
-                                                        <a href="#">@item.FullName</a>
+                                                        <a asp-action="ViewStudent"
+                                                            asp-route-id="@item.StudentId">@item.FullName</a>
                                                     </h2>
                                                 </td>
                                                 <td>@item.ClassName</td>
@@ -66,7 +67,7 @@
                                                 <td class="text-right">
                                                     <div class="actions">
                                                         <a asp-action="EditStudent" asp-route-id="@item.StudentId"
-                                                            class="btn btn-sm bg-success-light mr-2">
+                                                            class="btn btn-sm bg-success-light ">
                                                             <i class="fas fa-pen"></i>
                                                         </a>
 
@@ -75,7 +76,6 @@
                                                             onclick="return confirm('Bạn có chắc chắn muốn xóa sinh viên @item.FullName không?');">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
-
                                                     </div>
                                                 </td>
                                             </tr>

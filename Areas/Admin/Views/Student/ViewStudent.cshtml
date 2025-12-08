@@ -1,7 +1,148 @@
 @using SIMS_FPT.Models
-@model IEnumerable<StudentCSVModel>
+@model StudentCSVModel
 
 @{
-    ViewData["Title"] = "View Student";
+    ViewData["Title"] = "Student Details";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Student Details</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="ListStudent">Students</a></li>
+                        <li class="breadcrumb-item active">Student Details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="about-info">
+                            <h4>Personal Information</h4>
+                            <div class="media mt-3">
+                                @* Hiển thị ảnh sinh viên *@
+                                <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : Model.ImagePath)"
+                                    class="mr-3 rounded-circle" alt="Student Image"
+                                    style="width: 100px; height: 100px; object-fit: cover;"
+                                    onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
+
+                                <div class="media-body">
+                                    <ul>
+                                        <li>
+                                            <span class="title-span">Full Name : </span>
+                                            <span class="info-span">@Model.FullName</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Student ID : </span>
+                                            <span class="info-span">@Model.StudentId</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Class : </span>
+                                            <span class="info-span">@Model.ClassName</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Section : </span>
+                                            <span class="info-span">@Model.Section</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Mobile : </span>
+                                            <span class="info-span">@Model.MobileNumber</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Gender : </span>
+                                            <span class="info-span">@Model.Gender</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Date of Birth : </span>
+                                            <span class="info-span">@Model.DateOfBirth.ToString("dd MMM yyyy")</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Admission No : </span>
+                                            <span class="info-span">@Model.AdmissionNumber</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Joining Date : </span>
+                                            <span class="info-span">@Model.JoiningDate.ToString("dd MMM yyyy")</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-12">
+                                    <h5>Addresses</h5>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <p><strong>Present Address:</strong><br> @Model.Address</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Permanent Address:</strong><br> @Model.PermanentAddress</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+
+                @* Thay thế phần Skills/Education bằng Parent Info *@
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <h4 class="mb-3">Parent Information</h4>
+                    </div>
+
+                    @* Thông tin Cha *@
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Father's Info</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong>Name:</strong> @Model.FatherName</li>
+                                    <li class="mb-2"><strong>Occupation:</strong> @Model.FatherOccupation</li>
+                                    <li class="mb-2"><strong>Mobile:</strong> @Model.FatherMobile</li>
+                                    <li class="mb-2"><strong>Email:</strong> @Model.FatherEmail</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Thông tin Mẹ *@
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Mother's Info</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong>Name:</strong> @Model.MotherName</li>
+                                    <li class="mb-2"><strong>Occupation:</strong> @Model.MotherOccupation</li>
+                                    <li class="mb-2"><strong>Mobile:</strong> @Model.MotherMobile</li>
+                                    <li class="mb-2"><strong>Email:</strong> @Model.MotherEmail</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-12 text-right">
+                        <a asp-action="EditStudent" asp-route-id="@Model.StudentId" class="btn btn-primary"><i
+                                class="fas fa-pen"></i> Edit Profile</a>
+                        <a asp-action="ListStudent" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>Copyright © 2020 Dreamguys.</p>
+    </footer>
+</div>

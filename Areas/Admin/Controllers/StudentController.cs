@@ -224,5 +224,18 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                 return RedirectToAction("ListStudent");
             }
         }
+
+        [HttpGet]
+        public IActionResult ViewStudent(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var students = GetAllStudentsFromCsv();
+            var student = students.FirstOrDefault(s => s.StudentId == id);
+
+            if (student == null) return NotFound();
+
+            return View(student);
+        }
     }
 }
