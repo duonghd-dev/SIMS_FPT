@@ -1,0 +1,104 @@
+@using SIMS_FPT.Models
+@model IEnumerable<TeacherCSVModel>
+
+@{
+    ViewData["Title"] = "List Teacher";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #e3f2fd !important;
+        transition: all 0.3s ease;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Teachers</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Teachers</li>
+                    </ul>
+                </div>
+                <div class="col-auto text-right float-right ml-auto">
+                    <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
+                    <a asp-action="AddTeacher" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0 datatable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Gender</th>
+                                        <th>Qualification</th>
+                                        <th>Experience</th>
+                                        <th>Mobile</th>
+                                        <th>Address</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Any())
+                                    {
+                                        foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.TeacherId</td>
+                                                <td>
+                                                    <h2 class="table-avatar">
+                                                        <a href="#" class="avatar avatar-sm mr-2">
+                                                            <img class="avatar-img rounded-circle"
+                                                                src="@(string.IsNullOrEmpty(item.ImagePath) ? "/assets/img/profiles/avatar-02.jpg" : item.ImagePath)"
+                                                                alt="User Image"
+                                                                onerror="this.src='/assets/img/profiles/avatar-02.jpg'">
+                                                        </a>
+                                                        <a asp-action="Detail" asp-route-id="@item.TeacherId">@item.Name</a>
+                                                    </h2>
+                                                </td>
+                                                <td>@item.Gender</td>
+                                                <td>@item.Qualification</td>
+                                                <td>@item.Experience</td>
+                                                <td>@item.Mobile</td>
+                                                <td>@item.Address, @item.City</td>
+                                                <td class="text-right">
+                                                    <div class="actions">
+                                                        <a asp-action="EditTeacher" asp-route-id="@item.TeacherId"
+                                                            class="btn btn-sm bg-success-light mr-2">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+                                                        <a asp-action="DeleteTeacher" asp-route-id="@item.TeacherId"
+                                                            class="btn btn-sm bg-danger-light"
+                                                            onclick="return confirm('Delete teacher @item.Name?');">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="8" class="text-center">No data found</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

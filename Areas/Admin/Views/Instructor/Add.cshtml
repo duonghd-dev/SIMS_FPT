@@ -1,0 +1,123 @@
+@using SIMS_FPT.Models
+@model TeacherCSVModel
+@{
+    ViewData["Title"] = "Add Teacher";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Add Teachers</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="ListTeacher">Teachers</a></li>
+                        <li class="breadcrumb-item active">Add Teachers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-action="Add" method="post" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>Basic Details</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Teacher ID</label><input asp-for="TeacherId"
+                                            class="form-control" required></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Name</label><input asp-for="Name"
+                                            class="form-control" required></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <select asp-for="Gender" class="form-control">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Others">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Date of Birth</label><input asp-for="DateOfBirth"
+                                            type="date" class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Mobile</label><input asp-for="Mobile"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Joining Date</label><input asp-for="JoiningDate"
+                                            type="date" class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Qualification</label><input asp-for="Qualification"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Experience</label><input asp-for="Experience"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Image</label><input asp-for="TeacherImageFile"
+                                            type="file" class="form-control"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>Login Details</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Username</label><input asp-for="Username"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Email ID</label><input asp-for="Email" type="email"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Password</label><input asp-for="Password"
+                                            type="password" class="form-control"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>Address</span></h5>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group"><label>Address</label><input asp-for="Address"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>City</label><input asp-for="City"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>State</label><input asp-for="State"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Zip Code</label><input asp-for="ZipCode"
+                                            class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group"><label>Country</label><input asp-for="Country"
+                                            class="form-control"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
