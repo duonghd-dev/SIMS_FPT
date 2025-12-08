@@ -1,0 +1,74 @@
+@using SIMS_FPT.Models
+@model DepartmentModel
+@{
+    ViewData["Title"] = "Edit Department";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Edit Department</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="List">Department</a></li>
+                        <li class="breadcrumb-item active">Edit Department</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-action="Edit" method="post">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>Department Details</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Department ID</label>
+                                        @* ID là khóa chính nên để readonly *@
+                                        <input asp-for="DepartmentId" class="form-control" readonly
+                                            style="background-color:#e9ecef;">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Department Name</label>
+                                        <input asp-for="DepartmentName" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Head of Department</label>
+                                        <input asp-for="HeadOfDepartment" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Department Start Date</label>
+                                        <input asp-for="StartDate" type="date" class="form-control"
+                                            value="@Model.StartDate.ToString("yyyy-MM-dd")">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>No of Students</label>
+                                        <input asp-for="NoOfStudents" type="number" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <a asp-action="List" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

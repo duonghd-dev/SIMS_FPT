@@ -1,7 +1,7 @@
 subject_id,subject_name,class
-SUB001,Algebra,10A1
-SUB002,Geometry,10A1
-SUB003,Physics I,10A2
-SUB004,Computer Science,10A3
-SUB005,English Literature,10A4
-SUB006,Organic Chemistry,11B1
+SUB001,Algebra,SE0120
+SUB002,Geometry,SE0120
+SUB003,Physics I,SE0120
+SUB004,Computer Science,SE0120
+SUB005,English Literature,SE0120
+SUB006,Organic Chemistry,SE0120
