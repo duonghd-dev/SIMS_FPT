@@ -1,0 +1,4 @@
+Id,Email,Username,Password,Role,FullName
+1,duongteacher@gmail.com,teacher,123,Instructor,Duonggv
+2,duongadmin@gmail.com,admin,123,Admin,DuongAdmin
+3,duongstudent@gmail.com,student,123,Student,Duongstudent

@@ -1,0 +1,88 @@
+﻿@using SIMS_FPT.Models
+@model IEnumerable<StudentCSVModel>
+
+@{
+    ViewData["Title"] = "Student List";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Students (From CSV)</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Students</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0 datatable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>DOB</th>
+                                        <th>Parent Name</th>
+                                        <th>Mobile</th>
+                                        <th>Address</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Any())
+                                    {
+                                        foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.StudentId</td>
+                                                <td>
+                                                    <h2 class="table-avatar">
+                                                        <a href="#" class="avatar avatar-sm mr-2">
+                                                            <img class="avatar-img rounded-circle"
+                                                                 src="@(string.IsNullOrEmpty(item.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : item.ImagePath)"
+                                                                 alt="User Image"
+                                                                 onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
+                                                        </a>
+                                                        <a href="#">@item.FullName</a>
+                                                    </h2>
+                                                </td>
+                                                <td>@item.ClassName</td>
+                                                <td>@item.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                                                <td>@item.FatherName</td>
+                                                <td>@item.MobileNumber</td>
+                                                <td>@item.Address</td>
+                                                <td class="text-right">
+                                                    <div class="actions">
+                                                        <a href="#" class="btn btn-sm bg-success-light mr-2">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="8" class="text-center">Không tìm thấy file CSV hoặc file trống tại thư mục CSV_DATA</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

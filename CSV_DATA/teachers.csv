@@ -1,0 +1,6 @@
+teacher_id,name,gender,date_of_birth,mobile,joining_date,qualification,experience,username,email,password,repeat_password,address,city,state,zip_code,country
+TCH001,Nguyen Van Hung,Male,1980-05-15,0909123456,2015-09-05,PhD Mathematics,10 Years,hungnv,hung.nguyen@school.edu,Pass123,Pass123,"123 Le Loi","Da Nang","Da Nang",550000,Vietnam
+TCH002,Tran Thi Mai,Female,1985-08-20,0909987654,2018-01-10,Master Physics,7 Years,maitt,mai.tran@school.edu,Secure789,Secure789,"456 Tran Phu","Hue","Thua Thien Hue",530000,Vietnam
+TCH003,Le Van Tuan,Male,1990-12-10,0912345678,2020-08-15,Master IT,5 Years,tuanlv,tuan.le@school.edu,Dev2025,Dev2025,"789 Nguyen Hue","Hanoi","Hanoi",100000,Vietnam
+TCH004,Pham Thu Ha,Female,1992-03-25,0987654321,2021-09-05,Bachelor English,4 Years,hapt,ha.pham@school.edu,Eng#Star,Eng#Star,"321 Hai Ba Trung","HCMC","HCMC",700000,Vietnam
+TCH005,Hoang Van Nam,Male,1988-06-30,0978123456,2019-11-20,PhD Chemistry,6 Years,namhv,nam.hoang@school.edu,Chem!2024,Chem!2024,"654 Le Duan","Vinh","Nghe An",460000,Vietnam

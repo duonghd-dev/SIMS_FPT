@@ -1,0 +1,6 @@
+department_id,department_name,head_of_department,department_start_date,no_of_students
+DEP001,Mathematics,Nguyen Van Hung,2010-09-01,150
+DEP002,Physics,Tran Thi Mai,2012-09-01,120
+DEP003,Information Technology,Le Van Tuan,2015-01-15,200
+DEP004,English,Pham Thu Ha,2011-08-20,180
+DEP005,Chemistry,Hoang Van Nam,2013-11-10,130

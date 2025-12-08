@@ -1,0 +1,7 @@
+expenses_id,item_name,item_quality,expense_amount,source_of_purchase
+EXP001,Whiteboard Markers,High,500000,Thien Long Store
+EXP002,A4 Paper Reams,Standard,2000000,Office Supplies Co.
+EXP003,Projector Maintenance,Service,1500000,Tech Support Ltd.
+EXP004,Cleaning Detergents,Safe,800000,Clean Master
+EXP005,Library Books,New,5000000,Fahasa Bookstore
+EXP006,Lab Chemicals,High Purity,3000000,Science Direct
