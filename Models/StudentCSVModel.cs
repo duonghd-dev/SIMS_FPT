@@ -1,8 +1,6 @@
+using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SIMS_FPT.Models
 {
@@ -14,18 +12,19 @@ namespace SIMS_FPT.Models
         public string FullName => $"{FirstName} {LastName}";
         public string ClassName { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public string Gender { get; set; } 
-        public string Religion { get; set; } 
-        public DateTime JoiningDate { get; set; } 
+        public string Gender { get; set; }
+        public string Religion { get; set; }
+        public DateTime JoiningDate { get; set; }
         public string MobileNumber { get; set; }
-        public string AdmissionNumber { get; set; } 
-        public string Section { get; set; } 
+        public string AdmissionNumber { get; set; }
+        public string Section { get; set; }
         
-        public string ImagePath { get; set; } 
+        public string ImagePath { get; set; }
         
         [NotMapped]
         public IFormFile StudentImageFile { get; set; }
 
+        // Thông tin Cha
         public string FatherName { get; set; }
         public string FatherOccupation { get; set; }
         public string FatherMobile { get; set; }
@@ -37,8 +36,7 @@ namespace SIMS_FPT.Models
         public string MotherMobile { get; set; }
         public string MotherEmail { get; set; }
 
-        public string Address { get; set; }
-        public string PermanentAddress { get; set; }
-        
+        public string Address { get; set; } 
+        public string PermanentAddress { get; set; } 
     }
 }

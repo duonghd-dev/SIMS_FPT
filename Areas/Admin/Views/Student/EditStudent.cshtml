@@ -1,7 +1,195 @@
 @using SIMS_FPT.Models
-@model IEnumerable<StudentCSVModel>
+@model StudentCSVModel
 
 @{
     ViewData["Title"] = "Edit Student";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Edit Students</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="ListStudent">Students</a></li>
+                        <li class="breadcrumb-item active">Edit Students</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        @* Form gửi dữ liệu về Action EditStudent, hỗ trợ upload file *@
+                        <form asp-action="EditStudent" method="post" enctype="multipart/form-data">
+
+                            @* Hidden field để giữ đường dẫn ảnh cũ nếu không chọn ảnh mới *@
+                            <input type="hidden" asp-for="ImagePath" />
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>Student Information</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>First Name</label>
+                                        <input asp-for="FirstName" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Last Name</label>
+                                        <input asp-for="LastName" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Student Id</label>
+                                        @* ID để Readonly (không cho sửa) vì dùng làm khóa tìm kiếm trong CSV *@
+                                        <input asp-for="StudentId" class="form-control" readonly
+                                            style="background-color: #e9ecef;">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <select asp-for="Gender" class="form-control">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Others">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Date of Birth</label>
+                                        @* Format ngày tháng thành yyyy-MM-dd để hiển thị đúng trong input date *@
+                                        <input asp-for="DateOfBirth" type="date" class="form-control"
+                                            value="@Model.DateOfBirth.ToString("yyyy-MM-dd")">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Class</label>
+                                        <input asp-for="ClassName" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Religion</label>
+                                        <input asp-for="Religion" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Joining Date</label>
+                                        <input asp-for="JoiningDate" type="date" class="form-control"
+                                            value="@Model.JoiningDate.ToString("yyyy-MM-dd")">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Mobile Number</label>
+                                        <input asp-for="MobileNumber" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Admission Number</label>
+                                        <input asp-for="AdmissionNumber" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Section</label>
+                                        <input asp-for="Section" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Student Image</label>
+                                        <input asp-for="StudentImageFile" type="file" class="form-control">
+                                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                                        {
+                                            <small class="text-muted">Current: @Model.ImagePath</small>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>Parent Information</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Father's Name</label>
+                                        <input asp-for="FatherName" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Father's Occupation</label>
+                                        <input asp-for="FatherOccupation" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Father's Mobile</label>
+                                        <input asp-for="FatherMobile" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Father's Email</label>
+                                        <input asp-for="FatherEmail" type="email" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Mother's Name</label>
+                                        <input asp-for="MotherName" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Mother's Occupation</label>
+                                        <input asp-for="MotherOccupation" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Mother's Mobile</label>
+                                        <input asp-for="MotherMobile" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Mother's Email</label>
+                                        <input asp-for="MotherEmail" type="email" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Present Address</label>
+                                        <textarea asp-for="Address" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Permanent Address</label>
+                                        <textarea asp-for="PermanentAddress" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <a asp-action="ListStudent" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
