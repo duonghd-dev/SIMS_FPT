@@ -1,7 +1,7 @@
-expenses_id,item_name,item_quality,expense_amount,source_of_purchase
-EXP001,Whiteboard Markers,High,500000,Thien Long Store
-EXP002,A4 Paper Reams,Standard,2000000,Office Supplies Co.
-EXP003,Projector Maintenance,Service,1500000,Tech Support Ltd.
-EXP004,Cleaning Detergents,Safe,800000,Clean Master
-EXP005,Library Books,New,5000000,Fahasa Bookstore
-EXP006,Lab Chemicals,High Purity,3000000,Science Direct
+id,item_name,item_quality,amount,purchase_source,purchase_date,purchase_by
+EXP001,Chair,6,120,Abc Shop,2020-08-17,Loisss
+EXP002,Table,2,56,Online,2020-08-05,Malynne
+EXP003,Desk,6,378,Take Away,2020-09-04,Levell Scott
+EXP004,Projector,1,246,Real Shop,2020-09-17,Minnie
+EXP005,Hard disk,2,560,Sony Center,2020-10-02,Lois A
+

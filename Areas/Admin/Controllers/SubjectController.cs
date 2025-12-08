@@ -5,9 +5,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class SubjectController : Controller
     {

@@ -1,0 +1,5 @@
+id,student_name,gender,fees_type,amount,paid_date,status
+PRE2209,Aaliyah,Female,Mess Fees,120,2020-08-17,Paid
+PRE2213,Malynne,Female,Class Test,56,2020-08-05,Paid
+PRE2143,Levell Scott,Male,Exam Fees,378,2020-09-04,Paid
+PRE2431,Minnie,Female,Exam Fees,246,2020-09-17,Unpaid

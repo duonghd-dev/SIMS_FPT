@@ -1,44 +1,38 @@
+using Microsoft.AspNetCore.Mvc;
+using SIMS_FPT.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
-using SIMS_FPT.Models;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
-
-
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
     [Authorize(Roles = "Admin")]
     [Area("Admin")]
-    public class DepartmentController : Controller
+    public class HolidayController : Controller
     {
         private readonly string _csvFilePath;
 
-        public DepartmentController()
+        public HolidayController()
         {
-            // Đường dẫn file CSV: ProjectRoot/CSV_DATA/departments.csv
-            _csvFilePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "departments.csv");
+            _csvFilePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "holidays.csv");
         }
 
         // --- HELPER METHODS ---
-        private List<DepartmentModel> GetAllDepartments()
+        private List<HolidayModel> GetAllHolidays()
         {
-            var list = new List<DepartmentModel>();
+            var list = new List<HolidayModel>();
             if (!System.IO.File.Exists(_csvFilePath)) return list;
 
             string[] lines = System.IO.File.ReadAllLines(_csvFilePath);
-            // Bỏ qua header (i=1)
+            // Bỏ qua header
             for (int i = 1; i < lines.Length; i++)
             {
                 string line = lines[i];
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
-                // Tách CSV (xử lý dấu phẩy)
+                // Tách CSV (xử lý dấu phẩy trong ngoặc kép)
                 var pattern = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
                 var values = Regex.Split(line, pattern);
                 for (int j = 0; j < values.Length; j++) values[j] = values[j].Trim('"');
@@ -47,13 +41,13 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                 {
                     try
                     {
-                        list.Add(new DepartmentModel
+                        list.Add(new HolidayModel
                         {
-                            DepartmentId = values[0],
-                            DepartmentName = values[1],
-                            HeadOfDepartment = values[2],
-                            StartDate = DateTime.TryParse(values[3], out var d) ? d : DateTime.MinValue,
-                            NoOfStudents = int.TryParse(values[4], out var n) ? n : 0
+                            Id = values[0],
+                            Name = values[1],
+                            Type = values[2],
+                            StartDate = DateTime.TryParse(values[3], out var s) ? s : DateTime.MinValue,
+                            EndDate = DateTime.TryParse(values[4], out var e) ? e : DateTime.MinValue
                         });
                     }
                     catch { }
@@ -62,15 +56,18 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             return list;
         }
 
-        private string FormatToCsvLine(DepartmentModel m)
+        private string FormatToCsvLine(HolidayModel m)
         {
-            return $"{m.DepartmentId},\"{m.DepartmentName}\",\"{m.HeadOfDepartment}\",{m.StartDate:yyyy-MM-dd},{m.NoOfStudents}";
+            // Format: id,name,type,start_date,end_date
+            return $"{m.Id},\"{m.Name}\",\"{m.Type}\",{m.StartDate:yyyy-MM-dd},{m.EndDate:yyyy-MM-dd}";
         }
+
+        // --- ACTIONS ---
 
         // 1. List
         public IActionResult List()
         {
-            var data = GetAllDepartments();
+            var data = GetAllHolidays();
             return View(data);
         }
 
@@ -82,7 +79,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(DepartmentModel model)
+        public IActionResult Add(HolidayModel model)
         {
             try
             {
@@ -97,17 +94,17 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             }
         }
 
-        // 3. Edit
+        // 3. Edit (Bạn chưa gửi giao diện Edit nhưng tôi làm sẵn luôn để đồng bộ)
         [HttpGet]
         public IActionResult Edit(string id)
         {
             if (string.IsNullOrEmpty(id)) return NotFound();
-            var item = GetAllDepartments().FirstOrDefault(x => x.DepartmentId == id);
+            var item = GetAllHolidays().FirstOrDefault(x => x.Id == id);
             return item == null ? NotFound() : View(item);
         }
 
         [HttpPost]
-        public IActionResult Edit(DepartmentModel model)
+        public IActionResult Edit(HolidayModel model)
         {
             try
             {
@@ -119,7 +116,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                 for (int i = 1; i < allLines.Length; i++)
                 {
                     var cols = allLines[i].Split(',');
-                    if (cols[0] == model.DepartmentId)
+                    if (cols[0] == model.Id)
                     {
                         newContent.Add(FormatToCsvLine(model));
                         found = true;
