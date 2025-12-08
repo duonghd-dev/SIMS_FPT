@@ -94,20 +94,20 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         }
 
 
-        public IActionResult ListStudent()
+        public IActionResult List()
         {
             var students = GetAllStudentsFromCsv();
             return View(students);
         }
 
         [HttpGet]
-        public IActionResult AddStudent()
+        public IActionResult Add()
         {
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddStudent(StudentCSVModel model)
+        public async Task<IActionResult> Add(StudentCSVModel model)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
 
                 string line = FormatStudentToCsvLine(model);
                 System.IO.File.AppendAllText(_csvFilePath, Environment.NewLine + line);
-                return RedirectToAction("ListStudent");
+                return RedirectToAction("List");
             }
             catch (Exception ex)
             {
@@ -126,7 +126,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditStudent(string id)
+        public IActionResult Edit(string id)
         {
             if (string.IsNullOrEmpty(id)) return NotFound();
             var students = GetAllStudentsFromCsv();
@@ -136,7 +136,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditStudent(StudentCSVModel model)
+        public async Task<IActionResult> Edit(StudentCSVModel model)
         {
             try
             {
@@ -168,7 +168,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                 if (found)
                 {
                     System.IO.File.WriteAllLines(_csvFilePath, newContent);
-                    return RedirectToAction("ListStudent");
+                    return RedirectToAction("List");
                 }
                 
                 ModelState.AddModelError("", "Không tìm thấy ID sinh viên.");
@@ -217,16 +217,16 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                     System.IO.File.WriteAllLines(_csvFilePath, newContent);
                 }
 
-                return RedirectToAction("ListStudent");
+                return RedirectToAction("List");
             }
             catch
             {
-                return RedirectToAction("ListStudent");
+                return RedirectToAction("List");
             }
         }
 
         [HttpGet]
-        public IActionResult ViewStudent(string id)
+        public IActionResult Detail(string id)
         {
             if (string.IsNullOrEmpty(id)) return NotFound();
 

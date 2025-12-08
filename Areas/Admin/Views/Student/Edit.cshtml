@@ -13,7 +13,7 @@
                 <div class="col">
                     <h3 class="page-title">Edit Students</h3>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a asp-action="ListStudent">Students</a></li>
+                        <li class="breadcrumb-item"><a asp-action="List">Students</a></li>
                         <li class="breadcrumb-item active">Edit Students</li>
                     </ul>
                 </div>
@@ -24,7 +24,7 @@
                 <div class="card">
                     <div class="card-body">
                         @* Form gửi dữ liệu về Action EditStudent, hỗ trợ upload file *@
-                        <form asp-action="EditStudent" method="post" enctype="multipart/form-data">
+                        <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
                             @* Hidden field để giữ đường dẫn ảnh cũ nếu không chọn ảnh mới *@
                             <input type="hidden" asp-for="ImagePath" />
@@ -183,7 +183,7 @@
                                 </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary">Update</button>
-                                    <a asp-action="ListStudent" class="btn btn-secondary">Cancel</a>
+                                    <a asp-action="List" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </div>
                         </form>

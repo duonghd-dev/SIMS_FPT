@@ -55,8 +55,7 @@
                                                                 alt="Avatar"
                                                                 onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
                                                         </a>
-                                                        <a asp-action="ViewStudent"
-                                                            asp-route-id="@item.StudentId">@item.FullName</a>
+                                                        <a asp-action="Detail" asp-route-id="@item.StudentId">@item.FullName</a>
                                                     </h2>
                                                 </td>
                                                 <td>@item.ClassName</td>
@@ -66,7 +65,7 @@
                                                 <td>@item.Address</td>
                                                 <td class="text-right">
                                                     <div class="actions">
-                                                        <a asp-action="EditStudent" asp-route-id="@item.StudentId"
+                                                        <a asp-action="Edit" asp-route-id="@item.StudentId"
                                                             class="btn btn-sm bg-success-light ">
                                                             <i class="fas fa-pen"></i>
                                                         </a>

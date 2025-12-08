@@ -94,13 +94,11 @@
 
                 <hr />
 
-                @* Thay thế phần Skills/Education bằng Parent Info *@
                 <div class="row mt-2">
                     <div class="col-md-12">
                         <h4 class="mb-3">Parent Information</h4>
                     </div>
 
-                    @* Thông tin Cha *@
                     <div class="col-md-6">
                         <div class="card bg-light">
                             <div class="card-body">
@@ -115,7 +113,6 @@
                         </div>
                     </div>
 
-                    @* Thông tin Mẹ *@
                     <div class="col-md-6">
                         <div class="card bg-light">
                             <div class="card-body">
@@ -133,9 +130,9 @@
 
                 <div class="row mt-3">
                     <div class="col-md-12 text-right">
-                        <a asp-action="EditStudent" asp-route-id="@Model.StudentId" class="btn btn-primary"><i
+                        <a asp-action="Edit" asp-route-id="@Model.StudentId" class="btn btn-primary"><i
                                 class="fas fa-pen"></i> Edit Profile</a>
-                        <a asp-action="ListStudent" class="btn btn-secondary">Back to List</a>
+                        <a asp-action="List" class="btn btn-secondary">Back to List</a>
                     </div>
                 </div>
 
