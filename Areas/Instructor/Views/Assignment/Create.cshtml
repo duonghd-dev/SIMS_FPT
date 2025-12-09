@@ -1,0 +1,50 @@
+﻿@model SIMS_FPT.Models.AssignmentModel
+
+@{
+    ViewData["Title"] = "Create Assignment";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Create New Assignment</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Title</label>
+                    <input asp-for="Title" class="form-control" required />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Subject</label>
+                    <select asp-for="SubjectId" class="form-control"
+                            asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectName"))">
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Due Date</label>
+                    <input asp-for="DueDate" type="datetime-local" class="form-control" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Max Points</label>
+                    <input asp-for="MaxPoints" type="number" class="form-control" value="100" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Allowed File Types</label>
+                    <input asp-for="AllowedFileTypes" class="form-control" placeholder=".pdf, .docx, .zip" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Assignment</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-subject_id,subject_name,class
+subject_id,subject_name,class,time,room
 SUB002,Geometry,SE0120
 SUB003,Physics I,SE0120
 SUB004,Computer Science,SE0120

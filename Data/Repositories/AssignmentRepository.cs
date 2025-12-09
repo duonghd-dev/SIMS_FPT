@@ -53,7 +53,58 @@ namespace SIMS_FPT.Data.Repositories
         // Implement Update, Delete, GetBySubject similarly...
         public List<AssignmentModel> GetBySubject(string subjectId) => GetAll().Where(x => x.SubjectId == subjectId).ToList();
         public AssignmentModel GetById(string id) => GetAll().FirstOrDefault(x => x.AssignmentId == id);
-        public void Update(AssignmentModel m) { /* Implementation similar to SubjectRepository.Update */ }
-        public void Delete(string id) { /* Implementation similar to SubjectRepository.Delete */ }
+
+        public void Update(AssignmentModel model)
+        {
+            if (!File.Exists(_csvFilePath)) return;
+
+            string[] lines = File.ReadAllLines(_csvFilePath);
+            // Keep the header row
+            var newLines = new List<string> { lines[0] };
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                // Get the ID from the current line (assuming ID is the first column)
+                string currentId = lines[i].Split(',')[0];
+
+                if (currentId == model.AssignmentId)
+                {
+                    // Replace with the new formatted data
+                    newLines.Add(Format(model));
+                }
+                else
+                {
+                    // Keep the existing line
+                    newLines.Add(lines[i]);
+                }
+            }
+            File.WriteAllLines(_csvFilePath, newLines);
+        }
+
+        public void Delete(string id)
+        {
+            if (!File.Exists(_csvFilePath)) return;
+
+            string[] lines = File.ReadAllLines(_csvFilePath);
+            var newLines = new List<string> { lines[0] }; // Keep header
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                string currentId = lines[i].Split(',')[0];
+
+                // Only add lines that DO NOT match the ID we want to delete
+                if (currentId != id)
+                {
+                    newLines.Add(lines[i]);
+                }
+            }
+
+            File.WriteAllLines(_csvFilePath, newLines);
+        }
+        private string Format(AssignmentModel m)
+        {
+            return $"{m.AssignmentId},{m.SubjectId},\"{m.Title}\",\"{m.Description}\",{m.DueDate},{m.MaxPoints},\"{m.AllowedFileTypes}\",{m.AreGradesPublished}";
+        }
+
     }
 }

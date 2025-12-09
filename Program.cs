@@ -92,6 +92,8 @@ app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Dashboard}/{id?}");
 
+
+
 // ------------------------------------------------------
 // Route mặc định
 // ------------------------------------------------------
