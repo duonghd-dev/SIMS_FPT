@@ -14,3 +14,4 @@ Id,Email,Username,Password,HashAlgorithm,Role,FullName
 19,11@gmail.com,11,1111 qeqw,Plain,Instructor,1111111111111111
 20,321@gmail.com,12121,AQAAAAIAAYagAAAAEBoNL5GWMfEpaOvvLdTxCXXk3c3OWM9+wOFaJScGCpxfonVLrFWeRVGLqL/O/L4ihQ==,PBKDF2,Instructor,qêw
 21,321@gmail.com,321,AQAAAAIAAYagAAAAED3LpnuzDl5HZdHuj8dqUi8/zSqXroDzxwukyAobn3kjkYoI6xJMr5q6FwwMnANQiA==,PBKDF2,Instructor,321312
+22,bnm915915@gmail.com,Long,AQAAAAIAAYagAAAAEFgyKwYTa7CpWu12CoZGjV4uWDRuG/TnO6aFkJhzrCRYAd0wsl9AcYSoYGbnU9WGEg==,PBKDF2,Admin,Long
