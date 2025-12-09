@@ -1,28 +1,75 @@
-using SIMS_Project.Data;
-using SIMS_Project.Interface;
+using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Data.Repositories;
+using SIMS_FPT.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Đăng ký Repository (Để Controller dùng được _userRepo)
-// Mỗi lần Controller cần IUserRepository, nó sẽ tạo ra một LoginRepository mới
-builder.Services.AddScoped<IUserRepository, LoginRepository>();
+// ------------------------------------------------------
+// 1. Đăng ký Repository
+// Mỗi lần Controller cần IUserRepository -> tạo UsersRepository
+// ------------------------------------------------------
+builder.Services.AddScoped<IUserRepository, UsersRepository>();
 
+
+// Student Repository
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<StudentService>();
+
+// Subject Repository
+builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
+
+
+// Teacher Repository
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<TeacherService>();
+
+// Holiday Repository
+builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
+
+// Fees Structure Repository
+builder.Services.AddScoped<IFeesStructureRepository, FeesStructureRepository>();
+
+
+// Department Repository
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+
+// Expense, Fee, Salary Repositories
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IFeeRepository, FeeRepository>();
+builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------
 // 2. Cấu hình Authentication (Đăng nhập bằng Cookie)
+// ------------------------------------------------------
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
-        options.Cookie.Name = "SIMS_Cookie"; // Tên cookie lưu trên trình duyệt
-        options.LoginPath = "/Login/Login";  // Nếu chưa đăng nhập thì chuyển hướng về đây
-        options.AccessDeniedPath = "/Login/AccessDenied"; // Nếu không có quyền thì chuyển về đây
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Cookie hết hạn sau 30 phút
+        options.Cookie.Name = "SIMS_Cookie";                 // Tên cookie lưu trên trình duyệt
+        options.LoginPath = "/Users/Login";                  // Đúng controller: Users/Login
+        options.AccessDeniedPath = "/Users/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);   // Hết hạn 30 phút
     });
 
-// Add services to the container.
+// Load MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ------------------------------------------------------
+// Middleware pipeline
+// ------------------------------------------------------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -34,18 +81,20 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// 3. Kích hoạt Authentication (Xác thực - Bạn là ai?)
-// Phải đặt TRƯỚC Authorization
+// ⚠️ Authentication phải đặt trước Authorization
 app.UseAuthentication();
-
-// 4. Kích hoạt Authorization (Phân quyền - Bạn được làm gì?)
 app.UseAuthorization();
 
-
+// ------------------------------------------------------
+// Định nghĩa route cho Areas
+// ------------------------------------------------------
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=Home}/{action=Dashboard}/{id?}");
 
+// ------------------------------------------------------
+// Route mặc định
+// ------------------------------------------------------
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

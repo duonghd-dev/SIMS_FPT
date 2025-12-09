@@ -1,4 +1,4 @@
-﻿@model SIMS_Project.Models.Login
+﻿@model SIMS_FPT.Models.Users
 
 @{
     ViewData["NoHeaderFooter"] = true;
@@ -19,31 +19,31 @@
 
                 <form asp-action="Register">
                     <div class="mb-3">
-                        <label asp-for="FullName" class="form-label">Full Name</label>
-                        <input asp-for="FullName" class="form-control" placeholder="Enter Full Name" />
+                        <label asp-for="FullName"></label>
+                        <input asp-for="FullName" class="form-control" />
                         <span asp-validation-for="FullName" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Email Address</label>
-                        <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Username" class="form-label">Username</label>
-                        <input asp-for="Username" class="form-control" placeholder="Choose a Username" />
+                        <label asp-for="Username"></label>
+                        <input asp-for="Username" class="form-control" />
                         <span asp-validation-for="Username" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Password" class="form-label">Password</label>
-                        <input asp-for="Password" class="form-control" placeholder="Create a Password" />
+                        <label asp-for="Password"></label>
+                        <input asp-for="Password" class="form-control" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Role" class="form-label">Select Role</label>
+                        <label asp-for="Role"></label>
                         <select asp-for="Role" class="form-select">
                             <option value="">-- Select Role --</option>
                             <option value="Student">Student</option>
@@ -62,9 +62,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

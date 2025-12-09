@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic; // Cần thêm
 using System.IO;
 using System.Linq; // Cần thêm
+using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Models;
+
 using System.Text.RegularExpressions;
 
 namespace SIMS_FPT.Areas.Admin.Controllers

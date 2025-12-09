@@ -5,13 +5,13 @@ using SIMS_FPT.Models;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
-    [Authorize(Roles = "Admin")]
     [Area("Admin")]
-    public class FeesStructureController : Controller
+    [Authorize(Roles = "Admin")]
+    public class FeesController : Controller
     {
-        private readonly IFeesStructureRepository _repo;
+        private readonly IFeeRepository _repo;
 
-        public FeesStructureController(IFeesStructureRepository repo)
+        public FeesController(IFeeRepository repo)
         {
             _repo = repo;
         }
@@ -24,12 +24,11 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            ViewBag.ClassList = _repo.GetUniqueClasses();
             return View();
         }
 
         [HttpPost]
-        public IActionResult Add(FeesStructureModel m)
+        public IActionResult Add(FeeModel m)
         {
             _repo.Add(m);
             return RedirectToAction("List");
@@ -40,13 +39,11 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         {
             var item = _repo.GetById(id);
             if (item == null) return NotFound();
-
-            ViewBag.ClassList = _repo.GetUniqueClasses();
             return View(item);
         }
 
         [HttpPost]
-        public IActionResult Edit(FeesStructureModel m)
+        public IActionResult Edit(FeeModel m)
         {
             _repo.Update(m);
             return RedirectToAction("List");
