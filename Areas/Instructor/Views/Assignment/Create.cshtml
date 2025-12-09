@@ -2,49 +2,90 @@
 
 @{
     ViewData["Title"] = "Create Assignment";
+    Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
 }
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Create New Assignment</h6>
-    </div>
-    <div class="card-body">
-        <form asp-action="Create">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Title</label>
-                    <input asp-for="Title" class="form-control" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Subject</label>
-                    <select asp-for="SubjectId" class="form-control"
-                            asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectName"))">
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Description</label>
-                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label>Due Date</label>
-                    <input asp-for="DueDate" type="datetime-local" class="form-control" />
-                </div>
-                <div class="form-group col-md-4">
-                    <label>Max Points</label>
-                    <input asp-for="MaxPoints" type="number" class="form-control" value="100" />
-                </div>
-                <div class="form-group col-md-4">
-                    <label>Allowed File Types</label>
-                    <input asp-for="AllowedFileTypes" class="form-control" placeholder=".pdf, .docx, .zip" />
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Create Assignment</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
+@* --- PAGE HEADER --- *@
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Add Assignment</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Assignment" asp-action="Index">Assignments</a></li>
+                <li class="breadcrumb-item active">Add Assignment</li>
+            </ul>
+        </div>
     </div>
 </div>
+
+@* --- FORM CARD --- *@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="form-title"><span>Assignment Details</span></h5>
+                        </div>
+
+                        @* 1. Subject Selection *@
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label asp-for="SubjectId" class="form-label">Subject</label>
+                                @* Assuming you populate ViewBag.SubjectId in your Controller *@
+                                <select asp-for="SubjectId" class="form-control"
+                                        asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectName"))">
+                                    <option value="">-- Select Subject --</option>
+                                </select>
+                                <span asp-validation-for="SubjectId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        @* 2. Assignment Title *@
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label asp-for="Title" class="form-label">Assignment Title</label>
+                                <input asp-for="Title" class="form-control" placeholder="e.g. Mid-term Project" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        @* 3. Due Date *@
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label asp-for="DueDate" class="form-label">Due Date</label>
+                                <input asp-for="DueDate" class="form-control" type="date" />
+                                <span asp-validation-for="DueDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        @* 4. Description (Full Width) *@
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Description" class="form-label">Description</label>
+                                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter assignment instructions..."></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        @* 5. Buttons *@
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

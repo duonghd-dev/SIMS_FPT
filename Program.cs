@@ -1,3 +1,5 @@
+using SIMS_FPT.Business.Interfaces; 
+using SIMS_FPT.Business.Services;   
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Data.Repositories;
 using SIMS_FPT.Services;
@@ -38,7 +40,10 @@ builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<IFeeRepository, FeeRepository>();
 builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
 
-
+// Assignment & Submission Repositories
+builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+builder.Services.AddScoped<IGradingService, GradingService>();
 
 
 

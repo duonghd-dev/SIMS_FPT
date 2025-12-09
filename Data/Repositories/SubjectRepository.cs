@@ -11,11 +11,10 @@ namespace SIMS_FPT.Data.Repositories
     {
         private readonly string _csvFilePath;
 
-        public SubjectRepository()
+        public SubjectRepository(IWebHostEnvironment env)
         {
-            _csvFilePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "subjects.csv");
+            _csvFilePath = Path.Combine(env.ContentRootPath, "CSV_DATA", "subjects.csv");
         }
-
         public List<SubjectModel> GetAll()
         {
             var list = new List<SubjectModel>();

@@ -1,0 +1,54 @@
+﻿@model IEnumerable<SIMS_FPT.Models.AssignmentModel>
+
+@{
+    ViewData["Title"] = "Assignments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">All Assignments</h6>
+        <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Create New</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Subject</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Title</td>
+                            <td>@item.SubjectId</td>
+                            <td>@item.DueDate.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td>
+                                @if (item.AreGradesPublished)
+                                {
+                                    <span class="badge badge-success">Published</span>
+                                }
+                                else
+                                {
+
+                                    <span class="badge badge-secondary">Draft</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="BulkGrade" asp-route-id="@item.AssignmentId" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Grade
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

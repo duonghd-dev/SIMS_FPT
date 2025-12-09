@@ -1,19 +1,16 @@
-﻿@model SIMS_FPT.Models.ViewModels.InstructorDashboardViewModel
-@{
+﻿@{
     ViewData["Title"] = "Instructor Dashboard";
-    Layout = "~/Views/Shared/_Layout.cshtml"; // Ensure this points to your layout
+    Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
 }
-
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Instructor Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+        <a asp-area="Instructor" asp-controller="Assignment" asp-action="Create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Create New Assignment
         </a>
     </div>
 
     <div class="row">
-
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
@@ -52,10 +49,12 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Course Materials</div>
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Assignments</div>
                             <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">Upload New</div>
+                                    <a asp-area="Instructor" asp-controller="Assignment" asp-action="Create" class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+                                        Create New &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -72,8 +71,10 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Grading</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Manage Grading</div>
+                            <a asp-area="Instructor" asp-controller="Assignment" asp-action="Index" class="h5 mb-0 font-weight-bold text-gray-800">
+                                View All
+                            </a>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
@@ -84,8 +85,9 @@
         </div>
     </div>
 
-    <div class="row">
+    @* Paste the rest of your original Dashboard code here (Schedule, Charts, Scripts) *@
 
+    <div class="row">
         <div class="col-lg-6 mb-4">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -130,59 +132,21 @@
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-lg-12 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-danger">At-Risk Students (Action Required)</h6>
-                </div>
-                <div class="card-body">
-                    @foreach (var student in Model.AtRiskStudents)
-                    {
-                        var alertClass = student.RiskLevel == "High" ? "alert-danger" : "alert-warning";
-                        <div class="alert @alertClass d-flex justify-content-between align-items-center" role="alert">
-                            <div>
-                                <strong>@student.StudentName</strong> - @student.Reason
-                            </div>
-                            <button class="btn btn-sm btn-light">Contact Student</button>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 @section Scripts {
     <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
-
     <script>
-        // Data passed from C# ViewModel
         var labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PerformanceLabels));
         var dataPoints = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PerformanceData));
-
         var options = {
-            series: [{
-                name: 'Class Average',
-                data: dataPoints
-            }],
-            chart: {
-                height: 350,
-                type: 'area'
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                curve: 'smooth'
-            },
-            xaxis: {
-                categories: labels
-            },
-            colors: ['#4e73df'] // Primary Blue Color
+            series: [{ name: 'Class Average', data: dataPoints }],
+            chart: { height: 350, type: 'area' },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth' },
+            xaxis: { categories: labels },
+            colors: ['#4e73df']
         };
-
         var chart = new ApexCharts(document.querySelector("#performanceChart"), options);
         chart.render();
     </script>
