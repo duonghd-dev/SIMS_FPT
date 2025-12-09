@@ -2,3 +2,12 @@ Id,Email,Username,Password,Role,FullName
 1,duongteacher@gmail.com,teacher,123,Instructor,Duonggv
 2,duongadmin@gmail.com,admin,123,Admin,DuongAdmin
 3,duongstudent@gmail.com,student,123,Student,Duongstudent
+10,hung.nguyen@school.edu,hungnv,Pass12311,Instructor,Nguyen Van Hung
+11,mai.tran@school.edu,maitt,Secure789,Instructor,Tran Thi Mai
+12,tuan.le@school.edu,tuanlv,Dev2025,Instructor,Le Van Tuan
+13,ha.pham@school.edu,hapt,Eng#Star,Instructor,Pham Thu Ha
+14,nam.hoang@school.edu,namhv,Chem!2024,Instructor,Hoang Van Nam
+15,9@gmail.com,90000000000,9,Instructor,99999
+16,0909@gmail.com,090909,09090,Instructor,09909
+17,9@gmail.com,90,9,Instructor,99999
+18,0909@gmail.com,1,09090,Instructor,09909

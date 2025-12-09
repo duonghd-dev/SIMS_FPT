@@ -1,35 +1,33 @@
 using Microsoft.AspNetCore.Http;
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SIMS_FPT.Models
 {
     public class TeacherCSVModel
     {
-        public string TeacherId { get; set; }
-        public string Name { get; set; }
-        public string Gender { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public string Mobile { get; set; }
-        public DateTime JoiningDate { get; set; }
-        public string Qualification { get; set; }
-        public string Experience { get; set; }
-        
-        // Login Details
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        
-        // Address Details
-        public string Address { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public string ZipCode { get; set; }
-        public string Country { get; set; }
+        public string TeacherId { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Gender { get; set; } = string.Empty;
+        public DateTime DateOfBirth { get; set; } = DateTime.MinValue;
+        public string Mobile { get; set; } = string.Empty;
+        public DateTime JoiningDate { get; set; } = DateTime.MinValue;
+        public string Qualification { get; set; } = string.Empty;
+        public string Experience { get; set; } = string.Empty;
 
-        public string ImagePath { get; set; }
+        // Login
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+
+        // Address
+        public string Address { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+
+        public string ImagePath { get; set; } = string.Empty;
 
         [NotMapped]
-        public IFormFile TeacherImageFile { get; set; }
+        public IFormFile? TeacherImageFile { get; set; }
     }
 }

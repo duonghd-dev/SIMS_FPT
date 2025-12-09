@@ -1,14 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using SIMS_Project.Interface;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-
 
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
@@ -18,101 +13,117 @@ namespace SIMS_FPT.Areas.Admin.Controllers
     {
         private readonly string _csvFilePath;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IUserRepository _userRepository;
 
-        public InstructorController(IWebHostEnvironment webHostEnvironment)
+        public InstructorController(IWebHostEnvironment webHostEnvironment, IUserRepository userRepository)
         {
             _webHostEnvironment = webHostEnvironment;
+            _userRepository = userRepository;
             _csvFilePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "teachers.csv");
+            EnsureTeacherCsvHeader();
         }
 
-        // --- HELPER METHODS ---
+        private void EnsureTeacherCsvHeader()
+        {
+            if (!System.IO.File.Exists(_csvFilePath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(_csvFilePath)!);
+                var header = "teacher_id,name,gender,date_of_birth,mobile,joining_date,qualification,experience,username,email,password,address,city,state,country,image";
+                System.IO.File.WriteAllText(_csvFilePath, header);
+            }
+        }
+
         private List<TeacherCSVModel> GetAllTeachersFromCsv()
         {
             var teachers = new List<TeacherCSVModel>();
             if (!System.IO.File.Exists(_csvFilePath)) return teachers;
 
             string[] lines = System.IO.File.ReadAllLines(_csvFilePath);
-            // Bỏ qua header (i=1)
+            // Skip header
+            var pattern = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+
             for (int i = 1; i < lines.Length; i++)
             {
-                string line = lines[i];
+                var line = lines[i];
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
-                var pattern = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
-                var values = Regex.Split(line, pattern);
+                var values = Regex.Split(line, pattern).Select(v => v.Trim()).ToArray();
                 for (int j = 0; j < values.Length; j++) values[j] = values[j].Trim('"');
 
-                // CSV gốc có 17 cột. Nếu ta thêm ảnh vào cuối thì sẽ là 18.
-                if (values.Length >= 17)
+                if (values.Length < 16) continue;
+
+                try
                 {
-                    try
+                    var teacher = new TeacherCSVModel
                     {
-                        var teacher = new TeacherCSVModel
-                        {
-                            TeacherId = values[0],
-                            Name = values[1],
-                            Gender = values[2],
-                            DateOfBirth = DateTime.TryParse(values[3], out var dob) ? dob : DateTime.MinValue,
-                            Mobile = values[4],
-                            JoiningDate = DateTime.TryParse(values[5], out var join) ? join : DateTime.MinValue,
-                            Qualification = values[6],
-                            Experience = values[7],
-                            Username = values[8],
-                            Email = values[9],
-                            Password = values[10],
-                            // values[11] là repeat_password, ta không cần lưu vào model hiển thị
-                            Address = values[12],
-                            City = values[13],
-                            State = values[14],
-                            ZipCode = values[15],
-                            Country = values[16]
-                        };
-
-                        // Kiểm tra nếu có cột thứ 18 (ImagePath) thì lấy, không thì để default
-                        if (values.Length > 17)
-                        {
-                            teacher.ImagePath = values[17];
-                        }
-
-                        teachers.Add(teacher);
-                    }
-                    catch { /* Ignore lines with bad data */ }
+                        TeacherId = values[0],
+                        Name = values[1],
+                        Gender = values[2],
+                        DateOfBirth = DateTime.TryParse(values[3], out var dob) ? dob : DateTime.MinValue,
+                        Mobile = values[4],
+                        JoiningDate = DateTime.TryParse(values[5], out var join) ? join : DateTime.MinValue,
+                        Qualification = values[6],
+                        Experience = values[7],
+                        Username = values[8],
+                        Email = values[9],
+                        Password = values[10],
+                        Address = values[11],
+                        City = values[12],
+                        State = values[13],
+                        Country = values[14],
+                        ImagePath = values[15]
+                    };
+                    teachers.Add(teacher);
+                }
+                catch
+                {
+                    // ignore malformed line
                 }
             }
+
             return teachers;
         }
 
         private string FormatTeacherToCsvLine(TeacherCSVModel model)
         {
-            // Format đúng thứ tự cột trong file CSV + Thêm ImagePath vào cuối
-            return string.Format("{0},\"{1}\",{2},{3},{4},{5},\"{6}\",\"{7}\",{8},{9},{10},{10},\"{11}\",\"{12}\",\"{13}\",{14},\"{15}\",{16}",
-                model.TeacherId, model.Name, model.Gender, model.DateOfBirth.ToString("yyyy-MM-dd"),
-                model.Mobile, model.JoiningDate.ToString("yyyy-MM-dd"), model.Qualification, model.Experience,
-                model.Username, model.Email, model.Password, // Repeat pass giống pass
-                model.Address, model.City, model.State, model.ZipCode, model.Country,
-                model.ImagePath // Cột mới thêm cuối cùng
+            // All fields that can contain commas are wrapped in quotes.
+            return string.Join(",",
+                model.TeacherId,
+                $"\"{model.Name}\"",
+                model.Gender,
+                model.DateOfBirth == DateTime.MinValue ? "" : model.DateOfBirth.ToString("yyyy-MM-dd"),
+                model.Mobile,
+                model.JoiningDate == DateTime.MinValue ? "" : model.JoiningDate.ToString("yyyy-MM-dd"),
+                $"\"{model.Qualification}\"",
+                $"\"{model.Experience}\"",
+                model.Username,
+                model.Email,
+                model.Password,
+                $"\"{model.Address}\"",
+                $"\"{model.City}\"",
+                $"\"{model.State}\"",
+                model.Country,
+                model.ImagePath ?? ""
             );
         }
 
-        private async Task<string> UploadFile(TeacherCSVModel model)
+        private async Task<string?> UploadFile(TeacherCSVModel model)
         {
-            if (model.TeacherImageFile != null)
-            {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+            if (model.TeacherImageFile == null) return null;
 
-                string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.TeacherImageFile.FileName;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.TeacherImageFile.CopyToAsync(fileStream);
-                }
-                return "/images/" + uniqueFileName;
+            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(model.TeacherImageFile.FileName);
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.TeacherImageFile.CopyToAsync(fileStream);
             }
-            return null;
+            return "/images/" + uniqueFileName;
         }
 
-        // --- ACTIONS ---
+        // ---------- Actions ----------
 
         public IActionResult List()
         {
@@ -131,11 +142,21 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         {
             try
             {
-                string newImagePath = await UploadFile(model);
-                model.ImagePath = newImagePath ?? "/assets/img/profiles/avatar-02.jpg"; // Ảnh mặc định
+                // generate TeacherId if not provided
+                if (string.IsNullOrWhiteSpace(model.TeacherId))
+                {
+                    model.TeacherId = "TCH" + DateTime.UtcNow.Ticks.ToString().Substring(10);
+                }
 
-                string line = FormatTeacherToCsvLine(model);
+                model.ImagePath = await UploadFile(model) ?? "/assets/img/profiles/avatar-02.jpg";
+
+                // append teacher line
+                var line = FormatTeacherToCsvLine(model);
                 System.IO.File.AppendAllText(_csvFilePath, Environment.NewLine + line);
+
+                // sync to users.csv
+                _userRepository.AddTeacherUser(model);
+
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -149,51 +170,46 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         public IActionResult Edit(string id)
         {
             if (string.IsNullOrEmpty(id)) return NotFound();
-            var teachers = GetAllTeachersFromCsv();
-            var teacher = teachers.FirstOrDefault(t => t.TeacherId == id);
+            var teacher = GetAllTeachersFromCsv().FirstOrDefault(t => t.TeacherId == id);
             if (teacher == null) return NotFound();
             return View(teacher);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(TeacherCSVModel model)
+        public async Task<IActionResult> Edit(TeacherCSVModel model, string originalUsername)
         {
             try
             {
+                var all = GetAllTeachersFromCsv();
+                var idx = all.FindIndex(t => t.TeacherId == model.TeacherId);
+                if (idx < 0)
+                {
+                    ModelState.AddModelError("", "Teacher ID not found.");
+                    return View(model);
+                }
+
                 if (model.TeacherImageFile != null)
                 {
                     model.ImagePath = await UploadFile(model);
                 }
-
-                string[] allLines = System.IO.File.ReadAllLines(_csvFilePath);
-                var newContent = new List<string> { allLines[0] }; // Keep header
-                bool found = false;
-
-                for (int i = 1; i < allLines.Length; i++)
+                else
                 {
-                    var cols = allLines[i].Split(',');
-                    // ID là cột đầu tiên (index 0)
-                    string currentId = cols[0];
-
-                    if (currentId == model.TeacherId)
-                    {
-                        newContent.Add(FormatTeacherToCsvLine(model));
-                        found = true;
-                    }
-                    else
-                    {
-                        newContent.Add(allLines[i]);
-                    }
+                    model.ImagePath = all[idx].ImagePath;
                 }
 
-                if (found)
-                {
-                    System.IO.File.WriteAllLines(_csvFilePath, newContent);
-                    return RedirectToAction("List");
-                }
+                // update in memory
+                all[idx] = model;
 
-                ModelState.AddModelError("", "Teacher ID not found.");
-                return View(model);
+                // write file back
+                var header = "teacher_id,name,gender,date_of_birth,mobile,joining_date,qualification,experience,username,email,password,address,city,state,country,image";
+                var lines = new List<string> { header };
+                lines.AddRange(all.Select(FormatTeacherToCsvLine));
+                System.IO.File.WriteAllLines(_csvFilePath, lines);
+
+                // sync to users.csv (if username/email/password/name changed)
+                _userRepository.UpdateUserFromTeacher(model, originalUsername);
+
+                return RedirectToAction("List");
             }
             catch (Exception ex)
             {
@@ -206,22 +222,19 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(id)) return NotFound();
-                string[] allLines = System.IO.File.ReadAllLines(_csvFilePath);
-                var newContent = new List<string>();
-                if (allLines.Length > 0) newContent.Add(allLines[0]);
+                var all = GetAllTeachersFromCsv();
+                var teacher = all.FirstOrDefault(t => t.TeacherId == id);
+                if (teacher == null) return RedirectToAction("List");
 
-                bool isDeleted = false;
-                for (int i = 1; i < allLines.Length; i++)
-                {
-                    var cols = allLines[i].Split(',');
-                    string currentId = cols[0]; // ID cột đầu
+                var newList = all.Where(t => t.TeacherId != id).ToList();
+                var header = "teacher_id,name,gender,date_of_birth,mobile,joining_date,qualification,experience,username,email,password,address,city,state,country,image";
+                var lines = new List<string> { header };
+                lines.AddRange(newList.Select(FormatTeacherToCsvLine));
+                System.IO.File.WriteAllLines(_csvFilePath, lines);
 
-                    if (currentId != id) newContent.Add(allLines[i]);
-                    else isDeleted = true;
-                }
+                // delete account in users.csv
+                _userRepository.DeleteUserByUsername(teacher.Username);
 
-                if (isDeleted) System.IO.File.WriteAllLines(_csvFilePath, newContent);
                 return RedirectToAction("List");
             }
             catch
@@ -234,8 +247,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         public IActionResult Detail(string id)
         {
             if (string.IsNullOrEmpty(id)) return NotFound();
-            var teachers = GetAllTeachersFromCsv();
-            var teacher = teachers.FirstOrDefault(t => t.TeacherId == id);
+            var teacher = GetAllTeachersFromCsv().FirstOrDefault(t => t.TeacherId == id);
             if (teacher == null) return NotFound();
             return View(teacher);
         }

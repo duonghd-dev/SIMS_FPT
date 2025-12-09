@@ -1,5 +1,5 @@
-﻿using SIMS_Project.Models;
-using System.Collections.Generic;
+﻿using SIMS_FPT.Models;
+using SIMS_Project.Models;
 
 namespace SIMS_Project.Interface
 {
@@ -11,5 +11,10 @@ namespace SIMS_Project.Interface
 
         List<Login> GetInstructors();
         Login? GetUserById(int id);
+
+        // CSV sync helpers
+        void AddTeacherUser(TeacherCSVModel teacher);
+        void UpdateUserFromTeacher(TeacherCSVModel teacher, string oldUsername = null);
+        void DeleteUserByUsername(string username);
     }
 }

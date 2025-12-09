@@ -25,18 +25,26 @@
                         <div class="about-info">
                             <h4>Profile</h4>
                             <div class="media mt-3">
-                                <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "/assets/img/profiles/avatar-02.jpg" : Model.ImagePath)" 
-                                     class="mr-3 rounded-circle" alt="Avatar" style="width:100px;height:100px;object-fit:cover;"
-                                     onerror="this.src='/assets/img/profiles/avatar-02.jpg'">
+                                <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "/assets/img/profiles/avatar-02.jpg" : Model.ImagePath)"
+                                    class="mr-3 rounded-circle" alt="Avatar"
+                                    style="width:100px;height:100px;object-fit:cover;"
+                                    onerror="this.src='/assets/img/profiles/avatar-02.jpg'">
                                 <div class="media-body">
                                     <ul>
-                                        <li><span class="title-span">Full Name : </span><span class="info-span">@Model.Name</span></li>
-                                        <li><span class="title-span">Teacher ID : </span><span class="info-span">@Model.TeacherId</span></li>
-                                        <li><span class="title-span">Mobile : </span><span class="info-span">@Model.Mobile</span></li>
-                                        <li><span class="title-span">Email : </span><span class="info-span">@Model.Email</span></li>
-                                        <li><span class="title-span">Gender : </span><span class="info-span">@Model.Gender</span></li>
-                                        <li><span class="title-span">DOB : </span><span class="info-span">@Model.DateOfBirth.ToString("dd MMM yyyy")</span></li>
-                                        <li><span class="title-span">Joining Date : </span><span class="info-span">@Model.JoiningDate.ToString("dd MMM yyyy")</span></li>
+                                        <li><span class="title-span">Full Name : </span><span
+                                                class="info-span">@Model.Name</span></li>
+                                        <li><span class="title-span">Teacher ID : </span><span
+                                                class="info-span">@Model.TeacherId</span></li>
+                                        <li><span class="title-span">Mobile : </span><span
+                                                class="info-span">@Model.Mobile</span></li>
+                                        <li><span class="title-span">Email : </span><span
+                                                class="info-span">@Model.Email</span></li>
+                                        <li><span class="title-span">Gender : </span><span
+                                                class="info-span">@Model.Gender</span></li>
+                                        <li><span class="title-span">DOB : </span><span
+                                                class="info-span">@Model.DateOfBirth.ToString("dd MMM yyyy")</span></li>
+                                        <li><span class="title-span">Joining Date : </span><span
+                                                class="info-span">@Model.JoiningDate.ToString("dd MMM yyyy")</span></li>
                                     </ul>
                                 </div>
                             </div>
@@ -53,13 +61,13 @@
                                 <div class="col-md-12">
                                     <h5>Address Details</h5>
                                     <p>@Model.Address, @Model.City</p>
-                                    <p>@Model.State, @Model.Country - @Model.ZipCode</p>
                                 </div>
                             </div>
-                            
+
                             <div class="row mt-3">
                                 <div class="col-md-12 text-right">
-                                    <a asp-action="EditTeacher" asp-route-id="@Model.TeacherId" class="btn btn-primary"><i class="fas fa-pen"></i> Edit</a>
+                                    <a asp-action="EditTeacher" asp-route-id="@Model.TeacherId"
+                                        class="btn btn-primary"><i class="fas fa-pen"></i> Edit</a>
                                     <a asp-action="ListTeacher" class="btn btn-secondary">Back</a>
                                 </div>
                             </div>

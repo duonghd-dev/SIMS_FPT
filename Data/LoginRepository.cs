@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using SIMS_Project.Interface;
 using SIMS_Project.Models;
+using SIMS_FPT.Models;
 using System.Globalization;
 using System.IO;
 
@@ -10,128 +11,140 @@ namespace SIMS_Project.Data
     public class LoginRepository : IUserRepository
     {
         private readonly string _filePath;
+        private readonly CsvConfiguration _csvConfig;
 
         public LoginRepository()
         {
-            // 1. Lấy thư mục gốc của Web
             var currentDir = Directory.GetCurrentDirectory();
+            var folder = Path.Combine(currentDir, "CSV_DATA");
+            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
-            _filePath = Path.Combine(currentDir, "CSV_DATA", "users.csv");
-        }
+            _filePath = Path.Combine(folder, "users.csv");
 
-        private List<Login> GetAllUsers()
-        {
-            if (!File.Exists(_filePath)) return new List<Login>();
-
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            _csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
                 MissingFieldFound = null
             };
+        }
+
+        private List<Login> ReadAllUsersInternal()
+        {
+            if (!File.Exists(_filePath)) return new List<Login>();
 
             using (var reader = new StreamReader(_filePath))
-            using (var csv = new CsvReader(reader, config))
+            using (var csv = new CsvReader(reader, _csvConfig))
             {
-                return csv.GetRecords<Login>().ToList();
+                try
+                {
+                    return csv.GetRecords<Login>().ToList();
+                }
+                catch
+                {
+                    return new List<Login>();
+                }
+            }
+        }
+
+        private void WriteAllUsersInternal(IEnumerable<Login> users)
+        {
+            // Ensure directory exists
+            Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
+
+            using (var writer = new StreamWriter(_filePath, false))
+            using (var csv = new CsvWriter(writer, _csvConfig))
+            {
+                csv.WriteHeader<Login>();
+                csv.NextRecord();
+                csv.WriteRecords(users);
             }
         }
 
         public List<Login> GetInstructors()
         {
-            return GetAllUsers().Where(u => u.Role == "Instructor").ToList();
+            return ReadAllUsersInternal().Where(u => u.Role == "Instructor").ToList();
         }
 
         public Login? GetUserById(int id)
         {
-            return GetAllUsers().FirstOrDefault(u => u.Id == id);
+            return ReadAllUsersInternal().FirstOrDefault(u => u.Id == id);
         }
 
         public Login? Login(string username, string password)
         {
-            // Debug: In ra đường dẫn file đang dùng để kiểm tra
-            Console.WriteLine($"--- DEBUG LOGIN ---");
-            Console.WriteLine($"Đang đọc file tại: {_filePath}");
-
-            if (!File.Exists(_filePath))
-            {
-                Console.WriteLine("LỖI: Không tìm thấy file users.csv tại đường dẫn trên!");
-                return null;
-            }
-
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                HasHeaderRecord = true,
-                MissingFieldFound = null
-            };
-
-            using (var reader = new StreamReader(_filePath))
-            using (var csv = new CsvReader(reader, config))
-            {
-                try
-                {
-                    var users = csv.GetRecords<Login>().ToList();
-                    Console.WriteLine($"Đã đọc được {users.Count} user.");
-
-                    // Tìm user khớp
-                    var user = users.FirstOrDefault(u => u.Username == username && u.Password == password);
-
-                    if (user == null)
-                        Console.WriteLine($"KẾT QUẢ: Sai thông tin! Nhập: '{username}'/'{password}'");
-                    else
-                        Console.WriteLine("KẾT QUẢ: Đăng nhập thành công!");
-
-                    return user;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Lỗi khi đọc CSV: {ex.Message}");
-                    return null;
-                }
-            }
+            var users = ReadAllUsersInternal();
+            return users.FirstOrDefault(u =>
+                string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase)
+                && u.Password == password);
         }
 
         public void AddUser(Login newUser)
         {
-            var users = GetAllUsers();
+            var users = ReadAllUsersInternal();
             newUser.Id = users.Any() ? users.Max(u => u.Id) + 1 : 1;
-
-            bool append = File.Exists(_filePath);
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                HasHeaderRecord = !append
-            };
-
-            var directory = Path.GetDirectoryName(_filePath);
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            using (var stream = File.Open(_filePath, FileMode.Append))
-            using (var writer = new StreamWriter(stream))
-            using (var csv = new CsvWriter(writer, config))
-            {
-                csv.WriteRecord(newUser);
-                csv.NextRecord();
-            }
+            users.Add(newUser);
+            WriteAllUsersInternal(users);
         }
 
         public bool UsernameExists(string username)
         {
-            if (!File.Exists(_filePath)) return false;
+            var users = ReadAllUsersInternal();
+            return users.Any(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
+        }
 
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        // --- Sync helpers for Teacher CSV ---
+
+        public void AddTeacherUser(TeacherCSVModel teacher)
+        {
+            var users = ReadAllUsersInternal();
+
+            // avoid duplicate username
+            if (users.Any(u => string.Equals(u.Username, teacher.Username, StringComparison.OrdinalIgnoreCase)))
+                return;
+
+            var newUser = new Login
             {
-                HasHeaderRecord = true,
-                MissingFieldFound = null
+                Id = users.Any() ? users.Max(u => u.Id) + 1 : 1,
+                Email = teacher.Email,
+                Username = teacher.Username,
+                Password = teacher.Password,
+                Role = "Instructor",
+                FullName = teacher.Name
             };
 
-            using (var reader = new StreamReader(_filePath))
-            using (var csv = new CsvReader(reader, config))
+            users.Add(newUser);
+            WriteAllUsersInternal(users);
+        }
+
+        public void UpdateUserFromTeacher(TeacherCSVModel teacher, string oldUsername = null)
+        {
+            var users = ReadAllUsersInternal();
+            // Find by oldUsername (if provided) or by new username
+            var existing = (oldUsername != null)
+                ? users.FirstOrDefault(u => string.Equals(u.Username, oldUsername, StringComparison.OrdinalIgnoreCase))
+                : users.FirstOrDefault(u => string.Equals(u.Username, teacher.Username, StringComparison.OrdinalIgnoreCase));
+
+            if (existing != null)
             {
-                var users = csv.GetRecords<Login>().ToList();
-                return users.Any(u => u.Username == username);
+                existing.Username = teacher.Username;
+                existing.Email = teacher.Email;
+                existing.Password = teacher.Password;
+                existing.FullName = teacher.Name;
+                existing.Role = "Instructor";
+                WriteAllUsersInternal(users);
             }
+            else
+            {
+                // If not found, add as new
+                AddTeacherUser(teacher);
+            }
+        }
+
+        public void DeleteUserByUsername(string username)
+        {
+            var users = ReadAllUsersInternal();
+            var newList = users.Where(u => !string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase)).ToList();
+            WriteAllUsersInternal(newList);
         }
     }
 }

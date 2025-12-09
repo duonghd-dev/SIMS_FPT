@@ -16,25 +16,22 @@ namespace SIMS_Project.Controllers
             _userRepo = userRepo;
         }
 
-        // 1. Hiện form đăng nhập
         public IActionResult Login()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
             return View();
         }
 
-        // 2. Xử lý đăng nhập
         [HttpPost]
         public IActionResult Login(string username, string password)
         {
             var user = _userRepo.Login(username, password);
 
-            if (user != null) // Đăng nhập thành công
+            if (user != null)
             {
-                // Tạo thông tin định danh (Claim)
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.FullName),
@@ -45,22 +42,16 @@ namespace SIMS_Project.Controllers
                 var identity = new ClaimsIdentity(claims, "CookieAuth");
                 var principal = new ClaimsPrincipal(identity);
 
-                // Ghi Cookie vào trình duyệt
                 HttpContext.SignInAsync("CookieAuth", principal);
 
-                // Điều hướng dựa trên Role
                 if (user.Role == "Admin")
-                {
                     return RedirectToAction("Dashboard", "Home", new { area = "Admin" });
-                }
-                else if (user.Role == "Instructor")
-                {
+
+                if (user.Role == "Instructor")
                     return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
-                }
-                else if (user.Role == "Student")
-                {
+
+                if (user.Role == "Student")
                     return RedirectToAction("Dashboard", "Home", new { area = "Student" });
-                }
 
                 return RedirectToAction("Index", "Home");
             }
@@ -69,13 +60,11 @@ namespace SIMS_Project.Controllers
             return View();
         }
 
-        // 3. GET: Show the Registration Form
         public IActionResult Register()
         {
             return View();
         }
 
-        // 4. POST: Handle the submitted data
         [HttpPost]
         public IActionResult Register(Login user)
         {
@@ -93,17 +82,12 @@ namespace SIMS_Project.Controllers
             return View(user);
         }
 
-        // 5. Đăng xuất
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync("CookieAuth");
             return RedirectToAction("Index", "Home");
         }
 
-        // 6. Trang báo lỗi khi không có quyền
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
+        public IActionResult AccessDenied() => View();
     }
 }
