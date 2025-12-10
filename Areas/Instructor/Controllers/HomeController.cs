@@ -28,7 +28,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 TodayClasses = subjects.Select((s, index) => new ClassScheduleItem
                 {
                     SubjectName = s.SubjectName,
-                    ClassName = s.Class,
                     Time = $"{8 + (index * 2)}:00 AM - {10 + (index * 2)}:00 AM",
                     Room = $"Room A-{101 + index}"
                 }).ToList(),
