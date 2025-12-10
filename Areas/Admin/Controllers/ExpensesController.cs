@@ -6,7 +6,7 @@ using SIMS_FPT.Models;
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")] // Bỏ comment khi bạn đã làm xong chức năng login
     public class ExpensesController : Controller
     {
         private readonly IExpenseRepository _repo;
@@ -30,8 +30,12 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Add(ExpenseModel m)
         {
-            _repo.Add(m);
-            return RedirectToAction("List");
+            if (ModelState.IsValid)
+            {
+                _repo.Add(m);
+                return RedirectToAction("List");
+            }
+            return View(m);
         }
 
         [HttpGet]
@@ -45,8 +49,12 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(ExpenseModel m)
         {
-            _repo.Update(m);
-            return RedirectToAction("List");
+            if (ModelState.IsValid)
+            {
+                _repo.Update(m);
+                return RedirectToAction("List");
+            }
+            return View(m);
         }
 
         public IActionResult Delete(string id)

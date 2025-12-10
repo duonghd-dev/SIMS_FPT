@@ -178,81 +178,58 @@
 
                     </li>
 
-                    @* 2. STUDENTS *@
-                    @* Logic: Active submenu cha khi Controller là 'Student' *@
-                    <li class="submenu @(currentController == "Student" ? "active" : "")">
-                        <a href="#"><i class="fas fa-user-graduate"></i> <span> Students</span> <span
-                                class="menu-arrow"></span></a>
-                        <ul>
-                            @* Logic con: Active khi Action khớp (List hoặc Add) *@
-                            <li><a class="@(currentAction == "List" && currentController == "Student" ? "active" : "")"
-                                    asp-area="Admin" asp-controller="Student" asp-action="List">Student List</a></li>
-                            <li><a class="@(currentAction == "Add" && currentController == "Student" ? "active" : "")"
-                                    asp-area="Admin" asp-controller="Student" asp-action="Add">Student Add</a></li>
-                        </ul>
+
+                    <li class="@(currentController == "Student" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Student" asp-action="List"><i
+                                class="fas fa-user-graduate"></i>
+                            <span>Student</span></a>
                     </li>
 
-                    @* 3. TEACHERS (INSTRUCTORS) *@
-                    <li class="submenu @(currentController == "Instructor" ? "active" : "")">
-                        <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span> Teachers</span> <span
-                                class="menu-arrow"></span></a>
-                        <ul>
-                            <li><a class="@(currentAction == "List" && currentController == "Instructor" ? "active" : "")"
-                                    asp-area="Admin" asp-controller="Instructor" asp-action="List">Teacher List</a></li>
-                            <li><a class="@(currentAction == "Add" && currentController == "Instructor" ? "active" : "")"
-                                    asp-area="Admin" asp-controller="Instructor" asp-action="Add">Teacher Add</a></li>
-                        </ul>
+                    <li class="@(currentController == "Instructor" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Instructor" asp-action="List"><i
+                                class="fas fa-user-graduate"></i>
+                            <span>Teachers</span></a>
                     </li>
 
-                    @* 4. DEPARTMENTS *@
-                    <li class="submenu @(currentController == "Department" ? "active" : "")">
-                        <a href="#"><i class="fas fa-building"></i> <span> Departments</span> <span
-                                class="menu-arrow"></span></a>
-                        <ul>
-                            <li><a class="@(currentAction == "List" && currentController == "Department" ? "active" : "")"
-                                    asp-area="Admin" asp-controller="Department" asp-action="List">Department List</a>
-                            </li>
-                            <li><a class="@(currentAction == "Add" && currentController == "Department" ? "active" : "")"
-                                    asp-area="Admin" asp-controller="Department" asp-action="Add">Department Add</a>
-                            </li>
-                        </ul>
+                    <li class="@(currentController == "Department" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Department" asp-action="List"><i
+                                class="fas fa-user-graduate"></i>
+                            <span>Departments</span></a>
                     </li>
 
-                    @* 5. SUBJECTS *@
-                    <li class="submenu @(currentController == "Subject" ? "active" : "")">
-                        <a href="#"><i class="fas fa-book-reader"></i> <span> Subjects</span> <span
-                                class="menu-arrow"></span></a>
-                        <ul>
-                            <li><a class="@(currentAction == "List" && currentController == "Subject" ? "active" : "")"
-                                    asp-area="Admin" asp-controller="Subject" asp-action="List">Subject List</a></li>
-                            <li><a class="@(currentAction == "Add" && currentController == "Subject" ? "active" : "")"
-                                    asp-area="Admin" asp-controller="Subject" asp-action="Add">Subject Add</a></li>
-                        </ul>
+                    <li class="@(currentController == "Subject" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Subject" asp-action="List"><i
+                                class="fas fa-user-graduate"></i>
+                            <span>Subjects</span></a>
                     </li>
 
                     <li class="menu-title">
                         <span>Management</span>
                     </li>
-                    <li class="submenu">
+                    <li
+                        class="submenu @(currentController == "Expenses" || currentController == "Fees" || currentController == "Salary" ? "active" : "")">
                         <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Accounts</span> <span
                                 class="menu-arrow"></span></a>
                         <ul>
                             @* EXPENSES *@
-                            <li><a asp-area="Admin" asp-controller="Expenses" asp-action="List">Expenses</a></li>
+                            <li><a asp-area="Admin" asp-controller="Expenses" asp-action="List"
+                                    class="@(currentController == "Expenses" ? "active" : "")">Expenses</a></li>
 
                             @* FEES *@
-                            <li><a asp-area="Admin" asp-controller="Fees" asp-action="List">Fees Collection</a></li>
+                            <li><a asp-area="Admin" asp-controller="Fees" asp-action="List"
+                                    class="@(currentController == "Fees" ? "active" : "")">Fees Collection</a></li>
 
                             @* SALARY *@
-                            <li><a asp-area="Admin" asp-controller="Salary" asp-action="List">Salary</a></li>
+                            <li><a asp-area="Admin" asp-controller="Salary" asp-action="List"
+                                    class="@(currentController == "Salary" ? "active" : "")">Salary</a></li>
 
                         </ul>
                     </li>
-                    <li>
+                    <li class="@(currentController == "Holiday" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="Holiday" asp-action="List"><i
                                 class="fas fa-holly-berry"></i> <span>Holiday</span></a>
                     </li>
-                    <li>
+                    <li class="@(currentController == "FeesStructure" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="FeesStructure" asp-action="List"><i
                                 class="fas fa-comment-dollar"></i> <span>Fees</span></a>
                     </li>

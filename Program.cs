@@ -24,19 +24,19 @@ builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<TeacherService>();
 
 // Holiday Repository
-builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
+// builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
 
 // Fees Structure Repository
-builder.Services.AddScoped<IFeesStructureRepository, FeesStructureRepository>();
+// builder.Services.AddScoped<IFeesStructureRepository, FeesStructureRepository>();
 
 
-// Department Repository
+// // Department Repository
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
 // Expense, Fee, Salary Repositories
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
-builder.Services.AddScoped<IFeeRepository, FeeRepository>();
-builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
+// builder.Services.AddScoped<IFeeRepository, FeeRepository>();
+// builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
 
 
 

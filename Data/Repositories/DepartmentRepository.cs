@@ -1,98 +1,95 @@
+using CsvHelper;
+using CsvHelper.Configuration;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace SIMS_FPT.Data.Repositories
 {
     public class DepartmentRepository : IDepartmentRepository
     {
-        private readonly string _path;
+        private readonly string _filePath;
+        private readonly CsvConfiguration _config;
 
         public DepartmentRepository()
         {
-            _path = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "departments.csv");
-
-            if (!File.Exists(_path))
+            _filePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "departments.csv");
+            
+            _config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                File.WriteAllText(_path, "department_id,department_name,head_of_department,start_date,no_of_students");
+                HasHeaderRecord = true,
+                MissingFieldFound = null,
+                HeaderValidated = null
+            };
+        }
+
+        private List<DepartmentModel> ReadAll()
+        {
+            if (!File.Exists(_filePath)) return new List<DepartmentModel>();
+            try
+            {
+                using var reader = new StreamReader(_filePath);
+                using var csv = new CsvReader(reader, _config);
+                return csv.GetRecords<DepartmentModel>().ToList();
+            }
+            catch
+            {
+                return new List<DepartmentModel>();
             }
         }
 
-        private List<DepartmentModel> Parse()
+        private void WriteAll(List<DepartmentModel> departments)
         {
-            var list = new List<DepartmentModel>();
+            var dir = Path.GetDirectoryName(_filePath);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
-            string[] lines = File.ReadAllLines(_path);
-            var pattern = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
-
-            for (int i = 1; i < lines.Length; i++)
-            {
-                var vals = Regex.Split(lines[i], pattern);
-                for (int j = 0; j < vals.Length; j++)
-                    vals[j] = vals[j].Trim('"');
-
-                if (vals.Length >= 5)
-                {
-                    list.Add(new DepartmentModel
-                    {
-                        DepartmentId = vals[0],
-                        DepartmentName = vals[1],
-                        HeadOfDepartment = vals[2],
-                        StartDate = DateTime.TryParse(vals[3], out var sd) ? sd : DateTime.MinValue,
-                        NoOfStudents = int.TryParse(vals[4], out var n) ? n : 0
-                    });
-                }
-            }
-
-            return list;
-        }
-
-        private string Format(DepartmentModel m)
-        {
-            return $"{m.DepartmentId},\"{m.DepartmentName}\",\"{m.HeadOfDepartment}\",{m.StartDate:yyyy-MM-dd},{m.NoOfStudents}";
+            using var writer = new StreamWriter(_filePath);
+            using var csv = new CsvWriter(writer, _config);
+            csv.WriteRecords(departments);
         }
 
         public List<DepartmentModel> GetAll()
         {
-            return Parse();
+            return ReadAll();
         }
 
         public DepartmentModel GetById(string id)
         {
-            return Parse().FirstOrDefault(x => x.DepartmentId == id);
+            return ReadAll().FirstOrDefault(d => d.DepartmentId == id);
         }
 
-        public void Add(DepartmentModel m)
+        public void Add(DepartmentModel model)
         {
-            File.AppendAllText(_path, Environment.NewLine + Format(m));
+            var list = ReadAll();
+            if (list.Any(d => d.DepartmentId == model.DepartmentId)) return;
+
+            list.Add(model);
+            WriteAll(list);
         }
 
-        public void Update(DepartmentModel m)
+        public void Update(DepartmentModel model)
         {
-            var lines = File.ReadAllLines(_path).ToList();
-
-            for (int i = 1; i < lines.Count; i++)
+            var list = ReadAll();
+            var index = list.FindIndex(d => d.DepartmentId == model.DepartmentId);
+            if (index != -1)
             {
-                if (lines[i].Split(',')[0] == m.DepartmentId)
-                {
-                    lines[i] = Format(m);
-                    break;
-                }
+                list[index] = model;
+                WriteAll(list);
             }
-
-            File.WriteAllLines(_path, lines);
         }
 
         public void Delete(string id)
         {
-            var lines = File.ReadAllLines(_path)
-                            .Where(l => l.Split(',')[0] != id)
-                            .ToList();
-
-            File.WriteAllLines(_path, lines);
+            var list = ReadAll();
+            var item = list.FirstOrDefault(d => d.DepartmentId == id);
+            if (item != null)
+            {
+                list.Remove(item);
+                WriteAll(list);
+            }
         }
     }
 }

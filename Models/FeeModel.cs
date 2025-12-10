@@ -1,15 +1,23 @@
+using CsvHelper.Configuration.Attributes;
 using System;
 
 namespace SIMS_FPT.Models
 {
     public class FeeModel
     {
-        public string Id { get; set; } // Mã sinh viên
-        public string StudentName { get; set; }
-        public string Gender { get; set; }
-        public string FeesType { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime PaidDate { get; set; }
-        public string Status { get; set; } // Paid / Unpaid
+        [Name("payment_id")]
+        public string PaymentId { get; set; }
+
+        [Name("student_id")]
+        public string StudentId { get; set; }
+
+        [Name("fee_type_id")]
+        public string FeeTypeId { get; set; }
+
+        [Name("paid_date")]
+        public DateTime? PaidDate { get; set; }
+
+        [Name("status")]
+        public string Status { get; set; }
     }
 }

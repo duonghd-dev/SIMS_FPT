@@ -57,11 +57,11 @@
                                                 <td>@item.TeacherId</td>
                                                 <td>
                                                     <h2 class="table-avatar">
-                                                        <a href="#" class="avatar avatar-sm mr-2">
+                                                        <a asp-action="Detail" asp-route-id="@item.TeacherId"
+                                                            class="avatar avatar-sm mr-2">
                                                             <img class="avatar-img rounded-circle"
-                                                                src="@(string.IsNullOrEmpty(item.ImagePath) ? "/assets/img/profiles/avatar-02.jpg" : item.ImagePath)"
-                                                                alt="User Image"
-                                                                onerror="this.src='/assets/img/profiles/avatar-02.jpg'">
+                                                                src="@(string.IsNullOrEmpty(item.ImagePath) ? "/assets/img/603A6862.JPG" : item.ImagePath)"
+                                                                alt="User Image" onerror="this.src='/assets/img/603A6862.JPG'">
                                                         </a>
                                                         <a asp-action="Detail" asp-route-id="@item.TeacherId">@item.Name</a>
                                                     </h2>

@@ -1,107 +1,108 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Models;
 using System;
-using System.Collections.Generic; // Cần thêm
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Linq; // Cần thêm
-using SIMS_FPT.Data.Interfaces;
-using SIMS_FPT.Models;
-
-using System.Text.RegularExpressions;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class HomeController : Controller
     {
+        // Đường dẫn file
         private readonly string _studentPath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "students.csv");
         private readonly string _deptPath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "departments.csv");
         private readonly string _feesPath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "fees.csv");
+        private readonly string _expensePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "expenses.csv");
+        private readonly string _teacherPath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "teachers.csv");
 
         public IActionResult Dashboard()
         {
             var model = new DashboardViewModel();
 
-            // 1. Load dữ liệu thô từ CSV
-            var allStudents = GetAllStudents();
-            var allFees = GetAllFees();
-            var allDepts = GetCsvCount(_deptPath); // Chỉ cần đếm số lượng
+            // 1. Đọc dữ liệu (Sử dụng Helper chung)
+            var students = ReadCsv<StudentCSVModel>(_studentPath);
+            var departments = ReadCsv<DepartmentModel>(_deptPath);
+            var fees = ReadCsv<FeeModel>(_feesPath);
+            var expenses = ReadCsv<ExpenseModel>(_expensePath);
+            var teachers = ReadCsv<TeacherCSVModel>(_teacherPath);
 
-            // 2. Gán số liệu tổng quan
-            model.StudentCount = allStudents.Count;
-            model.DepartmentCount = allDepts;
-            model.TotalRevenue = allFees.Sum(x => x.Amount);
+            // 2. Thống kê cơ bản
+            model.StudentCount = students.Count;
+            model.DepartmentCount = departments.Count;
+            model.TeacherCount = teachers.Count;
 
-            // 3. Xử lý dữ liệu cho BIỂU ĐỒ REVENUE (Gom theo Năm)
-            var revenueByYear = allFees
-                .GroupBy(x => x.PaidDate.Year)
+            // Tính doanh thu giả định (vì file fees chưa có cột amount chuẩn)
+            model.TotalRevenue = fees.Count(f => f.Status == "Paid") * 500;
+
+            // 3. Biểu đồ Doanh thu
+            var revenueByYear = fees
+                .Where(x => x.PaidDate.HasValue && x.Status == "Paid")
+                .GroupBy(x => x.PaidDate.Value.Year)
                 .OrderBy(g => g.Key)
-                .Select(g => new { Year = g.Key.ToString(), Total = g.Sum(x => x.Amount) })
+                .Select(g => new { Year = g.Key.ToString(), Total = g.Count() * 500m })
                 .ToList();
 
             model.RevenueLabels = revenueByYear.Select(x => x.Year).ToList();
             model.RevenueData = revenueByYear.Select(x => x.Total).ToList();
 
-            // 4. Xử lý dữ liệu cho BIỂU ĐỒ HỌC SINH (Gom theo Lớp)
-            var studentsByClass = allStudents
-                .GroupBy(x => x.ClassName)
-                .OrderBy(g => g.Key)
-                .Select(g => new { ClassName = g.Key, Count = g.Count() })
+            // 4. Biểu đồ Sinh viên theo Giới tính
+            var studentsByGender = students
+                .GroupBy(x => x.Gender ?? "Unknown")
+                .Select(g => new { Gender = g.Key, Count = g.Count() })
                 .ToList();
 
-            model.StudentClassLabels = studentsByClass.Select(x => x.ClassName).ToList();
-            model.StudentClassData = studentsByClass.Select(x => x.Count).ToList();
+            model.StudentClassLabels = studentsByGender.Select(x => x.Gender).ToList();
+            model.StudentClassData = studentsByGender.Select(x => x.Count).ToList();
+
+            // 5. Sinh viên mới nhất (Dùng AdmissionDate vừa sửa trong Model)
+            model.NewestStudents = students
+                .OrderByDescending(s => s.AdmissionDate) // Bây giờ lệnh này sẽ chạy OK
+                .Take(5)
+                .ToList();
+
+            // 6. Chi tiêu gần đây
+            model.RecentExpenses = expenses
+                .OrderByDescending(e => e.PurchaseDate)
+                .Take(5)
+                .ToList();
 
             return View(model);
         }
 
-        // --- CÁC HÀM HỖ TRỢ ĐỌC CSV ---
-
-        private int GetCsvCount(string filePath)
+        // Helper đọc CSV an toàn
+        private List<T> ReadCsv<T>(string filePath)
         {
-            if (!System.IO.File.Exists(filePath)) return 0;
-            var lines = System.IO.File.ReadAllLines(filePath);
-            return lines.Length > 1 ? lines.Length - 1 : 0;
+            if (!System.IO.File.Exists(filePath)) return new List<T>();
+            try
+            {
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    HasHeaderRecord = true,
+                    MissingFieldFound = null,
+                    HeaderValidated = null,
+                    BadDataFound = null
+                };
+                using var reader = new StreamReader(filePath);
+                using var csv = new CsvReader(reader, config);
+                return csv.GetRecords<T>().ToList();
+            }
+            catch
+            {
+                return new List<T>();
+            }
         }
 
-        // Đọc danh sách học sinh để gom nhóm
-        private List<StudentCSVModel> GetAllStudents()
+        private decimal GetFeeAmount(string feeTypeId)
         {
-            var list = new List<StudentCSVModel>();
-            if (!System.IO.File.Exists(_studentPath)) return list;
-            var lines = System.IO.File.ReadAllLines(_studentPath);
-            for (int i = 1; i < lines.Length; i++)
-            {
-                var val = Regex.Split(lines[i], ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
-                // Cần lấy cột Class (index 5)
-                if (val.Length > 5) 
-                {
-                    list.Add(new StudentCSVModel { ClassName = val[5].Trim('"') });
-                }
-            }
-            return list;
-        }
-
-        // Đọc danh sách phí để gom nhóm
-        private List<FeeModel> GetAllFees()
-        {
-            var list = new List<FeeModel>();
-            if (!System.IO.File.Exists(_feesPath)) return list;
-            var lines = System.IO.File.ReadAllLines(_feesPath);
-            // fees.csv: id,student_name,gender,fees_type,amount,paid_date,status
-            for (int i = 1; i < lines.Length; i++)
-            {
-                var val = Regex.Split(lines[i], ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
-                if (val.Length >= 6)
-                {
-                    if (decimal.TryParse(val[4], out decimal amount) && 
-                        DateTime.TryParse(val[5], out DateTime date))
-                    {
-                        list.Add(new FeeModel { Amount = amount, PaidDate = date });
-                    }
-                }
-            }
-            return list;
+            return 500;
         }
     }
 }

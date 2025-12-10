@@ -19,7 +19,6 @@ namespace SIMS_FPT.Data.Repositories
         public UsersRepository()
         {
             _filePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "users.csv");
-
             _config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
@@ -31,13 +30,11 @@ namespace SIMS_FPT.Data.Repositories
         private List<Users> ReadAllUsersInternal()
         {
             if (!File.Exists(_filePath)) return new List<Users>();
-
             try
             {
                 using var reader = new StreamReader(_filePath);
                 using var csv = new CsvReader(reader, _config);
-                var records = csv.GetRecords<Users>().ToList();
-                return records ?? new List<Users>();
+                return csv.GetRecords<Users>().ToList();
             }
             catch
             {
@@ -48,155 +45,78 @@ namespace SIMS_FPT.Data.Repositories
         private void WriteAllUsersInternal(IEnumerable<Users> users)
         {
             var dir = Path.GetDirectoryName(_filePath);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
             using var writer = new StreamWriter(_filePath, false);
             using var csv = new CsvWriter(writer, _config);
-
-            csv.WriteHeader<Users>();
-            csv.NextRecord();
             csv.WriteRecords(users);
         }
 
-        // ------------------------------
-        // Implement Interface
-        // ------------------------------
-        public Users? Login(string username, string password)
+        // --- LOGIN BẰNG EMAIL ---
+        public Users? Login(string email, string password)
         {
             var users = ReadAllUsersInternal();
-
-            var user = users.FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            
+            // Tìm theo Email
+            var user = users.FirstOrDefault(u => u.Email.Trim().Equals(email.Trim(), StringComparison.OrdinalIgnoreCase));
             if (user == null) return null;
 
-            // If already hashed with PBKDF2 (PasswordHasher), verify accordingly
-            if (!string.IsNullOrEmpty(user.HashAlgorithm) && user.HashAlgorithm.Equals("PBKDF2", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(user.HashAlgorithm, "PBKDF2", StringComparison.OrdinalIgnoreCase))
             {
-                if (PasswordHasherHelper.Verify(password, user.Password))
-                    return user;
-
-                return null;
+                if (PasswordHasherHelper.Verify(password, user.Password)) return user;
             }
-
-            // If password stored in plain text (legacy), compare and upgrade to hashed
-            if (string.IsNullOrEmpty(user.HashAlgorithm) || user.HashAlgorithm.Equals("Plain", StringComparison.OrdinalIgnoreCase))
+            else if (string.IsNullOrEmpty(user.HashAlgorithm) || user.HashAlgorithm == "Plain")
             {
                 if (user.Password == password)
                 {
-                    // Upgrade: hash and set HashAlgorithm
                     user.Password = PasswordHasherHelper.Hash(password);
                     user.HashAlgorithm = "PBKDF2";
                     WriteAllUsersInternal(users);
                     return user;
                 }
-
-                return null;
             }
-
-            // Unknown algorithm -> reject (or implement other branches)
             return null;
         }
 
         public void AddUser(Users newUser)
         {
             var users = ReadAllUsersInternal();
-
-            // assign id
             newUser.Id = users.Any() ? users.Max(u => u.Id) + 1 : 1;
-
-            // Hash password before saving
-            newUser.Password = PasswordHasherHelper.Hash(newUser.Password);
-            newUser.HashAlgorithm = "PBKDF2";
+            
+            // Luôn hash pass khi tạo mới
+            if (newUser.HashAlgorithm == "Plain" || string.IsNullOrEmpty(newUser.HashAlgorithm))
+            {
+                 newUser.Password = PasswordHasherHelper.Hash(newUser.Password);
+                 newUser.HashAlgorithm = "PBKDF2";
+            }
 
             users.Add(newUser);
             WriteAllUsersInternal(users);
         }
 
-        public bool UsernameExists(string username)
+        // Đổi tên hàm check trùng từ UsernameExists -> EmailExists
+        public bool EmailExists(string email)
         {
-            return ReadAllUsersInternal().Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            return ReadAllUsersInternal().Any(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
         }
 
-        public List<Users> GetInstructors()
-        {
-            return ReadAllUsersInternal()
-                .Where(u => u.Role.Equals("Instructor", StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
+        // Các hàm phụ trợ
+        public List<Users> GetInstructors() => ReadAllUsersInternal().Where(u => u.Role == "Instructor").ToList();
+        
+        public Users? GetUserById(int id) => ReadAllUsersInternal().FirstOrDefault(u => u.Id == id);
 
-        public Users? GetUserById(int id)
+        public void DeleteUserByEmail(string email)
         {
-            return ReadAllUsersInternal().FirstOrDefault(u => u.Id == id);
-        }
-
-        // ------------------------------
-        // Sync TeacherCSV
-        // ------------------------------
-        public void AddTeacherUser(TeacherCSVModel teacher)
-        {
-            if (teacher == null) return;
-
+            if (string.IsNullOrEmpty(email)) return;
             var users = ReadAllUsersInternal();
-
-            if (users.Any(u => u.Username.Equals(teacher.Username, StringComparison.OrdinalIgnoreCase)))
-                return;
-
-            var newUser = new Users
-            {
-                Id = users.Any() ? users.Max(u => u.Id) + 1 : 1,
-                Email = teacher.Email ?? string.Empty,
-                Username = teacher.Username ?? string.Empty,
-                Password = PasswordHasherHelper.Hash(teacher.Password ?? string.Empty),
-                HashAlgorithm = "PBKDF2",
-                FullName = teacher.Name ?? string.Empty,
-                Role = "Instructor"
-            };
-
-            users.Add(newUser);
-            WriteAllUsersInternal(users);
+            var newList = users.Where(u => !u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (newList.Count != users.Count) WriteAllUsersInternal(newList);
         }
 
-        public void UpdateUserFromTeacher(TeacherCSVModel teacher, string? oldUsername = null)
-        {
-            if (teacher == null) return;
-
-            var users = ReadAllUsersInternal();
-
-            Users? existing = null;
-
-            if (!string.IsNullOrEmpty(oldUsername))
-                existing = users.FirstOrDefault(u => u.Username.Equals(oldUsername, StringComparison.OrdinalIgnoreCase));
-
-            existing ??= users.FirstOrDefault(u => u.Username.Equals(teacher.Username, StringComparison.OrdinalIgnoreCase));
-
-            if (existing != null)
-            {
-                existing.Username = teacher.Username ?? existing.Username;
-                existing.Email = teacher.Email ?? existing.Email;
-                existing.Password = PasswordHasherHelper.Hash(teacher.Password ?? string.Empty);
-                existing.HashAlgorithm = "PBKDF2";
-                existing.FullName = teacher.Name ?? existing.FullName;
-                existing.Role = "Instructor";
-
-                WriteAllUsersInternal(users);
-            }
-            else
-            {
-                AddTeacherUser(teacher);
-            }
-        }
-
-        public void DeleteUserByUsername(string username)
-        {
-            if (string.IsNullOrEmpty(username)) return;
-
-            var users = ReadAllUsersInternal();
-            var newList = users.Where(u => !u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)).ToList();
-
-            if (newList.Count != users.Count())
-                WriteAllUsersInternal(newList);
-        }
+        // Interface yêu cầu các hàm cũ, ta có thể bỏ hoặc để trống nếu Interface chưa kịp sửa
+        public bool UsernameExists(string u) => EmailExists(u); // Alias tạm thời
+        public void AddTeacherUser(TeacherCSVModel t) { }
+        public void UpdateUserFromTeacher(TeacherCSVModel t, string? old) { }
+        public void DeleteUserByUsername(string u) => DeleteUserByEmail(u);
     }
 }

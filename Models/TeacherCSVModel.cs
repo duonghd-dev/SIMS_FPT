@@ -1,3 +1,4 @@
+using CsvHelper.Configuration.Attributes;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,28 +7,61 @@ namespace SIMS_FPT.Models
 {
     public class TeacherCSVModel
     {
-        public string TeacherId { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Gender { get; set; } = string.Empty;
-        public DateTime DateOfBirth { get; set; } = DateTime.MinValue;
-        public string Mobile { get; set; } = string.Empty;
-        public DateTime JoiningDate { get; set; } = DateTime.MinValue;
-        public string Qualification { get; set; } = string.Empty;
-        public string Experience { get; set; } = string.Empty;
+        [Name("teacher_id")]
+        public string TeacherId { get; set; }
 
-        // Login
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        [Name("name")]
+        public string Name { get; set; }
 
-        // Address
-        public string Address { get; set; } = string.Empty;
-        public string City { get; set; } = string.Empty;
-        public string State { get; set; } = string.Empty;
-        public string Country { get; set; } = string.Empty;
+        [Name("department_id")]
+        public string? DepartmentId { get; set; }
 
-        public string ImagePath { get; set; } = string.Empty;
+        [Name("gender")]
+        public string Gender { get; set; }
 
+        [Name("date_of_birth")]
+        public DateTime? DateOfBirth { get; set; }
+
+        [Name("mobile")]
+        public string Mobile { get; set; }
+
+        [Name("joining_date")]
+        public DateTime? JoiningDate { get; set; }
+
+        [Name("qualification")]
+        public string Qualification { get; set; }
+
+        [Name("experience")]
+        public string? Experience { get; set; }
+
+        // --- Login Details (Map với CSV) ---
+        [Name("username")]
+        public string? Username { get; set; }
+
+        [Name("email")]
+        public string Email { get; set; }
+
+        [Name("password")]
+        public string? Password { get; set; }
+
+        // --- Address Info ---
+        [Name("address")]
+        public string? Address { get; set; }
+
+        [Name("city")]
+        public string? City { get; set; }
+
+        [Name("state")]
+        public string? State { get; set; }
+
+        [Name("country")]
+        public string? Country { get; set; }
+
+        [Name("image")] // Cột trong CSV là 'image'
+        public string? ImagePath { get; set; }
+
+        // --- Helper Properties (Không lưu vào CSV) ---
+        [Ignore]
         [NotMapped]
         public IFormFile? TeacherImageFile { get; set; }
     }

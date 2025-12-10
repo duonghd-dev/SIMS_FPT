@@ -1,9 +1,11 @@
-subject_id,subject_name,class
-SUB002,Geometry,SE0120
-SUB003,Physics I,SE0120
-SUB004,Computer Science,SE0120
-SUB005,English Literature,SE0120
-SUB006,Organic Chemistry,SE0120
-
-
-231,"312321",321321
+subject_id,subject_name,department_id,credits
+SUB001,Programming Fundamentals,DEP001,3
+SUB002,Data Structures,DEP001,4
+SUB003,Database Systems,DEP002,3
+SUB004,Operating Systems,DEP002,4
+SUB005,Microeconomics,DEP003,3
+SUB006,Digital Electronics,DEP004,3
+SUB007,Thermodynamics,DEP005,4
+SUB008,English Communication,DEP006,2
+SUB009,Marketing Principles,DEP007,3
+SUB010,Machine Learning,DEP010,4

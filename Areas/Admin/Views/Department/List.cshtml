@@ -6,13 +6,6 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<style>
-    .table-hover tbody tr:hover {
-        background-color: #e3f2fd !important;
-        transition: all 0.3s ease;
-    }
-</style>
-
 <div class="page-wrapper">
     <div class="content container-fluid">
         <div class="page-header">
@@ -52,9 +45,13 @@
                                         {
                                             <tr>
                                                 <td>@item.DepartmentId</td>
-                                                <td>@item.DepartmentName</td>
+                                                <td>
+                                                    <a asp-action="Detail" asp-route-id="@item.DepartmentId">
+                                                        <strong>@item.DepartmentName</strong>
+                                                    </a>
+                                                </td>
                                                 <td>@item.HeadOfDepartment</td>
-                                                <td>@item.StartDate.Year</td>
+                                                <td>@(item.StartDate?.Year)</td>
                                                 <td>@item.NoOfStudents</td>
                                                 <td class="text-right">
                                                     <div class="actions">

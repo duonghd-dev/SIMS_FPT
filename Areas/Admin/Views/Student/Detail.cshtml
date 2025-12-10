@@ -13,7 +13,7 @@
                 <div class="col-sm-12">
                     <h3 class="page-title">Student Details</h3>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a asp-action="ListStudent">Students</a></li>
+                        <li class="breadcrumb-item"><a asp-action="List">Students</a></li>
                         <li class="breadcrumb-item active">Student Details</li>
                     </ul>
                 </div>
@@ -27,11 +27,10 @@
                         <div class="about-info">
                             <h4>Personal Information</h4>
                             <div class="media mt-3">
-                                @* Hiển thị ảnh sinh viên *@
-                                <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : Model.ImagePath)"
+                                <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "/assets/img/603A6862.JPG" : Model.ImagePath)"
                                     class="mr-3 rounded-circle" alt="Student Image"
                                     style="width: 100px; height: 100px; object-fit: cover;"
-                                    onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
+                                    onerror="this.src='/assets/img/603A6862.JPG'">
 
                                 <div class="media-body">
                                     <ul>
@@ -67,9 +66,10 @@
                                             <span class="title-span">Admission No : </span>
                                             <span class="info-span">@Model.AdmissionNumber</span>
                                         </li>
+
                                         <li>
-                                            <span class="title-span">Joining Date : </span>
-                                            <span class="info-span">@Model.JoiningDate.ToString("dd MMM yyyy")</span>
+                                            <span class="title-span">Admission Date : </span>
+                                            <span class="info-span">@Model.AdmissionDate.ToString("dd MMM yyyy")</span>
                                         </li>
                                     </ul>
                                 </div>

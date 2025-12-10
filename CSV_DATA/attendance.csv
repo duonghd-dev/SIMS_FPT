@@ -1,6 +1,6 @@
-attendance_id,date,time_slot,subject_id,teacher_id,student_id,status,remarks
-ATT001,2025-09-10,08:00-09:30,SUB001,TCH001,STD001,Present,
-ATT002,2025-09-10,08:00-09:30,SUB001,TCH001,STD002,Absent,Sick leave (Parent called)
-ATT003,2025-09-10,08:00-09:30,SUB001,TCH001,STD003,Late,15 mins late
-ATT004,2025-09-10,08:00-09:30,SUB001,TCH001,STD004,Present,
-ATT005,2025-09-10,08:00-09:30,SUB001,TCH001,STD005,Excused,School team practice
+attendance_id,date,subject_id,teacher_id,student_id,status,remarks
+ATT001,2025-09-10,SUB001,TCH001,STD001,Present,
+ATT002,2025-09-10,SUB001,TCH001,STD002,Absent,Sick leave
+ATT003,2025-09-10,SUB001,TCH001,STD003,Late,15 mins late
+ATT004,2025-09-10,SUB001,TCH001,STD004,Present,
+ATT005,2025-09-10,SUB001,TCH001,STD005,Excused,Team practice

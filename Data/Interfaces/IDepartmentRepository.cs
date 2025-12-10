@@ -7,8 +7,8 @@ namespace SIMS_FPT.Data.Interfaces
     {
         List<DepartmentModel> GetAll();
         DepartmentModel GetById(string id);
-        void Add(DepartmentModel m);
-        void Update(DepartmentModel m);
+        void Add(DepartmentModel model);
+        void Update(DepartmentModel model);
         void Delete(string id);
     }
 }

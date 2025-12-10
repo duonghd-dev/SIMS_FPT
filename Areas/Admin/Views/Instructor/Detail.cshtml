@@ -42,9 +42,11 @@
                                         <li><span class="title-span">Gender : </span><span
                                                 class="info-span">@Model.Gender</span></li>
                                         <li><span class="title-span">DOB : </span><span
-                                                class="info-span">@Model.DateOfBirth.ToString("dd MMM yyyy")</span></li>
+                                                class="info-span">@Model.DateOfBirth?.ToString("dd MMM yyyy")</span>
+                                        </li>
                                         <li><span class="title-span">Joining Date : </span><span
-                                                class="info-span">@Model.JoiningDate.ToString("dd MMM yyyy")</span></li>
+                                                class="info-span">@Model.JoiningDate?.ToString("dd MMM yyyy")</span>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>

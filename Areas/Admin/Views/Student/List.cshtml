@@ -22,6 +22,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <form asp-action="List" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="className"
+                            placeholder="Search by Class (e.g. SE0120), ID or Name..." value="@ViewBag.SearchTerm">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                            <a asp-action="List" class="btn btn-secondary ml-1">Reset</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="card card-table">
@@ -58,7 +73,9 @@
                                                         <a asp-action="Detail" asp-route-id="@item.StudentId">@item.FullName</a>
                                                     </h2>
                                                 </td>
-                                                <td>@item.ClassName</td>
+                                                <td>
+                                                    <span class="badge badge-info">@item.ClassName</span>
+                                                </td>
                                                 <td>@item.DateOfBirth.ToString("dd/MM/yyyy")</td>
                                                 <td>@item.FatherName</td>
                                                 <td>@item.MobileNumber</td>
@@ -83,7 +100,7 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="8" class="text-center">No data found.</td>
+                                            <td colspan="8" class="text-center">No students found matching your search.</td>
                                         </tr>
                                     }
                                 </tbody>

@@ -1,4 +1,4 @@
-@using SIMS_FPT.Models
+@* @using SIMS_FPT.Models
 @model FeesStructureModel
 @{ ViewData["Title"] = "Edit Fees"; Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml"; }
 
@@ -15,7 +15,6 @@
                     </select>
                 </div></div>
                 
-                @* ĐOẠN CODE QUAN TRỌNG: Dropdown Class lấy từ ViewBag *@
                 <div class="col-12 col-sm-6"><div class="form-group"><label>Class</label>
                     <select asp-for="Class" class="form-control">
                         <option value="">Select Class</option>
@@ -28,7 +27,6 @@
                         }
                     </select>
                 </div></div>
-                @* -------------------------------------------------- *@
 
                 <div class="col-12 col-sm-6"><div class="form-group"><label>Amount</label><input asp-for="Amount" class="form-control" type="number"></div></div>
                 <div class="col-12 col-sm-6"><div class="form-group"><label>Start Date</label><input asp-for="StartDate" type="date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")"></div></div>
@@ -40,4 +38,4 @@
             </div>
         </form>
     </div></div>
-</div></div>
+</div></div> *@

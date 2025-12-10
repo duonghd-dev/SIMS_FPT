@@ -1,7 +1,3 @@
-id,item_name,item_quality,amount,purchase_source,purchase_date,purchase_by
-EXP001,Chair,6,120,Abc Shop,2020-08-17,Loisss
-EXP002,Table,2,56,Online,2020-08-05,Malynne
-EXP003,Desk,6,378,Take Away,2020-09-04,Levell Scott
-EXP004,Projector,1,246,Real Shop,2020-09-17,Minnie
-EXP005,Hard disk,2,560,Sony Center,2020-10-02,Lois A
-
+expense_id,item_name,quantity,unit_price,total_amount,source,purchase_date,purchased_by
+EXP001,Chair,120,6,720,Abc Shop,2020-08-17,Admin
+EXP002,Table,56,20,1120,Online,2020-08-05,Admin

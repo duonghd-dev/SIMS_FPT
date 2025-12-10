@@ -1,138 +1,109 @@
+using CsvHelper;
+using CsvHelper.Configuration;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
-using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace SIMS_FPT.Data.Repositories
 {
     public class StudentRepository : IStudentRepository
     {
-        private readonly string _csvFilePath;
+        private readonly string _filePath;
+        private readonly CsvConfiguration _config;
 
         public StudentRepository()
         {
-            _csvFilePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "students.csv");
+            _filePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "students.csv");
+
+            // Cấu hình CsvHelper chấp nhận dữ liệu thiếu hoặc header không khớp 100%
+            _config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = true,
+                MissingFieldFound = null,
+                HeaderValidated = null
+            };
         }
+
+        // --- Hàm Helper đọc file ---
+        private List<StudentCSVModel> ReadAll()
+        {
+            if (!File.Exists(_filePath)) return new List<StudentCSVModel>();
+            try
+            {
+                using var reader = new StreamReader(_filePath);
+                using var csv = new CsvReader(reader, _config);
+                return csv.GetRecords<StudentCSVModel>().ToList();
+            }
+            catch
+            {
+                return new List<StudentCSVModel>();
+            }
+        }
+
+        // --- Hàm Helper ghi file ---
+        private void WriteAll(List<StudentCSVModel> students)
+        {
+            // Tạo thư mục nếu chưa tồn tại
+            var dir = Path.GetDirectoryName(_filePath);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+            using var writer = new StreamWriter(_filePath);
+            using var csv = new CsvWriter(writer, _config);
+            csv.WriteRecords(students);
+        }
+
+        // --- Thực thi Interface ---
 
         public List<StudentCSVModel> GetAll()
         {
-            var students = new List<StudentCSVModel>();
-
-            if (!File.Exists(_csvFilePath)) return students;
-
-            string[] lines = File.ReadAllLines(_csvFilePath);
-
-            for (int i = 1; i < lines.Length; i++)
-            {
-                string line = lines[i];
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
-                var pattern = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
-                var values = Regex.Split(line, pattern);
-                for (int j = 0; j < values.Length; j++)
-                    values[j] = values[j].Trim('"');
-
-                if (values.Length > 20)
-                {
-                    try
-                    {
-                        students.Add(new StudentCSVModel
-                        {
-                            FirstName = values[0],
-                            LastName = values[1],
-                            StudentId = values[2],
-                            Gender = values[3],
-                            DateOfBirth = DateTime.TryParse(values[4], out var dob) ? dob : DateTime.MinValue,
-                            ClassName = values[5],
-                            Religion = values[6],
-                            JoiningDate = DateTime.TryParse(values[7], out var join) ? join : DateTime.MinValue,
-                            MobileNumber = values[8],
-                            AdmissionNumber = values[9],
-                            Section = values[10],
-                            ImagePath = values[11],
-                            FatherName = values[12],
-                            FatherOccupation = values[13],
-                            FatherMobile = values[14],
-                            FatherEmail = values[15],
-                            MotherName = values[16],
-                            MotherOccupation = values[17],
-                            MotherMobile = values[18],
-                            MotherEmail = values[19],
-                            Address = values[20],
-                            PermanentAddress = values.Length > 21 ? values[21] : ""
-                        });
-                    }
-                    catch { }
-                }
-            }
-
-            return students;
+            return ReadAll();
         }
 
         public StudentCSVModel GetById(string id)
         {
-            return GetAll().FirstOrDefault(s => s.StudentId == id);
+            return ReadAll().FirstOrDefault(s => s.StudentId == id);
         }
 
         public void Add(StudentCSVModel student)
         {
-            string line = Format(student);
-            File.AppendAllText(_csvFilePath, Environment.NewLine + line);
+            var students = ReadAll();
+            // Kiểm tra trùng ID
+            if (students.Any(s => s.StudentId == student.StudentId)) return;
+
+            students.Add(student);
+            WriteAll(students); // Ghi lại toàn bộ danh sách
         }
 
         public void Update(StudentCSVModel student)
         {
-            string[] lines = File.ReadAllLines(_csvFilePath);
-            var newLines = new List<string> { lines[0] };
+            var students = ReadAll();
+            var index = students.FindIndex(s => s.StudentId == student.StudentId);
 
-            for (int i = 1; i < lines.Length; i++)
+            if (index != -1)
             {
-                var cols = lines[i].Split(',');
-                string currentId = cols.Length > 2 ? cols[2] : "";
+                // Nếu người dùng không upload ảnh mới, giữ lại ảnh cũ
+                if (string.IsNullOrEmpty(student.ImagePath))
+                {
+                    student.ImagePath = students[index].ImagePath;
+                }
 
-                if (currentId == student.StudentId)
-                    newLines.Add(Format(student));
-                else
-                    newLines.Add(lines[i]);
+                students[index] = student;
+                WriteAll(students);
             }
-
-            File.WriteAllLines(_csvFilePath, newLines);
         }
 
         public void Delete(string id)
         {
-            string[] lines = File.ReadAllLines(_csvFilePath);
-            var newLines = new List<string> { lines[0] };
-
-            for (int i = 1; i < lines.Length; i++)
+            var students = ReadAll();
+            var item = students.FirstOrDefault(s => s.StudentId == id);
+            if (item != null)
             {
-                var cols = lines[i].Split(',');
-                string currentId = cols.Length > 2 ? cols[2] : "";
-
-                if (currentId != id)
-                    newLines.Add(lines[i]);
+                students.Remove(item);
+                WriteAll(students);
             }
-
-            File.WriteAllLines(_csvFilePath, newLines);
-        }
-
-        private string Format(StudentCSVModel m)
-        {
-            return string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},\"{20}\",\"{21}\"",
-                m.FirstName, m.LastName, m.StudentId, m.Gender,
-                m.DateOfBirth.ToString("yyyy-MM-dd"),
-                m.ClassName, m.Religion,
-                m.JoiningDate.ToString("yyyy-MM-dd"),
-                m.MobileNumber, m.AdmissionNumber,
-                m.Section, m.ImagePath,
-                m.FatherName, m.FatherOccupation,
-                m.FatherMobile, m.FatherEmail,
-                m.MotherName, m.MotherOccupation,
-                m.MotherMobile, m.MotherEmail,
-                m.Address, m.PermanentAddress);
         }
     }
 }

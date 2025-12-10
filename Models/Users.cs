@@ -1,18 +1,28 @@
-﻿namespace SIMS_FPT.Models
+﻿using CsvHelper.Configuration.Attributes;
+
+namespace SIMS_FPT.Models
 {
     public class Users
     {
+        [Name("Id")]
         public int Id { get; set; }
-        public string Email { get; set; } = string.Empty;
-        public string Username { get; set; } = string.Empty;
 
-        // Lưu chuỗi hashed (hoặc plaintext tạm thời khi chưa migrate)
-        public string Password { get; set; } = string.Empty;
+        [Name("Email")]
+        public string Email { get; set; }
 
-        // Giá trị: "Plain" (mật khẩu chưa được hash), "PBKDF2" (PasswordHasher), ...
-        public string HashAlgorithm { get; set; } = "Plain";
+        [Name("Password")]
+        public string Password { get; set; }
 
-        public string Role { get; set; } = string.Empty;    // Admin, Instructor, Student
-        public string FullName { get; set; } = string.Empty;
+        [Name("Role")]
+        public string Role { get; set; }
+
+        [Name("LinkedId")]
+        public string LinkedId { get; set; }
+
+        [Name("FullName")]
+        public string FullName { get; set; }
+
+        [Name("HashAlgorithm")]
+        public string HashAlgorithm { get; set; } = "PBKDF2";
     }
 }

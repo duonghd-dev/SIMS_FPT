@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
 using SIMS_FPT.Services;
+using System;
+using System.Linq; // Cần thiết để dùng Where
 using System.Threading.Tasks;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public class StudentController : Controller
     {
         private readonly IStudentRepository _repo;
@@ -20,9 +22,28 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             _service = service;
         }
 
-        public IActionResult List()
+        // SỬA: Thêm tham số className để lọc
+        public IActionResult List(string className)
         {
-            return View(_repo.GetAll());
+            var data = _repo.GetAll();
+
+            // Logic lọc theo lớp (hoặc tên)
+            if (!string.IsNullOrEmpty(className))
+            {
+                // Chuyển về chữ thường để tìm không phân biệt hoa/thường
+                className = className.Trim().ToLower();
+
+                data = data.Where(s =>
+                    (s.ClassName != null && s.ClassName.ToLower().Contains(className)) ||
+                    (s.StudentId != null && s.StudentId.ToLower().Contains(className)) ||
+                    (s.FullName != null && s.FullName.ToLower().Contains(className))
+                ).ToList();
+
+                // Lưu lại từ khóa để hiển thị lại trên ô tìm kiếm
+                ViewBag.SearchTerm = className;
+            }
+
+            return View(data);
         }
 
         [HttpGet]
@@ -34,8 +55,19 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(StudentCSVModel model)
         {
-            await _service.Add(model);
-            return RedirectToAction("List");
+            var existing = _repo.GetById(model.StudentId);
+            if (existing != null)
+            {
+                ModelState.AddModelError("StudentId", "Student ID already exists!");
+                return View(model);
+            }
+
+            if (ModelState.IsValid)
+            {
+                await _service.Add(model);
+                return RedirectToAction("List");
+            }
+            return View(model);
         }
 
         [HttpGet]
@@ -43,29 +75,31 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         {
             var student = _repo.GetById(id);
             if (student == null) return NotFound();
-
             return View(student);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(StudentCSVModel model)
         {
-            await _service.Update(model);
-            return RedirectToAction("List");
-        }
-
-        public IActionResult DeleteStudent(string id)
-        {
-            _repo.Delete(id);
-            return RedirectToAction("List");
+            if (ModelState.IsValid)
+            {
+                await _service.Update(model);
+                return RedirectToAction("List");
+            }
+            return View(model);
         }
 
         public IActionResult Detail(string id)
         {
             var student = _repo.GetById(id);
             if (student == null) return NotFound();
-
             return View(student);
+        }
+
+        public IActionResult DeleteStudent(string id)
+        {
+            _repo.Delete(id);
+            return RedirectToAction("List");
         }
     }
 }

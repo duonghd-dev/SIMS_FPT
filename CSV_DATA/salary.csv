@@ -1,3 +1,6 @@
-id,name,gender,joining_date,amount,status
-PRE2209,Aaliyah,Female,2020-08-17,320,Paid
-PRE2213,Malynne,Female,2020-08-05,536,Paid
+salary_id,teacher_id,month,year,basic_salary,allowance,bonus,deduction,net_salary,payment_date,status
+SAL001,TCH001,9,2025,2000,500,100,200,2400,2025-09-30,Paid
+SAL002,TCH002,9,2025,1800,300,50,150,2000,2025-09-30,Paid
+SAL003,TCH003,9,2025,1500,200,50,100,1650,2025-09-30,Pending
+SAL004,TCH004,9,2025,1200,100,0,80,1220,2025-09-30,Paid
+SAL005,TCH005,9,2025,1900,400,100,180,2220,,Unpaid

@@ -1,0 +1,141 @@
+@using SIMS_FPT.Models
+@model DepartmentDetailViewModel
+
+@{
+    ViewData["Title"] = "Department Details";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Department Details</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="List">Departments</a></li>
+                        <li class="breadcrumb-item active">Details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="about-info">
+                            <h4>@Model.Department.DepartmentName</h4>
+                            <div class="media mt-3">
+                                <ul>
+                                    <li><span class="title-span">ID: </span><span
+                                            class="info-span">@Model.Department.DepartmentId</span></li>
+                                    <li><span class="title-span">Head of Dept: </span><span
+                                            class="info-span">@Model.Department.HeadOfDepartment</span></li>
+
+                                    <li><span class="title-span">Start Year: </span><span
+                                            class="info-span">@(Model.Department.StartDate?.Year)</span></li>
+
+                                    <li><span class="title-span">Students: </span><span
+                                            class="info-span">@Model.Department.NoOfStudents</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 d-flex">
+                <div class="card card-table flex-fill">
+                    <div class="card-header">
+                        <h4 class="card-title">Instructors</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th class="text-right">Mobile</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Teachers != null && Model.Teachers.Any())
+                                    {
+                                        foreach (var t in Model.Teachers)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <h2 class="table-avatar">
+                                                        <a href="/assets/img/603A6862.JPG" class="avatar avatar-sm mr-2">
+                                                            <img class="avatar-img rounded-circle"
+                                                                src="@(string.IsNullOrEmpty(t.ImagePath) ? "/assets/img/profiles/avatar-02.jpg" : t.ImagePath)"
+                                                                onerror="this.src='/assets/img/profiles/avatar-02.jpg'">
+                                                        </a>
+                                                        <a asp-controller="Instructor" asp-action="Detail"
+                                                            asp-route-id="@t.TeacherId">@t.Name</a>
+                                                    </h2>
+                                                </td>
+                                                <td class="text-right">@t.Mobile</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="2" class="text-center">No instructors.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 d-flex">
+                <div class="card card-table flex-fill">
+                    <div class="card-header">
+                        <h4 class="card-title">Subjects</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th class="text-right">Credits</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Subjects != null && Model.Subjects.Any())
+                                    {
+                                        foreach (var s in Model.Subjects)
+                                        {
+                                            <tr>
+                                                <td>@s.SubjectId</td>
+                                                <td>@s.SubjectName</td>
+                                                <td class="text-right">@s.Credits</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="3" class="text-center">No subjects found.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

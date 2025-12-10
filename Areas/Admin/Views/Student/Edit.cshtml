@@ -23,10 +23,8 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        @* Form gửi dữ liệu về Action EditStudent, hỗ trợ upload file *@
                         <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
-                            @* Hidden field để giữ đường dẫn ảnh cũ nếu không chọn ảnh mới *@
                             <input type="hidden" asp-for="ImagePath" />
 
                             <div class="row">
@@ -48,7 +46,6 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Student Id</label>
-                                        @* ID để Readonly (không cho sửa) vì dùng làm khóa tìm kiếm trong CSV *@
                                         <input asp-for="StudentId" class="form-control" readonly
                                             style="background-color: #e9ecef;">
                                     </div>
@@ -66,7 +63,6 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Date of Birth</label>
-                                        @* Format ngày tháng thành yyyy-MM-dd để hiển thị đúng trong input date *@
                                         <input asp-for="DateOfBirth" type="date" class="form-control"
                                             value="@Model.DateOfBirth.ToString("yyyy-MM-dd")">
                                     </div>
@@ -83,13 +79,15 @@
                                         <input asp-for="Religion" class="form-control">
                                     </div>
                                 </div>
+
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
-                                        <label>Joining Date</label>
-                                        <input asp-for="JoiningDate" type="date" class="form-control"
-                                            value="@Model.JoiningDate.ToString("yyyy-MM-dd")">
+                                        <label>Admission Date</label>
+                                        <input asp-for="AdmissionDate" type="date" class="form-control"
+                                            value="@Model.AdmissionDate.ToString("yyyy-MM-dd")">
                                     </div>
                                 </div>
+
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Mobile Number</label>

@@ -51,7 +51,7 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Date of Birth</label><input asp-for="DateOfBirth"
                                             type="date" class="form-control"
-                                            value="@Model.DateOfBirth.ToString("yyyy-MM-dd")"></div>
+                                            value="@Model.DateOfBirth?.ToString("yyyy-MM-dd")"></div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Mobile</label><input asp-for="Mobile"
@@ -60,7 +60,7 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Joining Date</label><input asp-for="JoiningDate"
                                             type="date" class="form-control"
-                                            value="@Model.JoiningDate.ToString("yyyy-MM-dd")"></div>
+                                            value="@Model.JoiningDate?.ToString("yyyy-MM-dd")"></div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Qualification</label><input asp-for="Qualification"
@@ -85,10 +85,7 @@
                                 <div class="col-12">
                                     <h5 class="form-title"><span>Login Details</span></h5>
                                 </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group"><label>Username</label><input asp-for="Username"
-                                            class="form-control"></div>
-                                </div>
+
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Email ID</label><input asp-for="Email" type="email"
                                             class="form-control"></div>
@@ -116,6 +113,15 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Country</label><input asp-for="Country"
                                             class="form-control"></div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Department</label>
+                                        <select asp-for="DepartmentId" class="form-control"
+                                            asp-items="ViewBag.Departments">
+                                            <option value="">-- Select Department --</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div class="col-12">

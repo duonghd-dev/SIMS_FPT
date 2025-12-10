@@ -4,19 +4,21 @@ namespace SIMS_FPT.Models
 {
     public class DashboardViewModel
     {
-        // Các số liệu tổng quan cũ
+        // 1. Thẻ thống kê (Widgets)
         public int StudentCount { get; set; }
         public int DepartmentCount { get; set; }
         public decimal TotalRevenue { get; set; }
+        public int TeacherCount { get; set; } // Thêm đếm số giáo viên
 
-        // --- DỮ LIỆU BIỂU ĐỒ MỚI ---
-        
-        // Chart 1: Doanh thu theo Năm (Revenue)
-        public List<string> RevenueLabels { get; set; } = new List<string>(); // VD: ["2020", "2021", "2022"]
-        public List<decimal> RevenueData { get; set; } = new List<decimal>(); // VD: [1000, 5000, 2000]
+        // 2. Dữ liệu biểu đồ (Charts)
+        public List<string> RevenueLabels { get; set; } = new List<string>();
+        public List<decimal> RevenueData { get; set; } = new List<decimal>();
 
-        // Chart 2: Số lượng học sinh theo Lớp (Number of Students)
-        public List<string> StudentClassLabels { get; set; } = new List<string>(); // VD: ["10A", "10B", "11A"]
-        public List<int> StudentClassData { get; set; } = new List<int>(); // VD: [50, 40, 45]
+        public List<string> StudentClassLabels { get; set; } = new List<string>();
+        public List<int> StudentClassData { get; set; } = new List<int>();
+
+        // 3. Dữ liệu bảng (Tables & Lists)
+        public List<StudentCSVModel> NewestStudents { get; set; } = new List<StudentCSVModel>();
+        public List<ExpenseModel> RecentExpenses { get; set; } = new List<ExpenseModel>();
     }
 }

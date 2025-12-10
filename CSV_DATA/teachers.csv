@@ -1,12 +1,11 @@
-teacher_id,name,gender,date_of_birth,mobile,joining_date,qualification,experience,username,email,password,address,city,state,country,image
-TCH001,"Nguyen Van Hung",Male,1980-05-15,0909123456,2015-09-05,"PhD Mathematics","10 Years",hungnv,hung.nguyen@school.edu,Pass12311,"123 Le Loi","Da Nang","Da Nang",Vietnam,
-TCH002,"Tran Thi Mai",Female,1985-08-20,0909987654,2018-01-10,"Master Physics","7 Years",maitt,mai.tran@school.edu,Secure789,"456 Tran Phu","Hue","Thua Thien Hue",Vietnam,
-TCH003,"Le Van Tuan",Male,1990-12-10,0912345678,2020-08-15,"Master IT","5 Years",tuanlv,tuan.le@school.edu,Dev2025,"789 Nguyen Hue","Hanoi","Hanoi",Vietnam,
-TCH004,"Pham Thu Ha",Female,1992-03-25,0987654321,2021-09-05,"Bachelor English","4 Years",hapt,ha.pham@school.edu,Eng#Star,"321 Hai Ba Trung","HCMC","HCMC",Vietnam,
-TCH005,"Hoang Van Nam",Male,1988-06-30,0978123456,2019-11-20,"PhD Chemistry","6 Years",namhv,nam.hoang@school.edu,Chem!2024,"654 Le Duan","Vinh","Nghe An",Vietnam,
-11111111111111111111111111,"1111111111111111",Female,1111-11-11,01111,1111-11-11,"1111","11111",11,11@gmail.com,1111 qeqw,"11","11","11",111,/assets/img/profiles/avatar-02.jpg
-9999999999999999,"99999",Male,,9999999999999999,9999-09-09,"9","9",90,9@gmail.com,9,"9","9","9",/assets/img/profiles/avatar-02.jpg,
-31232,"09909",Male,,09090,9090-09-09,"0909","09090",1,0909@gmail.com,09090,"09090","09090","090990",0909,/assets/img/profiles/avatar-02.jpg
-
-eqw,"qêw",Female,,eqw,0021-12-01,"12","12",12121,321@gmail.com,eqweqewq,"321321","321231","321321",23132,/assets/img/profiles/avatar-02.jpg
-321312,"321312",Male,0001-01-01,321321,0001-01-01,"321312","321321",321,321@gmail.com,321,"321","321","321",321,/assets/img/profiles/avatar-02.jpg
+teacher_id,name,department_id,gender,date_of_birth,mobile,joining_date,qualification,experience,username,email,password,address,city,state,country,image
+TCH001,Nguyen Anh Duc,DEP001,Male,1980-04-12,0909123456,2010-09-01,PhD,12,ngduc,ngduc@fpt.edu.com,123456,12 Nguyen Trai,Hanoi,Hanoi,Vietnam,/assets/img/profiles/tch001.jpg
+TCH002,Tran Thi Hong,DEP006,Female,1985-11-20,0912334455,2012-02-15,MA,10,thhong,thhong@fpt.edu.com,123456,45 Le Loi,Da Nang,Da Nang,Vietnam,/assets/img/profiles/tch002.jpg
+TCH003,Le Van Minh,DEP002,Male,1978-06-05,0933445566,2009-08-01,PhD,15,lvm, lvm@fpt.edu.com,123456,78 Bach Dang,HCMC,HCMC,Vietnam,/assets/img/profiles/tch003.jpg
+TCH004,Pham Quang Huy,DEP004,Male,1982-02-14,0909988776,2011-01-10,MSc,11,pqh,pqh@fpt.edu.com,123456,32 Tran Hung Dao,Hue,Hue,Vietnam,/assets/img/profiles/tch004.jpg
+TCH005,Vu Thi Lan,DEP003,Female,1987-09-30,0977443322,2014-03-22,MA,8,vtlan,vtlan@fpt.edu.com,123456,66 Kim Ma,Hanoi,Hanoi,Vietnam,/assets/img/profiles/tch005.jpg
+TCH006,Hoang Minh Son,DEP010,Male,1983-12-25,0966778899,2019-08-01,PhD,6,hms,hms@fpt.edu.com,123456,9 Tran Phu,Da Nang,Da Nang,Vietnam,/assets/img/profiles/tch006.jpg
+TCH007,Nguyen Thu Ha,DEP006,Female,1990-01-18,0988122233,2016-09-01,MSc,7,nthha,nthha@fpt.edu.com,123456,124 Vo Van Tan,HCMC,HCMC,Vietnam,/assets/img/profiles/tch007.jpg
+TCH008,Dao Van Quang,DEP005,Male,1975-07-11,0912556677,2008-05-20,MSc,14,dvq,dvq@fpt.edu.com,123456,88 Le Duan,Ha Noi,Ha Noi,Vietnam,/assets/img/profiles/tch008.jpg
+TCH009,Tran Minh Chau,DEP007,Female,1988-04-09,0922333444,2015-10-12,MA,9,tmchau,tmchau@fpt.edu.com,123456,15 Phan Chu Trinh,Ha Noi,Ha Noi,Vietnam,/assets/img/profiles/tch009.jpg
+TCH010,Phan Duc Long,DEP008,Male,1981-03-03,0909223344,2011-06-18,MBA,12,pdl,pdl@fpt.edu.com,123456,50 Nguyen Hue,HCMC,HCMC,Vietnam,/assets/img/profiles/tch010.jpg

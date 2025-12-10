@@ -42,8 +42,17 @@
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
-                                        <label>Class</label>
-                                        <input asp-for="Class" class="form-control" required>
+                                        <label>Department</label>
+                                        <select asp-for="DepartmentId" class="form-control"
+                                            asp-items="ViewBag.Departments" required>
+                                            <option value="">-- Select Department --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Credits</label>
+                                        <input asp-for="Credits" type="number" class="form-control" required>
                                     </div>
                                 </div>
                                 <div class="col-12">
