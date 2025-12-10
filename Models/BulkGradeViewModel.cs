@@ -8,8 +8,7 @@ namespace SIMS_FPT.Models.ViewModels
         public string AssignmentTitle { get; set; }
         public int MaxPoints { get; set; }
         public bool IsPublished { get; set; }
-
-        public List<StudentGradeItem> StudentGrades { get; set; }
+        public List<StudentGradeItem> StudentGrades { get; set; } = new List<StudentGradeItem>();
     }
 
     public class StudentGradeItem
@@ -17,9 +16,7 @@ namespace SIMS_FPT.Models.ViewModels
         public string StudentId { get; set; }
         public string StudentName { get; set; }
         public bool HasSubmitted { get; set; }
-        public string SubmissionFilePath { get; set; } // For "Digital Submissions" link
-
-        // Editable fields for Bulk Entry
+        public string SubmissionFilePath { get; set; }
         public double? Grade { get; set; }
         public string Feedback { get; set; }
     }
