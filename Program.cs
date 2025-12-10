@@ -1,5 +1,5 @@
-using SIMS_FPT.Business.Interfaces; 
-using SIMS_FPT.Business.Services;   
+using SIMS_FPT.Business.Interfaces;
+using SIMS_FPT.Business.Services;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Data.Repositories;
 using SIMS_FPT.Services;
@@ -35,29 +35,11 @@ builder.Services.AddScoped<TeacherService>();
 // // Department Repository
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
-<<<<<<< HEAD
-
-=======
-// Expense, Fee, Salary Repositories
-builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
-builder.Services.AddScoped<IFeeRepository, FeeRepository>();
-builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
 
 // Assignment & Submission Repositories
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 builder.Services.AddScoped<IGradingService, GradingService>();
->>>>>>> ede8857e55285dbd2b9da95219eff4bc0035a489
-
-
-
-
-
-
-
-
-
-
 
 // ------------------------------------------------------
 // 2. Cấu hình Authentication (Đăng nhập bằng Cookie)

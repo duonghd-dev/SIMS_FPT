@@ -1,30 +1,4 @@
-<<<<<<< HEAD
-Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
-1,admin@school.edu,AQAAAAIAAYagAAAAEHIM63CFyGDfnn88e6vf5MAY2N657x3Pizo99uPhuJAGnqF+U0utUGk0jaB/51hYXA==,Admin,,Admin User,PBKDF2
-2,bd00535@school.edu,AQAAAAIAAYagAAAAENEgtlGcqdBluJYVyAmlxGDn1xUnFOSkjSnb2kBX4jBuuGSHBg9pF9+kQ+2lNYdtdw==,Student,TCH001,Nguyen Van Hung,PBKDF2
-3,duong@school.edu,AQAAAAIAAYagAAAAEAee6HKs2VSRfyBTQcoXZwz3zmVdWxM71RcXfDy9ZZXvSvjlO0IJLP8WpxKBJBXweg==,Instructor,TCH002,Tran Thi Mai,PBKDF2
-4,ngduc@fpt.edu.com,123,Teacher,TCH001,Nguyen Anh Duc,PBKDF2
-6,lvm@fpt.edu.com,123,Teacher,TCH003,Le Van Minh,PBKDF2
-5,thhong@fpt.edu.com,123,Teacher,TCH002,Tran Thi Hong,PBKDF2
-7,pqh@fpt.edu.com,123,Teacher,TCH004,Pham Quang Huy,PBKDF2
-8,vtlan@fpt.edu.com,123,Teacher,TCH005,Vu Thi Lan,PBKDF2
-9,hms@fpt.edu.com,123,Teacher,TCH006,Hoang Minh Son,PBKDF2
-10,nthha@fpt.edu.com,123,Teacher,TCH007,Nguyen Thu Ha,PBKDF2
-11,dvq@fpt.edu.com,123,Teacher,TCH008,Dao Van Quang,PBKDF2
-12,tmchau@fpt.edu.com,123,Teacher,TCH009,Tran Minh Chau,PBKDF2
-13,pdl@fpt.edu.com,123,Teacher,TCH010,Phan Duc Long,PBKDF2
-14,toan.nguyen@fpt.edu.com,123,Student,STD001,Nguyen Toan,PBKDF2
-15,linh.tran@fpt.edu.com,123,Student,STD002,Tran Linh,PBKDF2
-16,minh.le@fpt.edu.com,123,Student,STD003,Le Minh,PBKDF2
-17,ha.pham@fpt.edu.com,123,Student,STD004,Pham Ha,PBKDF2
-18,vu.do@fpt.edu.com,123,Student,STD005,Do Vu,PBKDF2
-19,trang.nguyen@fpt.edu.com,123,Student,STD006,Nguyen Trang,PBKDF2
-20,son.hoang@fpt.edu.com,123,Student,STD007,Hoang Son,PBKDF2
-21,chi.vu@fpt.edu.com,123,Student,STD008,Vu Chi,PBKDF2
-22,khoa.dao@fpt.edu.com,123,Student,STD009,Dao Khoa,PBKDF2
-23,my.thai@fpt.edu.com,123,Student,STD010,Thai My,PBKDF2
-24,4564@gmail.com,312312,Instructor,312312,321312,PBKDF2
-=======
+
 Id,Email,Username,Password,HashAlgorithm,Role,FullName
 1,duongteacher@gmail.com,teacher,123,Plain,Instructor,Duonggv
 2,duongadmin@gmail.com,admin,AQAAAAIAAYagAAAAEApWHEYImf/8wlPXshYO3IGPVomJ5T9rSfyKOXQbrKgJNbe0WSHZ2mjWFzmHFe3PLQ==,PBKDF2,Admin,DuongAdmin
@@ -43,4 +17,3 @@ Id,Email,Username,Password,HashAlgorithm,Role,FullName
 21,321@gmail.com,321,AQAAAAIAAYagAAAAED3LpnuzDl5HZdHuj8dqUi8/zSqXroDzxwukyAobn3kjkYoI6xJMr5q6FwwMnANQiA==,PBKDF2,Instructor,321312
 22,bnm915915@gmail.com,Long,AQAAAAIAAYagAAAAEFgyKwYTa7CpWu12CoZGjV4uWDRuG/TnO6aFkJhzrCRYAd0wsl9AcYSoYGbnU9WGEg==,PBKDF2,Admin,Long
 23,liubu1412@gmail.com,liubu,AQAAAAIAAYagAAAAEPEwvtmmCnoYjYQnZBSfaqglhXuIk9fHdA3crCF3kniyy1G4WRZ0ODMvwNo3gypPOw==,PBKDF2,Instructor,liubu
->>>>>>> ede8857e55285dbd2b9da95219eff4bc0035a489
