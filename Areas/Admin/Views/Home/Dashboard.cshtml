@@ -19,14 +19,13 @@
             </div>
         </div>
 
+        <!-- Widgets -->
         <div class="row">
             <div class="col-xl-3 col-sm-6 col-12 d-flex">
                 <div class="card bg-one w-100">
                     <div class="card-body">
                         <div class="db-widgets d-flex justify-content-between align-items-center">
-                            <div class="db-icon">
-                                <i class="fas fa-user-graduate"></i>
-                            </div>
+                            <div class="db-icon"><i class="fas fa-user-graduate"></i></div>
                             <div class="db-info">
                                 <h3>@Model.StudentCount</h3>
                                 <h6>Students</h6>
@@ -35,13 +34,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-xl-3 col-sm-6 col-12 d-flex">
                 <div class="card bg-two w-100">
                     <div class="card-body">
                         <div class="db-widgets d-flex justify-content-between align-items-center">
-                            <div class="db-icon">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                            </div>
+                            <div class="db-icon"><i class="fas fa-chalkboard-teacher"></i></div>
                             <div class="db-info">
                                 <h3>@Model.TeacherCount</h3>
                                 <h6>Teachers</h6>
@@ -50,13 +48,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-xl-3 col-sm-6 col-12 d-flex">
                 <div class="card bg-three w-100">
                     <div class="card-body">
                         <div class="db-widgets d-flex justify-content-between align-items-center">
-                            <div class="db-icon">
-                                <i class="fas fa-building"></i>
-                            </div>
+                            <div class="db-icon"><i class="fas fa-building"></i></div>
                             <div class="db-info">
                                 <h3>@Model.DepartmentCount</h3>
                                 <h6>Departments</h6>
@@ -65,15 +62,14 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-xl-3 col-sm-6 col-12 d-flex">
                 <div class="card bg-four w-100">
                     <div class="card-body">
                         <div class="db-widgets d-flex justify-content-between align-items-center">
-                            <div class="db-icon">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                            </div>
+                            <div class="db-icon"><i class="fas fa-file-invoice-dollar"></i></div>
                             <div class="db-info">
-                                <h3>$@Model.TotalRevenue.ToString("N0")</h3>
+                                <h3>$@Model.TotalRevenue</h3>
                                 <h6>Revenue</h6>
                             </div>
                         </div>
@@ -82,35 +78,28 @@
             </div>
         </div>
 
+        <!-- Charts -->
         <div class="row">
             <div class="col-md-12 col-lg-6">
                 <div class="card card-chart">
-                    <div class="card-header">
-                        <h5 class="card-title">Revenue (By Year)</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="revenue-chart"></div>
-                    </div>
+                    <div class="card-header"><h5 class="card-title">Revenue (By Year)</h5></div>
+                    <div class="card-body"><div id="revenue-chart"></div></div>
                 </div>
             </div>
+
             <div class="col-md-12 col-lg-6">
                 <div class="card card-chart">
-                    <div class="card-header">
-                        <h5 class="card-title">Student Demographics (Gender)</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="student-chart"></div>
-                    </div>
+                    <div class="card-header"><h5 class="card-title">Student Demographics (Gender)</h5></div>
+                    <div class="card-body"><div id="student-chart"></div></div>
                 </div>
             </div>
         </div>
 
+        <!-- Newest Students -->
         <div class="row">
-            <div class="col-md-6 d-flex">
+            <div class="col-md-12 d-flex">
                 <div class="card flex-fill">
-                    <div class="card-header">
-                        <h5 class="card-title">Newest Students</h5>
-                    </div>
+                    <div class="card-header"><h5 class="card-title">Newest Students</h5></div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover table-center">
@@ -126,17 +115,15 @@
                                     @foreach (var student in Model.NewestStudents)
                                     {
                                         <tr>
-                                            <td class="text-nowrap">@student.StudentId</td>
-                                            <td class="text-nowrap">
-                                                <img class="avatar-img rounded-circle"
-                                                    src="@(string.IsNullOrEmpty(student.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : student.ImagePath)"
-                                                    alt="" style="width:25px;height:25px;">
+                                            <td>@student.StudentId</td>
+                                            <td>
+                                                <img class="avatar-img rounded-circle" 
+                                                     src="@(string.IsNullOrEmpty(student.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : student.ImagePath)" 
+                                                     style="width:25px;height:25px;">
                                                 @student.FullName
                                             </td>
                                             <td>@student.ClassName</td>
-                                            <td class="text-right">
-                                                <div>@student.AdmissionDate.ToString("yyyy")</div>
-                                            </td>
+                                            <td class="text-right">@student.AdmissionDate.ToString("yyyy")</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -145,86 +132,35 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-6 d-flex">
-                <div class="card flex-fill">
-                    <div class="card-header">
-                        <h5 class="card-title">Recent Expenses</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="activity-feed">
-                            @foreach (var expense in Model.RecentExpenses)
-                            {
-                                <li class="feed-item">
-                                    <div class="feed-date">@expense.PurchaseDate.ToString("MMM dd")</div>
-                                    <span class="feed-text">
-                                        Purchased <strong>@expense.ItemName</strong> (Qty: @expense.Quantity)
-                                        from <a href="#">@expense.Source</a> for
-                                        <b class="text-danger">$@expense.TotalAmount.ToString("N0")</b>
-                                    </span>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
+
     </div>
 </div>
 
 @section Scripts {
     <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
+
     <script>
-        $(document).ready(function () {
-            // 1. Revenue Chart Data
+        $(function () {
             var revenueLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.RevenueLabels));
             var revenueData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.RevenueData));
 
-            if ($('#revenue-chart').length > 0) {
-                var options = {
-                    series: [{
-                        name: "Revenue",
-                        data: revenueData
-                    }],
-                    chart: {
-                        height: 350,
-                        type: 'area', // hoặc 'line', 'bar'
-                        zoom: { enabled: false }
-                    },
-                    dataLabels: { enabled: false },
-                    stroke: { curve: 'smooth' },
-                    xaxis: { categories: revenueLabels }
-                };
-                var chart = new ApexCharts(document.querySelector("#revenue-chart"), options);
-                chart.render();
+            if ($("#revenue-chart").length) {
+                new ApexCharts(document.querySelector("#revenue-chart"), {
+                    series: [{ name: "Revenue", data: revenueData }],
+                    chart: { type: "area", height: 350 }
+                }).render();
             }
 
-            // 2. Student Chart Data
             var studentLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.StudentClassLabels));
             var studentData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.StudentClassData));
 
-            if ($('#student-chart').length > 0) {
-                var options = {
-                    series: [{
-                        data: studentData
-                    }],
-                    chart: {
-                        type: 'bar',
-                        height: 350
-                    },
-                    plotOptions: {
-                        bar: {
-                            borderRadius: 4,
-                            horizontal: true,
-                        }
-                    },
-                    dataLabels: { enabled: false },
-                    xaxis: {
-                        categories: studentLabels,
-                    }
-                };
-                var chart = new ApexCharts(document.querySelector("#student-chart"), options);
-                chart.render();
+            if ($("#student-chart").length) {
+                new ApexCharts(document.querySelector("#student-chart"), {
+                    series: [{ data: studentData }],
+                    chart: { type: "bar", height: 350 },
+                    xaxis: { categories: studentLabels }
+                }).render();
             }
         });
     </script>

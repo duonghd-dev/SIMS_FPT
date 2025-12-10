@@ -1,5 +1,0 @@
-payment_id,student_id,fee_type_id,paid_date,status
-PAY001,STD001,FEE001,2025-08-17,Paid
-PAY002,STD002,FEE002,2025-08-05,Paid
-PAY003,STD003,FEE001,,Unpaid
-PAY004,STD004,FEE003,2025-09-17,Paid

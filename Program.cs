@@ -33,11 +33,6 @@ builder.Services.AddScoped<TeacherService>();
 // // Department Repository
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
-// Expense, Fee, Salary Repositories
-builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
-// builder.Services.AddScoped<IFeeRepository, FeeRepository>();
-// builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
-
 
 
 

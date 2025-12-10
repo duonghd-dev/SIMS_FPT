@@ -4,21 +4,20 @@ namespace SIMS_FPT.Models
 {
     public class DashboardViewModel
     {
-        // 1. Thẻ thống kê (Widgets)
+        // 1. Widgets
         public int StudentCount { get; set; }
         public int DepartmentCount { get; set; }
-        public decimal TotalRevenue { get; set; }
-        public int TeacherCount { get; set; } // Thêm đếm số giáo viên
+        public int TeacherCount { get; set; }
+        public decimal TotalRevenue { get; set; } // Nếu không dùng revenue thì set 0
 
-        // 2. Dữ liệu biểu đồ (Charts)
-        public List<string> RevenueLabels { get; set; } = new List<string>();
-        public List<decimal> RevenueData { get; set; } = new List<decimal>();
+        // 2. Charts
+        public List<string> RevenueLabels { get; set; } = new();
+        public List<decimal> RevenueData { get; set; } = new();
 
-        public List<string> StudentClassLabels { get; set; } = new List<string>();
-        public List<int> StudentClassData { get; set; } = new List<int>();
+        public List<string> StudentClassLabels { get; set; } = new();
+        public List<int> StudentClassData { get; set; } = new();
 
-        // 3. Dữ liệu bảng (Tables & Lists)
-        public List<StudentCSVModel> NewestStudents { get; set; } = new List<StudentCSVModel>();
-        public List<ExpenseModel> RecentExpenses { get; set; } = new List<ExpenseModel>();
+        // 3. Table data
+        public List<StudentCSVModel> NewestStudents { get; set; } = new();
     }
 }

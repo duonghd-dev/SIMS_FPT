@@ -1,3 +1,0 @@
-expense_id,item_name,quantity,unit_price,total_amount,source,purchase_date,purchased_by
-EXP001,Chair,120,6,720,Abc Shop,2020-08-17,Admin
-EXP002,Table,56,20,1120,Online,2020-08-05,Admin

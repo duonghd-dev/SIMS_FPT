@@ -8,7 +8,7 @@ using System.Linq;
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public class SubjectController : Controller
     {
         private readonly ISubjectRepository _repo;

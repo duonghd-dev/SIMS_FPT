@@ -56,7 +56,7 @@ namespace SIMS_FPT.Data.Repositories
         public Users? Login(string email, string password)
         {
             var users = ReadAllUsersInternal();
-            
+
             // Tìm theo Email
             var user = users.FirstOrDefault(u => u.Email.Trim().Equals(email.Trim(), StringComparison.OrdinalIgnoreCase));
             if (user == null) return null;
@@ -82,12 +82,12 @@ namespace SIMS_FPT.Data.Repositories
         {
             var users = ReadAllUsersInternal();
             newUser.Id = users.Any() ? users.Max(u => u.Id) + 1 : 1;
-            
+
             // Luôn hash pass khi tạo mới
             if (newUser.HashAlgorithm == "Plain" || string.IsNullOrEmpty(newUser.HashAlgorithm))
             {
-                 newUser.Password = PasswordHasherHelper.Hash(newUser.Password);
-                 newUser.HashAlgorithm = "PBKDF2";
+                newUser.Password = PasswordHasherHelper.Hash(newUser.Password);
+                newUser.HashAlgorithm = "PBKDF2";
             }
 
             users.Add(newUser);
@@ -102,7 +102,7 @@ namespace SIMS_FPT.Data.Repositories
 
         // Các hàm phụ trợ
         public List<Users> GetInstructors() => ReadAllUsersInternal().Where(u => u.Role == "Instructor").ToList();
-        
+
         public Users? GetUserById(int id) => ReadAllUsersInternal().FirstOrDefault(u => u.Id == id);
 
         public void DeleteUserByEmail(string email)
@@ -113,7 +113,6 @@ namespace SIMS_FPT.Data.Repositories
             if (newList.Count != users.Count) WriteAllUsersInternal(newList);
         }
 
-        // Interface yêu cầu các hàm cũ, ta có thể bỏ hoặc để trống nếu Interface chưa kịp sửa
         public bool UsernameExists(string u) => EmailExists(u); // Alias tạm thời
         public void AddTeacherUser(TeacherCSVModel t) { }
         public void UpdateUserFromTeacher(TeacherCSVModel t, string? old) { }
