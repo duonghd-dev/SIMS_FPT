@@ -1,4 +1,3 @@
-
 Id,Email,Username,Password,HashAlgorithm,Role,FullName
 1,duongteacher@gmail.com,teacher,123,Plain,Instructor,Duonggv
 2,duongadmin@gmail.com,admin,AQAAAAIAAYagAAAAEApWHEYImf/8wlPXshYO3IGPVomJ5T9rSfyKOXQbrKgJNbe0WSHZ2mjWFzmHFe3PLQ==,PBKDF2,Admin,DuongAdmin
