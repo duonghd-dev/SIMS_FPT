@@ -40,7 +40,9 @@
                                 }
                             </td>
                             <td>
-                                @* UPDATED LINK HERE: Changed BulkGrade to Grade *@
+                                <a asp-action="Edit" asp-route-id="@item.AssignmentId" class="btn btn-info btn-sm mr-1">
+                                    <i class="fas fa-pen"></i> Edit
+                                </a>
                                 <a asp-action="Grade" asp-route-id="@item.AssignmentId" class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i> Grade
                                 </a>

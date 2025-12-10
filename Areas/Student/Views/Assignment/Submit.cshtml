@@ -1,0 +1,63 @@
+@model SIMS_FPT.Models.ViewModels.StudentAssignmentViewModel
+
+@{
+    ViewData["Title"] = "Submit Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h3 class="page-title">Submit: @Model.Assignment.Title</h3>
+            <p class="text-muted">Due @Model.Assignment.DueDate.ToString("MMM dd, yyyy") • Max @Model.Assignment.MaxPoints points</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="Submit" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="id" value="@Model.Assignment.AssignmentId" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label class="form-label font-weight-bold">Allowed file types</label>
+                    <div class="text-muted">
+                        @(string.IsNullOrWhiteSpace(Model.Assignment.AllowedFileTypes) ? "Any file type" : Model.Assignment.AllowedFileTypes)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload file</label>
+                    <input type="file" name="uploadFile" class="form-control" />
+                    <small class="form-text text-muted">Uploading again replaces your previous submission.</small>
+                </div>
+
+                @if (Model.HasSubmission)
+                {
+                    <div class="alert alert-info mt-3">
+                        <div class="mb-1"><strong>Current file:</strong> <a target="_blank" href="~/@Model.Submission.FilePath">View</a></div>
+                        <div><strong>Submitted at:</strong> @Model.SubmittedAt?.ToString("g")</div>
+                    </div>
+                }
+
+                @if (Model.Assignment.AreGradesPublished && Model.HasGrade)
+                {
+                    <div class="alert alert-success mt-3">
+                        <div><strong>Grade:</strong> @Model.Grade / @Model.Assignment.MaxPoints</div>
+                        @if (!string.IsNullOrWhiteSpace(Model.TeacherComments))
+                        {
+                            <div><strong>Teacher Comments:</strong> @Model.TeacherComments</div>
+                        }
+                    </div>
+                }
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Save Submission</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

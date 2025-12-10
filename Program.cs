@@ -41,16 +41,6 @@ builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 builder.Services.AddScoped<IGradingService, GradingService>();
 
-
-
-
-
-
-
-
-
-
-
 // ------------------------------------------------------
 // 2. Cấu hình Authentication (Đăng nhập bằng Cookie)
 // ------------------------------------------------------
@@ -58,9 +48,13 @@ builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
         options.Cookie.Name = "SIMS_Cookie";                 // Tên cookie lưu trên trình duyệt
-        options.LoginPath = "/Users/Login";                  // Đúng controller: Users/Login
-        options.AccessDeniedPath = "/Users/AccessDenied";
+        // Correct login/access-denied paths (LoginController exists at /Login)
+        options.LoginPath = "/Login/Login";                  // Controller: Login/Login
+        options.AccessDeniedPath = "/Login/AccessDenied";    // Controller: Login/AccessDenied
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);   // Hết hạn 30 phút
+        options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
     });
 
 // Load MVC
