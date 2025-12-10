@@ -180,14 +180,10 @@
         </div>
     </header>
 
-
-    @* ========== SIDEBAR ========== *@
-
     @{
         var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
         var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
     }
-
     <div class="sidebar" id="sidebar">
         <div class="sidebar-inner slimscroll">
             <div id="sidebar-menu" class="sidebar-menu">
@@ -222,7 +218,12 @@
                                     Student Add
                                 </a>
                             </li>
-
+                             <!-- Student Enrollment -->
+                            <li class="@(currentController == "Enrollment" ? "active" : "")">
+                                <a asp-area="Admin" asp-controller="Enrollment" asp-action="Index">
+                                 <span>Student Enrollment</span>
+                               </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -250,6 +251,22 @@
                         </a>
                     </li>
 
+                    <!-- Class Management -->
+                    <li class="submenu @(currentController == "Class" ? "active" : "")">
+                        <a href="#">
+                            <i class="fas fa-school"></i>
+                            <span>Class Student</span>
+                            <span class="menu-arrow"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a asp-area="Admin" asp-controller="Class" asp-action="List">Class List</a>
+                            </li>
+                            <li>
+                                <a asp-area="Admin" asp-controller="Class" asp-action="Add">Class Add</a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
