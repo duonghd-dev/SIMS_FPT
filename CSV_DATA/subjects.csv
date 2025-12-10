@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 subject_id,subject_name,department_id,credits
 SUB001,Programming Fundamentals,DEP001,3
 SUB002,Data Structures,DEP001,4
@@ -10,15 +9,4 @@ SUB007,Thermodynamics,DEP005,4
 SUB008,English Communication,DEP006,2
 SUB009,Marketing Principles,DEP007,3
 SUB010,Machine Learning,DEP010,4
-=======
-subject_id,subject_name,class,time,room
-SUB002,Geometry,SE0120,25/5/2025,A-101
-SUB003,Physics I,SE0120
-SUB004,Computer Science,SE0120
-SUB005,English Literature,SE0120
-SUB006,Organic Chemistry,SE0120
 
-
-
-SU01,"Test",SE07202
->>>>>>> ede8857e55285dbd2b9da95219eff4bc0035a489
