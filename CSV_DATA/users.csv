@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
 1,admin@school.edu,AQAAAAIAAYagAAAAEHIM63CFyGDfnn88e6vf5MAY2N657x3Pizo99uPhuJAGnqF+U0utUGk0jaB/51hYXA==,Admin,,Admin User,PBKDF2
 2,bd00535@school.edu,AQAAAAIAAYagAAAAENEgtlGcqdBluJYVyAmlxGDn1xUnFOSkjSnb2kBX4jBuuGSHBg9pF9+kQ+2lNYdtdw==,Student,TCH001,Nguyen Van Hung,PBKDF2
@@ -23,3 +24,23 @@ Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
 22,khoa.dao@fpt.edu.com,123,Student,STD009,Dao Khoa,PBKDF2
 23,my.thai@fpt.edu.com,123,Student,STD010,Thai My,PBKDF2
 24,4564@gmail.com,312312,Instructor,312312,321312,PBKDF2
+=======
+Id,Email,Username,Password,HashAlgorithm,Role,FullName
+1,duongteacher@gmail.com,teacher,123,Plain,Instructor,Duonggv
+2,duongadmin@gmail.com,admin,AQAAAAIAAYagAAAAEApWHEYImf/8wlPXshYO3IGPVomJ5T9rSfyKOXQbrKgJNbe0WSHZ2mjWFzmHFe3PLQ==,PBKDF2,Admin,DuongAdmin
+3,duongstudent@gmail.com,student,123,Plain,Student,Duongstudent
+10,hung.nguyen@school.edu,hungnv,Pass12311,Plain,Instructor,Nguyen Van Hung
+11,mai.tran@school.edu,maitt,Secure789,Plain,Instructor,Tran Thi Mai
+12,tuan.le@school.edu,tuanlv,Dev2025,Plain,Instructor,Le Van Tuan
+13,ha.pham@school.edu,hapt,Eng#Star,Plain,Instructor,Pham Thu Ha
+14,nam.hoang@school.edu,namhv,Chem!2024,Plain,Instructor,Hoang Van Nam
+15,9@gmail.com,90000000000,9,Plain,Instructor,99999
+16,0909@gmail.com,090909,09090,Plain,Instructor,09909
+17,9@gmail.com,90,9,Plain,Instructor,99999
+18,0909@gmail.com,1,09090,Plain,Instructor,09909
+19,11@gmail.com,11,1111 qeqw,Plain,Instructor,1111111111111111
+20,321@gmail.com,12121,AQAAAAIAAYagAAAAEBoNL5GWMfEpaOvvLdTxCXXk3c3OWM9+wOFaJScGCpxfonVLrFWeRVGLqL/O/L4ihQ==,PBKDF2,Instructor,qêw
+21,321@gmail.com,321,AQAAAAIAAYagAAAAED3LpnuzDl5HZdHuj8dqUi8/zSqXroDzxwukyAobn3kjkYoI6xJMr5q6FwwMnANQiA==,PBKDF2,Instructor,321312
+22,bnm915915@gmail.com,Long,AQAAAAIAAYagAAAAEFgyKwYTa7CpWu12CoZGjV4uWDRuG/TnO6aFkJhzrCRYAd0wsl9AcYSoYGbnU9WGEg==,PBKDF2,Admin,Long
+23,liubu1412@gmail.com,liubu,AQAAAAIAAYagAAAAEPEwvtmmCnoYjYQnZBSfaqglhXuIk9fHdA3crCF3kniyy1G4WRZ0ODMvwNo3gypPOw==,PBKDF2,Instructor,liubu
+>>>>>>> ede8857e55285dbd2b9da95219eff4bc0035a489

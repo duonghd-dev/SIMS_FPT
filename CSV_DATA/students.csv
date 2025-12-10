@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 student_id,first_name,last_name,class_name,gender,date_of_birth,religion,joining_date,mobile_number,admission_number,section,email,image_path,address,permanent_address,father_name,father_occupation,father_mobile,father_email,mother_name,mother_occupation,mother_mobile,mother_email
 STD001,Toan,Nguyen,SE0120,Male,2010-05-15,Buddhism,2020-09-01,0912345678,AD1001,A,toan.nguyen@fpt.edu.com,/images/std001.jpg,Da Nang,Da Nang,Nguyen Van A,Engineer,0909123456,a.nguyen@fpt.edu.com,Tran Thi B,Teacher,0909765432,b.tran@fpt.edu.com
 STD002,Linh,Tran,SE0720,Female,2011-02-13,Catholic,2021-08-20,0987654321,AD1002,B,linh.tran@fpt.edu.com,/images/std002.jpg,Hanoi,Hanoi,Tran Van C,Farmer,0911222333,c.tran@fpt.edu.com,Le Thi D,Housewife,0922333444,d.le@fpt.edu.com
@@ -9,3 +10,10 @@ STD007,Son,Hoang,SE0788,Male,2008-09-05,Catholic,2018-09-01,0944556677,AD1007,A,
 STD008,Chi,Vu,SE0671,Female,2012-01-12,Buddhism,2022-07-10,0977332211,AD1008,B,chi.vu@fpt.edu.com,/images/std008.jpg,Thai Nguyen,Thai Nguyen,Vu Van O,Fisherman,0909223344,o.vu@fpt.edu.com,Phan Thi P,Seamstress,0911556677,p.phan@fpt.edu.com
 STD009,Khoa,Dao,SE0112,Male,2009-04-21,Atheism,2019-08-20,0966778899,AD1009,C,khoa.dao@fpt.edu.com,/images/std009.jpg,Thanh Hoa,Thanh Hoa,Dao Van Q,Teacher,0909776655,q.dao@fpt.edu.com,Nguyen Thi R,Doctor,0977443322,r.nguyen@fpt.edu.com
 STD010,My,Thai,SE0222,Female,2010-10-08,Catholic,2020-09-01,0999888777,AD1010,A,my.thai@fpt.edu.com,/images/std010.jpg,Da Lat,Da Lat,Thai Van S,Chef,0912332211,s.thai@fpt.edu.com,Le Thi T,Nurse,0922443311,t.le@fpt.edu.com
+=======
+first_name,last_name,student_id,gender,date_of_birth,class,religion,joining_date,mobile_number,admission_number,section,student_image,father_name,father_occupation,father_mobile,father_email,mother_name,mother_occupation,mother_mobile,mother_email,present_address,permanent_address
+Nguyen,Van Toan,STD001,Female,2010-05-15,SE0120,None,2025-09-05,0901234567,ADM001,A,/images/std001.jpg,Nguyen Van Ka,Engineer,0912345678,b.nguyen@email.com,Tran Thi C,Teacher,0987654321,c.tran@email.com,"123 Le Loi, Da Nang","123 Le Loi, Da Nang"
+Le,Thi Anh,STD002,Female,2010-08-20,SE0122,Buddhist,2025-09-05,0902345678,ADM002,A,/images/std002.jpg,Le Van Dung,Doctor,0913456789,d.le@email.com,Pham Thi E,Nurse,0988765432,e.pham@email.com,"456 Nguyen Hue, Hue","789 Tran Phu, Quang Binh"
+Tran,Minh Hieu,STD003,Female,2010-02-10,SE0120,Catholic,2025-09-05,0903456789,ADM003,B,/images/std003.jpg,Tran Van Vy,Business,0914567890,f.tran@email.com,Nguyen Thi G,Housewife,0989876543,g.nguyen@email.com,"101 Pasteur, HCMC","101 Pasteur, HCMC"
+
+>>>>>>> ede8857e55285dbd2b9da95219eff4bc0035a489

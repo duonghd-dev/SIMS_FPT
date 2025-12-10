@@ -14,10 +14,25 @@ namespace SIMS_FPT.Data.Repositories
         private readonly string _filePath;
         private readonly CsvConfiguration _config;
 
-        public SubjectRepository()
+        public SubjectRepository(IWebHostEnvironment env)
         {
+<<<<<<< HEAD
             _filePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "subjects.csv");
             _config = new CsvConfiguration(CultureInfo.InvariantCulture)
+=======
+            _csvFilePath = Path.Combine(env.ContentRootPath, "CSV_DATA", "subjects.csv");
+        }
+        public List<SubjectModel> GetAll()
+        {
+            var list = new List<SubjectModel>();
+
+            if (!File.Exists(_csvFilePath))
+                return list;
+
+            string[] lines = File.ReadAllLines(_csvFilePath);
+
+            for (int i = 1; i < lines.Length; i++)
+>>>>>>> ede8857e55285dbd2b9da95219eff4bc0035a489
             {
                 HasHeaderRecord = true,
                 MissingFieldFound = null,
