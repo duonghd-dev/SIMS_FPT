@@ -4,72 +4,92 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] Dashboard</title>
+    <title>@ViewData["Title"] - Dashboard</title>
+
     <script type="importmap"></script>
+
+    <!-- Default ASP.NET -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SIMS_FPT.styles.css" asp-append-version="true" />
 
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap">
+    <!-- Template Assets -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+
     <link rel="stylesheet" href="~/assets/plugins/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="~/assets/css/style.css">
 </head>
 
+
 <body>
     <header class="sticky-top">
-        <div class="header" style="@(!User.Identity.IsAuthenticated ? "justify-content: flex-end;" : "")">
+        <div class="header" style="@(!User.Identity.IsAuthenticated ? "justify-content:flex-end;" : "")">
 
             @if (User.Identity.IsAuthenticated)
             {
+                <!-- LEFT LOGO -->
                 <div class="header-left">
-                    <a href="index.html" class="logo">
-                        <img src="assets/img/logo.png" alt="Logo">
+                    <a asp-area="Admin" asp-controller="Home" asp-action="Dashboard" class="logo">
+                        <img src="~/assets/img/logo.png" alt="Logo">
                     </a>
-                    <a href="index.html" class="logo logo-small">
-                        <img src="assets/img/logo-small.png" alt="Logo" width="30" height="30">
+                    <a asp-area="Admin" asp-controller="Home" asp-action="Dashboard" class="logo logo-small">
+                        <img src="~/assets/img/logo-small.png" alt="Logo" width="30" height="30">
                     </a>
                 </div>
+
+                <!-- Toggle Sidebar -->
                 <a href="javascript:void(0);" id="toggle_btn">
                     <i class="fas fa-align-left"></i>
                 </a>
+
+                <!-- Search Bar -->
                 <div class="top-nav-search">
                     <form>
                         <input type="text" class="form-control" placeholder="Search here">
                         <button class="btn" type="submit"><i class="fas fa-search"></i></button>
                     </form>
                 </div>
+
+                <!-- Mobile Menu -->
                 <a class="mobile_btn" id="mobile_btn">
                     <i class="fas fa-bars"></i>
                 </a>
 
+                <!-- USER MENU -->
                 <ul class="nav user-menu">
+
+                    <!-- Notifications -->
                     <li class="nav-item dropdown noti-dropdown">
                         <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                            <i class="far fa-bell"></i> <span class="badge badge-pill">3</span>
+                            <i class="far fa-bell"></i>
+                            <span class="badge badge-pill">3</span>
                         </a>
+
                         <div class="dropdown-menu notifications">
                             <div class="topnav-dropdown-header">
                                 <span class="notification-title">Notifications</span>
-                                <a href="javascript:void(0)" class="clear-noti"> Clear All </a>
+                                <a href="#" class="clear-noti"> Clear All </a>
                             </div>
+
                             <div class="noti-content">
                                 <ul class="notification-list">
                                     <li class="notification-message">
                                         <a href="#">
                                             <div class="media">
                                                 <span class="avatar avatar-sm">
-                                                    <img class="avatar-img rounded-circle" alt="User Image"
-                                                        src="assets/img/profiles/avatar-02.jpg">
+                                                    <img class="avatar-img rounded-circle"
+                                                        src="~/assets/img/profiles/avatar-02.jpg" alt="User">
                                                 </span>
+
                                                 <div class="media-body">
                                                     <p class="noti-details">
-                                                        <span class="noti-title">Carlson Tech</span> has approved <span
-                                                            class="noti-title">your estimate</span>
+                                                        <span class="noti-title">Carlson Tech</span> has approved
+                                                        <span class="noti-title">your estimate</span>
                                                     </p>
-                                                    <p class="noti-time"><span class="notification-time">4 mins ago</span>
+                                                    <p class="noti-time">
+                                                        <span class="notification-time">4 mins ago</span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -77,27 +97,31 @@
                                     </li>
                                 </ul>
                             </div>
+
                             <div class="topnav-dropdown-footer">
                                 <a href="#">View all Notifications</a>
                             </div>
                         </div>
                     </li>
 
+                    <!-- Profile -->
                     <li class="nav-item dropdown has-arrow">
                         <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                             <span class="user-img">
-                                <img class="rounded-circle" src="assets/img/profiles/avatar-01.jpg" width="31"
-                                    alt="User Name">
+                                <img class="rounded-circle" src="~/assets/img/profiles/avatar-01.jpg" width="31" alt="User">
                             </span>
                         </a>
+
                         <div class="dropdown-menu">
                             <div class="user-header">
                                 <div class="avatar avatar-sm">
-                                    <img src="assets/img/profiles/avatar-01.jpg" alt="User Image"
-                                        class="avatar-img rounded-circle">
+                                    <img src="~/assets/img/profiles/avatar-01.jpg" class="avatar-img rounded-circle"
+                                        alt="User">
                                 </div>
+
                                 <div class="user-text">
                                     <h6>@User.Identity.Name</h6>
+
                                     @if (User.IsInRole("Admin"))
                                     {
                                         <p class="text-muted mb-0">Admin</p>
@@ -112,8 +136,9 @@
                                     }
                                 </div>
                             </div>
-                            <a class="dropdown-item" href="profile.html">Hồ sơ</a>
-                            <a class="dropdown-item" href="inbox.html">Hộp thư</a>
+
+                            <a class="dropdown-item" asp-area="Admin" asp-controller="Profile" asp-action="Index">Hồ sơ</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="Inbox" asp-action="Index">Hộp thư</a>
                             <a class="dropdown-item text-danger" asp-area="" asp-controller="Login" asp-action="Logout">Đăng
                                 xuất</a>
                         </div>
@@ -122,31 +147,33 @@
             }
             else
             {
-                <nav
-                    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <!-- NOT LOGIN MENU -->
+                <nav class="navbar navbar-expand-sm bg-white border-bottom box-shadow mb-3">
                     <div class="container-fluid">
                         <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SIMS_FPT</a>
+
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false"
-                            aria-label="Toggle navigation">
+                            data-bs-target=".navbar-collapse">
                             <span class="navbar-toggler-icon"></span>
                         </button>
-                    </div>
 
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                                    asp-action="Privacy">Privacy</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary btn-sm me-3" asp-controller="Login" asp-action="Login">Đăng
-                                    nhập</a>
-                            </li>
-                        </ul>
+                        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="btn btn-primary btn-sm me-3" asp-controller="Login" asp-action="Login">
+                                        Đăng nhập
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </nav>
             }
@@ -245,16 +272,14 @@
         </div>
     </div>
 
+
+    <!-- MAIN -->
     <main role="main" class="pb-3">
         @RenderBody()
     </main>
 
-    @* <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - SIMS_FPT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer> *@
 
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -269,7 +294,9 @@
     <script src="~/assets/js/calander.js"></script>
     <script src="~/assets/js/circle-progress.min.js"></script>
     <script src="~/assets/js/script.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 
 </html>
