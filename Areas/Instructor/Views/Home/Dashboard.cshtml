@@ -1,7 +1,9 @@
-﻿@{
+﻿@model SIMS_FPT.Models.ViewModels.InstructorDashboardViewModel
+@{
     ViewData["Title"] = "Instructor Dashboard";
     Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
 }
+
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Instructor Dashboard</h1>
@@ -11,39 +13,6 @@
     </div>
 
     <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Leave Balance</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.LeaveDaysRemaining Days</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Last Payslip</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.LastSalaryMonth</div>
-                            <a asp-action="MyPayslips" class="text-xs text-success">View Details &rarr;</a>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
@@ -85,8 +54,6 @@
         </div>
     </div>
 
-    @* Paste the rest of your original Dashboard code here (Schedule, Charts, Scripts) *@
-
     <div class="row">
         <div class="col-lg-6 mb-4">
             <div class="card shadow mb-4">
@@ -105,13 +72,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model.TodayClasses)
+                                @if (Model.TodayClasses != null && Model.TodayClasses.Any())
+                                {
+                                    @foreach (var item in Model.TodayClasses)
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold">@item.Time</td>
+                                            <td>@item.SubjectName</td>
+                                            <td>@item.ClassName</td>
+                                            <td><span class="badge badge-secondary">@item.Room</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
                                 {
                                     <tr>
-                                        <td class="font-weight-bold">@item.Time</td>
-                                        <td>@item.SubjectName</td>
-                                        <td>@item.ClassName</td>
-                                        <td><span class="badge badge-secondary">@item.Room</span></td>
+                                        <td colspan="4" class="text-center">No classes scheduled for today.</td>
                                     </tr>
                                 }
                             </tbody>
@@ -137,8 +113,10 @@
 @section Scripts {
     <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
     <script>
+        // Safely serialize data from the Model
         var labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PerformanceLabels));
         var dataPoints = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PerformanceData));
+
         var options = {
             series: [{ name: 'Class Average', data: dataPoints }],
             chart: { height: 350, type: 'area' },
@@ -147,6 +125,7 @@
             xaxis: { categories: labels },
             colors: ['#4e73df']
         };
+
         var chart = new ApexCharts(document.querySelector("#performanceChart"), options);
         chart.render();
     </script>

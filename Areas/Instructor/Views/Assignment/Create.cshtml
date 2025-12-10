@@ -38,7 +38,7 @@
                                 <label asp-for="SubjectId" class="form-label">Subject</label>
                                 @* Assuming you populate ViewBag.SubjectId in your Controller *@
                                 <select asp-for="SubjectId" class="form-control"
-                                        asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectName"))">
+                                        asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectId"))">
                                     <option value="">-- Select Subject --</option>
                                 </select>
                                 <span asp-validation-for="SubjectId" class="text-danger"></span>
