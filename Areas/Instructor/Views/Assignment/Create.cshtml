@@ -36,7 +36,6 @@
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label asp-for="SubjectId" class="form-label">Subject</label>
-                                @* Assuming you populate ViewBag.SubjectId in your Controller *@
                                 <select asp-for="SubjectId" class="form-control"
                                         asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectId"))">
                                     <option value="">-- Select Subject --</option>
@@ -63,7 +62,25 @@
                             </div>
                         </div>
 
-                        @* 4. Description (Full Width) *@
+                        @* 4. Max Points (ADDED) *@
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label asp-for="MaxPoints" class="form-label">Max Points</label>
+                                <input asp-for="MaxPoints" class="form-control" type="number" value="100" />
+                                <span asp-validation-for="MaxPoints" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        @* 5. Allowed File Types (ADDED) *@
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label asp-for="AllowedFileTypes" class="form-label">Allowed File Types</label>
+                                <input asp-for="AllowedFileTypes" class="form-control" placeholder="e.g. .pdf, .docx, .zip" />
+                                <span asp-validation-for="AllowedFileTypes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        @* 6. Description *@
                         <div class="col-12">
                             <div class="form-group">
                                 <label asp-for="Description" class="form-label">Description</label>
@@ -72,7 +89,7 @@
                             </div>
                         </div>
 
-                        @* 5. Buttons *@
+                        @* 7. Buttons *@
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
                             <a asp-action="Index" class="btn btn-secondary">Cancel</a>
