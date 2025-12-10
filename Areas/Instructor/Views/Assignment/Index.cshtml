@@ -36,12 +36,12 @@
                                 }
                                 else
                                 {
-
                                     <span class="badge badge-secondary">Draft</span>
                                 }
                             </td>
                             <td>
-                                <a asp-action="BulkGrade" asp-route-id="@item.AssignmentId" class="btn btn-warning btn-sm">
+                                @* UPDATED LINK HERE: Changed BulkGrade to Grade *@
+                                <a asp-action="Grade" asp-route-id="@item.AssignmentId" class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i> Grade
                                 </a>
                             </td>
