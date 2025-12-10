@@ -203,60 +203,6 @@
                             <span>Subjects</span></a>
                     </li>
 
-                    <li class="menu-title">
-                        <span>Management</span>
-                    </li>
-                    <li
-                        class="submenu @(currentController == "Expenses" || currentController == "Fees" || currentController == "Salary" ? "active" : "")">
-                        <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Accounts</span> <span
-                                class="menu-arrow"></span></a>
-                        <ul>
-                            @* EXPENSES *@
-                            <li><a asp-area="Admin" asp-controller="Expenses" asp-action="List"
-                                    class="@(currentController == "Expenses" ? "active" : "")">Expenses</a></li>
-
-                            @* FEES *@
-                            <li><a asp-area="Admin" asp-controller="Fees" asp-action="List"
-                                    class="@(currentController == "Fees" ? "active" : "")">Fees Collection</a></li>
-
-                            @* SALARY *@
-                            <li><a asp-area="Admin" asp-controller="Salary" asp-action="List"
-                                    class="@(currentController == "Salary" ? "active" : "")">Salary</a></li>
-
-                        </ul>
-                    </li>
-                    <li class="@(currentController == "Holiday" ? "active" : "")">
-                        <a asp-area="Admin" asp-controller="Holiday" asp-action="List"><i
-                                class="fas fa-holly-berry"></i> <span>Holiday</span></a>
-                    </li>
-                    <li class="@(currentController == "FeesStructure" ? "active" : "")">
-                        <a asp-area="Admin" asp-controller="FeesStructure" asp-action="List"><i
-                                class="fas fa-comment-dollar"></i> <span>Fees</span></a>
-                    </li>
-                    <li>
-                        <a href="exam.html"><i class="fas fa-clipboard-list"></i> <span>Exam list</span></a>
-                    </li>
-                    <li>
-                        <a href="event.html"><i class="fas fa-calendar-day"></i> <span>Events</span></a>
-                    </li>
-                    <li>
-                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Time Table</span></a>
-                    </li>
-                    <li>
-                        <a href="library.html"><i class="fas fa-book"></i> <span>Library</span></a>
-                    </li>
-                    <li class="menu-title">
-                        <span>Others</span>
-                    </li>
-                    <li>
-                        <a href="sports.html"><i class="fas fa-baseball-ball"></i> <span>Sports</span></a>
-                    </li>
-                    <li>
-                        <a href="hostel.html"><i class="fas fa-hotel"></i> <span>Hostel</span></a>
-                    </li>
-                    <li>
-                        <a href="transport.html"><i class="fas fa-bus"></i> <span>Transport</span></a>
-                    </li>
                 </ul>
             </div>
         </div>

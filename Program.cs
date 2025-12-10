@@ -36,11 +36,6 @@ builder.Services.AddScoped<TeacherService>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
 
-// Expense, Fee, Salary Repositories
-// builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
-// builder.Services.AddScoped<IFeeRepository, FeeRepository>();
-// builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
-
 // Assignment & Submission Repositories
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
