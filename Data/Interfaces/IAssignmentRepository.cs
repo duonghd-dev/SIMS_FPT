@@ -12,12 +12,4 @@ namespace SIMS_FPT.Data.Interfaces
         void Update(AssignmentModel model);
         void Delete(string id);
     }
-
-    public interface ISubmissionRepository
-    {
-        List<SubmissionModel> GetByAssignmentId(string assignmentId);
-        SubmissionModel GetByStudentAndAssignment(string studentId, string assignmentId);
-        void SaveSubmission(SubmissionModel model); // Handles Add or Update logic
-        void UpdateGrades(List<SubmissionModel> submissions); // For Bulk Entry
-    }
 }

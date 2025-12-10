@@ -7,6 +7,9 @@ namespace SIMS_FPT.Data.Interfaces
     {
         List<StudentCSVModel> GetAll();
         StudentCSVModel GetById(string id);
+
+        List<StudentCSVModel> GetBySubject(string subjectId);
+
         void Add(StudentCSVModel student);
         void Update(StudentCSVModel student);
         void Delete(string id);

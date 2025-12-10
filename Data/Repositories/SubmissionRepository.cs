@@ -37,22 +37,19 @@ namespace SIMS_FPT.Data.Repositories
 
             if (existing != null)
             {
-                // Update
                 existing.Grade = model.Grade;
                 existing.TeacherComments = model.TeacherComments;
-                existing.SubmissionDate = DateTime.Now; // Update timestamp
-                // existing.FilePath = model.FilePath; // Update if needed
+                existing.SubmissionDate = DateTime.Now;
             }
             else
             {
-                // Add
                 model.SubmissionDate = DateTime.Now;
                 all.Add(model);
             }
-
             WriteAll(all);
         }
 
+        // Fix for CS0535: This implements the interface method
         public void UpdateGrades(List<SubmissionModel> submissions)
         {
             var all = GetAll();
@@ -66,6 +63,8 @@ namespace SIMS_FPT.Data.Repositories
                 }
                 else
                 {
+                    // Create new submission entry if grading a student who hasn't submitted a file
+                    sub.SubmissionDate = DateTime.Now;
                     all.Add(sub);
                 }
             }
@@ -87,6 +86,7 @@ namespace SIMS_FPT.Data.Repositories
                 {
                     StudentId = v[0],
                     AssignmentId = v[1],
+                    // Handle commas in comments by trimming quotes if present
                     TeacherComments = v.Length > 3 ? v[3].Trim('"') : ""
                 };
 
@@ -104,6 +104,7 @@ namespace SIMS_FPT.Data.Repositories
             var lines = new List<string> { "StudentId,AssignmentId,Grade,TeacherComments,SubmissionDate,FilePath" };
             foreach (var m in list)
             {
+                // Wrap comments in quotes to handle commas safely
                 lines.Add($"{m.StudentId},{m.AssignmentId},{m.Grade},\"{m.TeacherComments}\",{m.SubmissionDate},{m.FilePath}");
             }
             File.WriteAllLines(_csvFilePath, lines);
