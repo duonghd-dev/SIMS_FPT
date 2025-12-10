@@ -98,6 +98,12 @@
                             </li>
                         </ul>
                     </li>
+
+                    <li class="@(currentController == "CourseMaterial" ? "active" : "")">
+                        <a asp-area="Instructor" asp-controller="CourseMaterial" asp-action="Index">
+                            <i class="fas fa-folder-open"></i> <span>Course Materials</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
