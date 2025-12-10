@@ -1,8 +1,7 @@
 ﻿@model SIMS_FPT.Models.ViewModels.BulkGradeViewModel
 
 @{
-    ViewData["Title"] = "Bulk Grade Entry";
-    // Assuming you have an Instructor Layout, otherwise use standard _Layout
+    ViewData["Title"] = "Grade Assignment";
     Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
 }
 
@@ -12,7 +11,8 @@
             <h6 class="m-0 font-weight-bold text-primary">Grading: @Model.AssignmentTitle</h6>
         </div>
         <div class="card-body">
-            <form asp-action="BulkGrade" method="post">
+            @* CHANGED: asp-action is now "Grade" *@
+            <form asp-action="Grade" method="post">
                 <input type="hidden" asp-for="AssignmentId" />
                 <input type="hidden" asp-for="AssignmentTitle" />
 
@@ -22,7 +22,7 @@
                         Publish Grades to Students?
                     </label>
                     <small class="form-text text-muted">
-                        If checked, students will immediately see their grades and feedback on their dashboard.
+                        If checked, students will immediately see their grades and feedback.
                     </small>
                 </div>
 
@@ -55,7 +55,6 @@
                                     <td class="align-middle text-center">
                                         @if (!string.IsNullOrEmpty(Model.StudentGrades[i].SubmissionFilePath))
                                         {
-                                            // The requirement: Open PDF in new tab
                                             <a href="/uploads/@Model.StudentGrades[i].SubmissionFilePath"
                                                class="btn btn-sm btn-info"
                                                target="_blank">
@@ -82,9 +81,9 @@
 
                                     <td class="align-middle">
                                         <textarea class="form-control"
-                                              asp-for="StudentGrades[i].Feedback"
-                                              rows="2"
-                                              placeholder="Enter comments..."></textarea>
+                                                  asp-for="StudentGrades[i].Feedback"
+                                                  rows="2"
+                                                  placeholder="Enter comments..."></textarea>
                                     </td>
                                 </tr>
                             }

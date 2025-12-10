@@ -17,8 +17,6 @@ namespace SIMS_FPT.Data.Repositories
         public StudentRepository()
         {
             _filePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "students.csv");
-
-            // Cấu hình CsvHelper chấp nhận dữ liệu thiếu hoặc header không khớp 100%
             _config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
@@ -27,7 +25,6 @@ namespace SIMS_FPT.Data.Repositories
             };
         }
 
-        // --- Hàm Helper đọc file ---
         private List<StudentCSVModel> ReadAll()
         {
             if (!File.Exists(_filePath)) return new List<StudentCSVModel>();
@@ -43,10 +40,8 @@ namespace SIMS_FPT.Data.Repositories
             }
         }
 
-        // --- Hàm Helper ghi file ---
         private void WriteAll(List<StudentCSVModel> students)
         {
-            // Tạo thư mục nếu chưa tồn tại
             var dir = Path.GetDirectoryName(_filePath);
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
@@ -55,41 +50,37 @@ namespace SIMS_FPT.Data.Repositories
             csv.WriteRecords(students);
         }
 
-        // --- Thực thi Interface ---
+        public List<StudentCSVModel> GetAll() => ReadAll();
 
-        public List<StudentCSVModel> GetAll()
-        {
-            return ReadAll();
-        }
+        public StudentCSVModel GetById(string id) => ReadAll().FirstOrDefault(s => s.StudentId == id);
 
-        public StudentCSVModel GetById(string id)
+        // Fix for CS1061: Implement the method
+        public List<StudentCSVModel> GetBySubject(string subjectId)
         {
-            return ReadAll().FirstOrDefault(s => s.StudentId == id);
+            // Currently returning all students. 
+            // TODO: If you have a linkage between Subject and Class, filter here.
+            // e.g., return GetAll().Where(s => s.ClassName == "SE0120").ToList();
+            return GetAll();
         }
 
         public void Add(StudentCSVModel student)
         {
             var students = ReadAll();
-            // Kiểm tra trùng ID
             if (students.Any(s => s.StudentId == student.StudentId)) return;
-
             students.Add(student);
-            WriteAll(students); // Ghi lại toàn bộ danh sách
+            WriteAll(students);
         }
 
         public void Update(StudentCSVModel student)
         {
             var students = ReadAll();
             var index = students.FindIndex(s => s.StudentId == student.StudentId);
-
             if (index != -1)
             {
-                // Nếu người dùng không upload ảnh mới, giữ lại ảnh cũ
                 if (string.IsNullOrEmpty(student.ImagePath))
                 {
                     student.ImagePath = students[index].ImagePath;
                 }
-
                 students[index] = student;
                 WriteAll(students);
             }
