@@ -21,7 +21,6 @@ namespace SIMS_FPT.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
-            // If already logged in, redirect immediately to the correct dashboard
             if (User.Identity?.IsAuthenticated == true)
             {
                 var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;

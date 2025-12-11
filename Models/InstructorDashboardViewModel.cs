@@ -17,6 +17,8 @@ namespace SIMS_FPT.Models.ViewModels
         public string SelectedStudentId { get; set; }
         public string SelectedStudentName { get; set; }
         public List<StudentOption> StudentOptions { get; set; } = new();
+        public List<int> SubmissionCounts { get; set; } = new();
+        public List<int> GradedCounts { get; set; } = new();
 
         // 5. Personal/Administrative Summary
         public int LeaveDaysRemaining { get; set; }

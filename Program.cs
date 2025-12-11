@@ -43,6 +43,7 @@ builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 builder.Services.AddScoped<IGradingService, GradingService>();
+builder.Services.AddScoped<ICourseMaterialRepository, CourseMaterialRepository>();
 
 // ------------------------------------------------------
 // 2. Cấu hình Authentication (Đăng nhập bằng Cookie)
@@ -97,6 +98,6 @@ app.MapControllerRoute(
 // ------------------------------------------------------
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Login}/{id?}");
 
 app.Run();

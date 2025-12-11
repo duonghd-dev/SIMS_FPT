@@ -72,6 +72,11 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 ? students.FirstOrDefault(s => s.StudentId == studentId)
                 : students.FirstOrDefault();
 
+            if (selectedStudent == null && students.Any())
+            {
+                selectedStudent = students.First();
+            }
+
             var model = new InstructorDashboardViewModel
             {
                 TodayClasses = BuildTodayClasses(),
@@ -79,30 +84,45 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 LastSalaryMonth = "November 2025",
                 StudentOptions = students.Select(s => new StudentOption { StudentId = s.StudentId, StudentName = s.FullName }).ToList(),
                 SelectedStudentId = selectedStudent?.StudentId,
-                SelectedStudentName = selectedStudent?.FullName ?? "N/A"
+                SelectedStudentName = selectedStudent?.FullName ?? "No students"
             };
 
-            // Build performance chart data
-            foreach (var assn in teacherAssignments)
+            // Build performance + submissions chart data
+            if (teacherAssignments.Any())
             {
-                model.PerformanceLabels.Add(assn.Title);
-
-                var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
-                var graded = submissions.Where(s => s.Grade.HasValue).ToList();
-                double classAvg = graded.Any()
-                    ? graded.Average(s => s.Grade.GetValueOrDefault(0))
-                    : 0;
-                model.ClassAverageSeries.Add(Math.Round(classAvg, 2));
-
-                if (selectedStudent != null)
+                foreach (var assn in teacherAssignments)
                 {
-                    var studentSub = submissions.FirstOrDefault(s => s.StudentId == selectedStudent.StudentId);
-                    model.StudentSeries.Add(Math.Round(studentSub?.Grade ?? 0, 2));
+                    model.PerformanceLabels.Add(assn.Title);
+
+                    var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
+                    model.SubmissionCounts.Add(submissions.Count);
+                    model.GradedCounts.Add(submissions.Count(s => s.Grade.HasValue));
+
+                    var graded = submissions.Where(s => s.Grade.HasValue).ToList();
+                    double classAvg = graded.Any()
+                        ? graded.Average(s => s.Grade.GetValueOrDefault(0))
+                        : 0;
+                    model.ClassAverageSeries.Add(Math.Round(classAvg, 2));
+
+                    if (selectedStudent != null)
+                    {
+                        var studentSub = submissions.FirstOrDefault(s => s.StudentId == selectedStudent.StudentId);
+                        model.StudentSeries.Add(Math.Round(studentSub?.Grade ?? 0, 2));
+                    }
+                    else
+                    {
+                        model.StudentSeries.Add(0);
+                    }
                 }
-                else
-                {
-                    model.StudentSeries.Add(0);
-                }
+            }
+            else
+            {
+                // Provide safe defaults so charts don't break
+                model.PerformanceLabels.Add("No assignments yet");
+                model.ClassAverageSeries.Add(0);
+                model.StudentSeries.Add(0);
+                model.SubmissionCounts.Add(0);
+                model.GradedCounts.Add(0);
             }
 
             // Build at-risk list (avg grade < 50% or missing submissions on more than half assignments)
