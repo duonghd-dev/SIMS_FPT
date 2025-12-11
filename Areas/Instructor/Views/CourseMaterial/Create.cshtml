@@ -1,0 +1,86 @@
+@model SIMS_FPT.Models.CourseMaterialModel
+@{
+    ViewData["Title"] = "Add Course Material";
+    Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
+}
+
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Add Course Material</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-action="Index">Materials</a></li>
+                <li class="breadcrumb-item active">Add</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Title" class="form-label">Title</label>
+                        <input asp-for="Title" class="form-control" placeholder="Week 1 Slides" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="SubjectId" class="form-label">Subject</label>
+                        <select asp-for="SubjectId" class="form-control"
+                                asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectId"))">
+                            <option value="">-- Select Subject --</option>
+                        </select>
+                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Category" class="form-label">Category (Week / Chapter)</label>
+                        <input asp-for="Category" class="form-control" placeholder="Week 1: Introduction" />
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Upload File (PDF/PPT/PPTX)</label>
+                        <input type="file" name="uploadFile" class="form-control" />
+                        <small class="text-muted">Must fill this is provide a video</small>
+                        <small class="text-muted d-block">Allowed: .pdf, .ppt, .pptx</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="VideoUrl" class="form-label">Video Link (YouTube)</label>
+                <input asp-for="VideoUrl" class="form-control" placeholder="https://youtube.com/..." />
+                <span asp-validation-for="VideoUrl" class="text-danger"></span>
+            </div>
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

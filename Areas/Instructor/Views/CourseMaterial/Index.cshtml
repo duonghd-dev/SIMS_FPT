@@ -1,0 +1,99 @@
+@model IEnumerable<SIMS_FPT.Models.CourseMaterialModel>
+@{
+    ViewData["Title"] = "Course Materials";
+    Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
+}
+
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Course Materials</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active">Materials</li>
+            </ul>
+        </div>
+        <div class="col-auto text-right float-right ml-auto">
+            <a asp-action="Create" class="btn btn-primary"><i class="fas fa-upload"></i> Add Material</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="text-muted">No materials uploaded yet.</div>
+        }
+        else
+        {
+            var grouped = Model.GroupBy(m => m.Category ?? "Uncategorized")
+                               .OrderBy(g => g.Key);
+
+            foreach (var group in grouped)
+            {
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">@group.Key</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Subject</th>
+                                    <th>File</th>
+                                    <th>Video</th>
+                                    <th>Uploaded</th>
+                                    <th style="width:120px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in group)
+                                {
+                                    <tr>
+                                        <td>@item.Title</td>
+                                        <td>@item.SubjectId</td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.FilePath))
+                                            {
+                                                <a href="~/@item.FilePath" target="_blank"><i class="fas fa-file"></i> Download</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.VideoUrl))
+                                            {
+                                                <a href="@item.VideoUrl" target="_blank"><i class="fas fa-video"></i> Watch</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>@item.UploadDate.ToString("dd MMM yyyy")</td>
+                                        <td>
+                                            <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this material?');">
+                                                <input type="hidden" name="id" value="@item.MaterialId" />
+                                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
