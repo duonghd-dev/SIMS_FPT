@@ -1,0 +1,27 @@
+// File: SIMS_FPT/Models/ClassModel.cs
+using CsvHelper.Configuration.Attributes;
+
+namespace SIMS_FPT.Models
+{
+    public class ClassModel
+    {
+        [Name("class_id")]
+        public string ClassId { get; set; }
+
+        [Name("class_name")]
+        public string ClassName { get; set; }
+
+        [Name("subject_id")] // Liên kết với SubjectModel
+        public string SubjectName { get; set; }
+
+        [Name("teacher_id")] // Liên kết với Teacher (User có Role Teacher)
+        public string TeacherName { get; set; }
+
+        [Name("semeter")]
+        public string Semester { get; set; } // Ví dụ: Spring2025
+
+        // Mới thêm: Số lượng sinh viên (Sĩ số)
+        [Name("number_of_students")]
+        public int NumberOfStudents { get; set; }
+    }
+}

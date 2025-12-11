@@ -1,0 +1,89 @@
+@using SIMS_FPT.Models
+@model IEnumerable<ClassModel>
+
+@{
+    ViewData["Title"] = "Class List";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Classes</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Classes</li>
+                    </ul>
+                </div>
+                <div class="col-auto text-right float-right ml-auto">
+                    <a asp-action="Add" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0 datatable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Class Name</th>
+                                        <th>Subject</th>
+                                        <th>Teacher</th>
+                                        <th>Semester</th>
+                                        <th>Students</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Any())
+                                    {
+                                        foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.ClassId</td>
+                                                <td>
+                                                    <h2><a>@item.ClassName</a></h2>
+                                                </td>
+                                                <td>@item.SubjectName</td>
+                                                <td>@item.TeacherName</td>
+                                                <td>@item.Semester</td>
+                                                <td>@item.NumberOfStudents</td>
+                                                <td class="text-right">
+                                                    <div class="actions">
+                                                        <a asp-action="ManageStudents" asp-route-id="@item.ClassId"
+                                                            class="btn btn-sm bg-primary-light mr-2" title="Manage Students">
+                                                            <i class="fas fa-users"></i>
+                                                        </a>
+
+                                                        <a asp-action="Edit" asp-route-id="@item.ClassId"
+                                                            class="btn btn-sm bg-success-light mr-2">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+                                                        <a asp-action="Delete" asp-route-id="@item.ClassId"
+                                                            class="btn btn-sm bg-danger-light" onclick="...">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7" class="text-center">No classes found</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -41,6 +41,8 @@ builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 builder.Services.AddScoped<IGradingService, GradingService>();
 builder.Services.AddScoped<ICourseMaterialRepository, CourseMaterialRepository>();
+builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<IStudentClassRepository, StudentClassRepository>();
 
 // ------------------------------------------------------
 // 2. Cấu hình Authentication (Đăng nhập bằng Cookie)

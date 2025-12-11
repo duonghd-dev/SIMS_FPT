@@ -54,12 +54,10 @@ namespace SIMS_FPT.Data.Repositories
 
         public StudentCSVModel GetById(string id) => ReadAll().FirstOrDefault(s => s.StudentId == id);
 
-        // Fix for CS1061: Implement the method
         public List<StudentCSVModel> GetBySubject(string subjectId)
         {
-            // Currently returning all students. 
-            // TODO: If you have a linkage between Subject and Class, filter here.
-            // e.g., return GetAll().Where(s => s.ClassName == "SE0120").ToList();
+            // Logic lấy sinh viên theo môn học sẽ được xử lý ở bảng trung gian StudentClass
+            // Tạm thời trả về tất cả hoặc danh sách rỗng
             return GetAll();
         }
 
@@ -77,6 +75,7 @@ namespace SIMS_FPT.Data.Repositories
             var index = students.FindIndex(s => s.StudentId == student.StudentId);
             if (index != -1)
             {
+                // Giữ lại ảnh cũ nếu không up ảnh mới
                 if (string.IsNullOrEmpty(student.ImagePath))
                 {
                     student.ImagePath = students[index].ImagePath;

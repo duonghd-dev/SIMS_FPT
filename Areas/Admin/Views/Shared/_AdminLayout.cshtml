@@ -218,11 +218,11 @@
                                     Student Add
                                 </a>
                             </li>
-                             <!-- Student Enrollment -->
-                            <li class="@(currentController == "Enrollment" ? "active" : "")">
-                                <a asp-area="Admin" asp-controller="Enrollment" asp-action="Index">
-                                 <span>Student Enrollment</span>
-                               </a>
+                            <!-- Student Enrollment -->
+                            <li class="@(currentController == "Class" && currentAction == "List" ? "active" : "")">
+                                <a asp-area="Admin" asp-controller="Class" asp-action="List">
+                                    <span>Student Enrollment</span>
+                                </a>
                             </li>
                         </ul>
                     </li>

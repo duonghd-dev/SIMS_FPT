@@ -82,15 +82,23 @@
         <div class="row">
             <div class="col-md-12 col-lg-6">
                 <div class="card card-chart">
-                    <div class="card-header"><h5 class="card-title">Revenue (By Year)</h5></div>
-                    <div class="card-body"><div id="revenue-chart"></div></div>
+                    <div class="card-header">
+                        <h5 class="card-title">Revenue (By Year)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="revenue-chart"></div>
+                    </div>
                 </div>
             </div>
 
             <div class="col-md-12 col-lg-6">
                 <div class="card card-chart">
-                    <div class="card-header"><h5 class="card-title">Student Demographics (Gender)</h5></div>
-                    <div class="card-body"><div id="student-chart"></div></div>
+                    <div class="card-header">
+                        <h5 class="card-title">Student Demographics (Gender)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="student-chart"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,7 +107,9 @@
         <div class="row">
             <div class="col-md-12 d-flex">
                 <div class="card flex-fill">
-                    <div class="card-header"><h5 class="card-title">Newest Students</h5></div>
+                    <div class="card-header">
+                        <h5 class="card-title">Newest Students</h5>
+                    </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover table-center">
@@ -107,8 +117,8 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Class</th>
-                                        <th class="text-right">Joined</th>
+                                        <th>Email</th>
+                                        <th class="text-right">Gender</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -117,13 +127,21 @@
                                         <tr>
                                             <td>@student.StudentId</td>
                                             <td>
-                                                <img class="avatar-img rounded-circle" 
-                                                     src="@(string.IsNullOrEmpty(student.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : student.ImagePath)" 
-                                                     style="width:25px;height:25px;">
-                                                @student.FullName
+                                                <h2 class="table-avatar">
+                                                    <a href="#" class="avatar avatar-sm mr-2">
+                                                        <img class="avatar-img rounded-circle"
+                                                            src="@(string.IsNullOrEmpty(student.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : student.ImagePath)"
+                                                            alt="Avatar"
+                                                            onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
+                                                    </a>
+                                                    <a asp-controller="Student" asp-action="Detail"
+                                                        asp-route-id="@student.StudentId">
+                                                        @student.FullName
+                                                    </a>
+                                                </h2>
                                             </td>
-                                            <td>@student.ClassName</td>
-                                            <td class="text-right">@student.AdmissionDate.ToString("yyyy")</td>
+                                            <td>@student.Email</td>
+                                            <td class="text-right">@student.Gender</td>
                                         </tr>
                                     }
                                 </tbody>
