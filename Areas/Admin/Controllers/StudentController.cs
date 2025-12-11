@@ -35,7 +35,6 @@ namespace SIMS_FPT.Areas.Admin.Controllers
 
                 data = data.Where(s =>
                     (s.ClassName != null && s.ClassName.ToLower().Contains(className)) ||
-                    (s.StudentId != null && s.StudentId.ToLower().Contains(className)) ||
                     (s.FullName != null && s.FullName.ToLower().Contains(className))
                 ).ToList();
 
@@ -55,10 +54,10 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(StudentCSVModel model)
         {
-            var existing = _repo.GetById(model.StudentId);
+            var existing = _repo.GetByEmail(model.Email);
             if (existing != null)
             {
-                ModelState.AddModelError("StudentId", "Student ID already exists!");
+                ModelState.AddModelError("Email", "Student Email already exists!");
                 return View(model);
             }
 
@@ -71,9 +70,9 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(string id)
+        public IActionResult Edit(string email)
         {
-            var student = _repo.GetById(id);
+            var student = _repo.GetByEmail(email);
             if (student == null) return NotFound();
             return View(student);
         }
@@ -89,16 +88,16 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             return View(model);
         }
 
-        public IActionResult Detail(string id)
+        public IActionResult Detail(string email)
         {
-            var student = _repo.GetById(id);
+            var student = _repo.GetByEmail(email);
             if (student == null) return NotFound();
             return View(student);
         }
 
-        public IActionResult DeleteStudent(string id)
+        public IActionResult DeleteStudent(string email)
         {
-            _repo.Delete(id);
+            _repo.Delete(email);
             return RedirectToAction("List");
         }
     }

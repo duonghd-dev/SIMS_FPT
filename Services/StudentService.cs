@@ -48,10 +48,10 @@ namespace SIMS_FPT.Services
                 var newUser = new Users
                 {
                     Email = model.Email,        // Email chính
-                    Password = model.StudentId, // Mật khẩu mặc định là Mã SV
+                    Password = model.Email, // Mật khẩu mặc định là Email
                     FullName = model.FullName,
                     Role = "Student",
-                    LinkedId = model.StudentId
+                    LinkedId = model.Email
                 };
                 _userRepo.AddUser(newUser);
             }

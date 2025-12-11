@@ -26,6 +26,7 @@
                         <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
                             <input type="hidden" asp-for="ImagePath" />
+                            <input type="hidden" asp-for="Email" />
 
                             <div class="row">
                                 <div class="col-12">
@@ -45,8 +46,8 @@
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
-                                        <label>Student Id</label>
-                                        <input asp-for="StudentId" class="form-control" readonly
+                                        <label>Email</label>
+                                        <input asp-for="Email" class="form-control" readonly
                                             style="background-color: #e9ecef;">
                                     </div>
                                 </div>
@@ -75,35 +76,8 @@
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
-                                        <label>Religion</label>
-                                        <input asp-for="Religion" class="form-control">
-                                    </div>
-                                </div>
-
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Admission Date</label>
-                                        <input asp-for="AdmissionDate" type="date" class="form-control"
-                                            value="@Model.AdmissionDate.ToString("yyyy-MM-dd")">
-                                    </div>
-                                </div>
-
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Mobile Number</label>
-                                        <input asp-for="MobileNumber" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Admission Number</label>
-                                        <input asp-for="AdmissionNumber" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Section</label>
-                                        <input asp-for="Section" class="form-control">
+                                        <label>Major</label>
+                                        <input asp-for="Major" class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
@@ -114,69 +88,6 @@
                                         {
                                             <small class="text-muted">Current: @Model.ImagePath</small>
                                         }
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <h5 class="form-title"><span>Parent Information</span></h5>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Father's Name</label>
-                                        <input asp-for="FatherName" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Father's Occupation</label>
-                                        <input asp-for="FatherOccupation" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Father's Mobile</label>
-                                        <input asp-for="FatherMobile" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Father's Email</label>
-                                        <input asp-for="FatherEmail" type="email" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Mother's Name</label>
-                                        <input asp-for="MotherName" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Mother's Occupation</label>
-                                        <input asp-for="MotherOccupation" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Mother's Mobile</label>
-                                        <input asp-for="MotherMobile" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Mother's Email</label>
-                                        <input asp-for="MotherEmail" type="email" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Present Address</label>
-                                        <textarea asp-for="Address" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Permanent Address</label>
-                                        <textarea asp-for="PermanentAddress" class="form-control"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-12">

@@ -62,16 +62,16 @@ namespace SIMS_FPT.Data.Repositories
             return ReadAll();
         }
 
-        public StudentCSVModel GetById(string id)
+        public StudentCSVModel GetByEmail(string email)
         {
-            return ReadAll().FirstOrDefault(s => s.StudentId == id);
+            return ReadAll().FirstOrDefault(s => s.Email == email);
         }
 
         public void Add(StudentCSVModel student)
         {
             var students = ReadAll();
-            // Kiểm tra trùng ID
-            if (students.Any(s => s.StudentId == student.StudentId)) return;
+            // Kiểm tra trùng Email
+            if (students.Any(s => s.Email == student.Email)) return;
 
             students.Add(student);
             WriteAll(students); // Ghi lại toàn bộ danh sách
@@ -80,7 +80,7 @@ namespace SIMS_FPT.Data.Repositories
         public void Update(StudentCSVModel student)
         {
             var students = ReadAll();
-            var index = students.FindIndex(s => s.StudentId == student.StudentId);
+            var index = students.FindIndex(s => s.Email == student.Email);
 
             if (index != -1)
             {
@@ -95,10 +95,10 @@ namespace SIMS_FPT.Data.Repositories
             }
         }
 
-        public void Delete(string id)
+        public void Delete(string email)
         {
             var students = ReadAll();
-            var item = students.FirstOrDefault(s => s.StudentId == id);
+            var item = students.FirstOrDefault(s => s.Email == email);
             if (item != null)
             {
                 students.Remove(item);

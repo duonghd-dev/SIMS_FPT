@@ -6,9 +6,9 @@ namespace SIMS_FPT.Data.Interfaces
     public interface IStudentRepository
     {
         List<StudentCSVModel> GetAll();
-        StudentCSVModel GetById(string id);
+        StudentCSVModel GetByEmail(string email);
         void Add(StudentCSVModel student);
         void Update(StudentCSVModel student);
-        void Delete(string id);
+        void Delete(string email);
     }
 }
