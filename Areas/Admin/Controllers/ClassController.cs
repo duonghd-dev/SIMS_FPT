@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
+using SIMS_FPT.Models.ViewModels;
 using System.Linq;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
@@ -12,12 +13,22 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         private readonly IClassRepository _classRepo;
         private readonly ISubjectRepository _subjectRepo;
         private readonly ITeacherRepository _teacherRepo;
+        // Mới thêm
+        private readonly IStudentRepository _studentRepo;
+        private readonly IStudentClassRepository _studentClassRepo;
 
-        public ClassController(IClassRepository classRepo, ISubjectRepository subjectRepo, ITeacherRepository teacherRepo)
+        public ClassController(
+            IClassRepository classRepo,
+            ISubjectRepository subjectRepo,
+            ITeacherRepository teacherRepo,
+            IStudentRepository studentRepo,
+            IStudentClassRepository studentClassRepo)
         {
             _classRepo = classRepo;
             _subjectRepo = subjectRepo;
             _teacherRepo = teacherRepo;
+            _studentRepo = studentRepo;
+            _studentClassRepo = studentClassRepo;
         }
 
         // 1. Xem danh sách lớp
@@ -140,6 +151,81 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         {
             _classRepo.Delete(id);
             return RedirectToAction("List");
+        }
+
+        // 5. Trang quản lý sinh viên của lớp (GET)
+        [HttpGet]
+        public IActionResult ManageStudents(string id)
+        {
+            var classInfo = _classRepo.GetById(id);
+            if (classInfo == null) return NotFound();
+
+            // Lấy danh sách ID sinh viên đã ở trong lớp
+            var enrolledRelations = _studentClassRepo.GetByClassId(id);
+            var enrolledStudentIds = enrolledRelations.Select(x => x.StudentId).ToList();
+
+            // Lấy tất cả sinh viên
+            var allStudents = _studentRepo.GetAll();
+
+            var viewModel = new ClassEnrollmentViewModel
+            {
+                ClassInfo = classInfo,
+                // Lọc ra danh sách sinh viên đã có trong lớp
+                EnrolledStudents = allStudents.Where(s => enrolledStudentIds.Contains(s.StudentId)).ToList(),
+                // Lọc ra danh sách sinh viên CHƯA có trong lớp (để hiển thị checkbox chọn)
+                AvailableStudents = allStudents.Where(s => !enrolledStudentIds.Contains(s.StudentId)).ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        // 6. Xử lý thêm sinh viên vào lớp (POST)
+        [HttpPost]
+        public IActionResult AddStudentsToClass(string classId, List<string> selectedStudents)
+        {
+            if (selectedStudents != null && selectedStudents.Any())
+            {
+                foreach (var studentId in selectedStudents)
+                {
+                    if (!_studentClassRepo.IsEnrolled(classId, studentId))
+                    {
+                        var newEnrollment = new StudentClassModel
+                        {
+                            ClassId = classId,
+                            StudentId = studentId,
+                            JoinedDate = DateTime.Now
+                        };
+                        _studentClassRepo.Add(newEnrollment);
+                    }
+                }
+                
+                // Cập nhật lại sỉ số lớp (Optional)
+                UpdateClassCount(classId);
+            }
+
+            return RedirectToAction("ManageStudents", new { id = classId });
+        }
+
+        // 7. Xóa 1 sinh viên khỏi lớp
+        public IActionResult RemoveStudentFromClass(string classId, string studentId)
+        {
+            _studentClassRepo.Remove(classId, studentId);
+            // Cập nhật lại sỉ số lớp (Optional)
+            UpdateClassCount(classId);
+
+            return RedirectToAction("ManageStudents", new { id = classId });
+        }
+
+        // Hàm phụ: Cập nhật lại cột NumberOfStudents trong file classes.csv
+        private void UpdateClassCount(string classId)
+        {
+            var currentClass = _classRepo.GetById(classId);
+            if(currentClass != null)
+            {
+                var count = _studentClassRepo.GetByClassId(classId).Count;
+                currentClass.NumberOfStudents = count;
+                _classRepo.Update(currentClass);
+            }
         }
     }
 }
