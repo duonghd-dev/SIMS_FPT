@@ -1,0 +1,302 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Dashboard</title>
+
+    <script type="importmap"></script>
+
+    <!-- Default ASP.NET -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SIMS_FPT.styles.css" asp-append-version="true" />
+
+    <!-- Template Assets -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+
+    <link rel="stylesheet" href="~/assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="~/assets/css/style.css">
+</head>
+
+
+<body>
+    <header class="sticky-top">
+        <div class="header" style="@(!User.Identity.IsAuthenticated ? "justify-content:flex-end;" : "")">
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <!-- LEFT LOGO -->
+                <div class="header-left">
+                    <a asp-area="Admin" asp-controller="Home" asp-action="Dashboard" class="logo">
+                        <img src="~/assets/img/logo.png" alt="Logo">
+                    </a>
+                    <a asp-area="Admin" asp-controller="Home" asp-action="Dashboard" class="logo logo-small">
+                        <img src="~/assets/img/logo-small.png" alt="Logo" width="30" height="30">
+                    </a>
+                </div>
+
+                <!-- Toggle Sidebar -->
+                <a href="javascript:void(0);" id="toggle_btn">
+                    <i class="fas fa-align-left"></i>
+                </a>
+
+                <!-- Search Bar -->
+                <div class="top-nav-search">
+                    <form>
+                        <input type="text" class="form-control" placeholder="Search here">
+                        <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
+
+                <!-- Mobile Menu -->
+                <a class="mobile_btn" id="mobile_btn">
+                    <i class="fas fa-bars"></i>
+                </a>
+
+                <!-- USER MENU -->
+                <ul class="nav user-menu">
+
+                    <!-- Notifications -->
+                    <li class="nav-item dropdown noti-dropdown">
+                        <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                            <i class="far fa-bell"></i>
+                            <span class="badge badge-pill">3</span>
+                        </a>
+
+                        <div class="dropdown-menu notifications">
+                            <div class="topnav-dropdown-header">
+                                <span class="notification-title">Notifications</span>
+                                <a href="#" class="clear-noti"> Clear All </a>
+                            </div>
+
+                            <div class="noti-content">
+                                <ul class="notification-list">
+                                    <li class="notification-message">
+                                        <a href="#">
+                                            <div class="media">
+                                                <span class="avatar avatar-sm">
+                                                    <img class="avatar-img rounded-circle"
+                                                        src="~/assets/img/profiles/avatar-02.jpg" alt="User">
+                                                </span>
+
+                                                <div class="media-body">
+                                                    <p class="noti-details">
+                                                        <span class="noti-title">Carlson Tech</span> has approved
+                                                        <span class="noti-title">your estimate</span>
+                                                    </p>
+                                                    <p class="noti-time">
+                                                        <span class="notification-time">4 mins ago</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="topnav-dropdown-footer">
+                                <a href="#">View all Notifications</a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Profile -->
+                    <li class="nav-item dropdown has-arrow">
+                        <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                            <span class="user-img">
+                                <img class="rounded-circle" src="~/assets/img/profiles/avatar-01.jpg" width="31" alt="User">
+                            </span>
+                        </a>
+
+                        <div class="dropdown-menu">
+                            <div class="user-header">
+                                <div class="avatar avatar-sm">
+                                    <img src="~/assets/img/profiles/avatar-01.jpg" class="avatar-img rounded-circle"
+                                        alt="User">
+                                </div>
+
+                                <div class="user-text">
+                                    <h6>@User.Identity.Name</h6>
+
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <p class="text-muted mb-0">Admin</p>
+                                    }
+                                    else if (User.IsInRole("Instructor"))
+                                    {
+                                        <p class="text-muted mb-0">Instructor</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-0">Student</p>
+                                    }
+                                </div>
+                            </div>
+
+                            <a class="dropdown-item" asp-area="Admin" asp-controller="Profile" asp-action="Index">Hồ sơ</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="Inbox" asp-action="Index">Hộp thư</a>
+                            <a class="dropdown-item text-danger" asp-area="" asp-controller="Login" asp-action="Logout">Đăng
+                                xuất</a>
+                        </div>
+                    </li>
+                </ul>
+            }
+            else
+            {
+                <!-- NOT LOGIN MENU -->
+                <nav class="navbar navbar-expand-sm bg-white border-bottom box-shadow mb-3">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SIMS_FPT</a>
+
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target=".navbar-collapse">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="btn btn-primary btn-sm me-3" asp-controller="Login" asp-action="Login">
+                                        Đăng nhập
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            }
+        </div>
+    </header>
+
+    @{
+        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+    }
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-inner slimscroll">
+            <div id="sidebar-menu" class="sidebar-menu">
+                <ul>
+
+                    <li class="menu-title"><span>Main Menu</span></li>
+
+                    <!-- Dashboard -->
+                    <li class="@(currentController == "Home" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Dashboard">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="submenu @(currentController == "Student" ? "active" : "")">
+                        <a href="#">
+                            <i class="fas fa-users"></i>
+                            <span>Students</span>
+                            <span class="menu-arrow"></span>
+                        </a>
+
+                        <ul>
+                            <li class="@(currentController == "List" ? "active" : "")">
+                                <a asp-area="Admin" asp-controller="Student" asp-action="List">
+                                    <span>Student List</span>
+                                </a>
+                            </li>
+
+                            <li class="@(currentAction == "Add" ? "active" : "")">
+                                <a asp-area="Admin" asp-controller="Student" asp-action="Add">
+                                    Student Add
+                                </a>
+                            </li>
+                             <!-- Student Enrollment -->
+                            <li class="@(currentController == "Enrollment" ? "active" : "")">
+                                <a asp-area="Admin" asp-controller="Enrollment" asp-action="Index">
+                                 <span>Student Enrollment</span>
+                               </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Instructor -->
+                    <li class="@(currentController == "Instructor" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Instructor" asp-action="List">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Teachers</span>
+                        </a>
+                    </li>
+
+                    <!-- Department -->
+                    <li class="@(currentController == "Department" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Department" asp-action="List">
+                            <i class="fas fa-building"></i>
+                            <span>Departments</span>
+                        </a>
+                    </li>
+
+                    <!-- Subject -->
+                    <li class="@(currentController == "Subject" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Subject" asp-action="List">
+                            <i class="fas fa-book"></i>
+                            <span>Subjects</span>
+                        </a>
+                    </li>
+
+                    <!-- Class Management -->
+                    <li class="submenu @(currentController == "Class" ? "active" : "")">
+                        <a href="#">
+                            <i class="fas fa-school"></i>
+                            <span>Class Student</span>
+                            <span class="menu-arrow"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a asp-area="Admin" asp-controller="Class" asp-action="List">Class List</a>
+                            </li>
+                            <li>
+                                <a asp-area="Admin" asp-controller="Class" asp-action="Add">Class Add</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MAIN -->
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/assets/js/jquery-3.6.0.min.js"></script>
+    <script src="~/assets/js/popper.min.js"></script>
+    <script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
+    <script src="~/assets/plugins/apexchart/chart-data.js"></script>
+    <script src="~/assets/plugins/simple-calendar/jquery.simple-calendar.js"></script>
+    <script src="~/assets/js/calander.js"></script>
+    <script src="~/assets/js/circle-progress.min.js"></script>
+    <script src="~/assets/js/script.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>
