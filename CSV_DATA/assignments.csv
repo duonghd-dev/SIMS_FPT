@@ -1,5 +1,13 @@
 AssignmentId,SubjectId,Title,Description,DueDate,MaxPoints,AllowedFileTypes,AreGradesPublished
+<<<<<<< HEAD
 ASG001,SUB002,Geometry Basics,Complete exercises on triangles,2025-10-15,100,.pdf,true
 ASG002,SUB003,Motion Lab,Write a report on the motion experiment,2025-10-20,50,.pdf|.docx,false
 ASG003,SUB004,Intro to C#,Create a simple console application,2025-11-01,100,.zip|.cs,false
 ASG004,SUB005,Essay Draft,Submit first draft of history essay,2025-10-25,20,.docx,true
+=======
+
+StudentId,AssignmentId,Grade,TeacherComments,SubmissionDate,FilePath
+STD001,9a4c2df2-aed7-402c-8898-f884ad8f055a,,Processing...,2025-10-10,/submissions/sample_submission.pdf
+
+e331fe49-d6fa-4223-a8e9-0cb362ae8b70,SUB001,"Testing","no",2025-12-14,100,".pdf",False,23
+>>>>>>> master

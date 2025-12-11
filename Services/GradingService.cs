@@ -3,6 +3,8 @@ using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Business.Interfaces;
 using SIMS_FPT.Models;
 using SIMS_FPT.Models.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SIMS_FPT.Business.Services
 {
@@ -10,12 +12,21 @@ namespace SIMS_FPT.Business.Services
     {
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly ISubmissionRepository _submissionRepo;
+        private readonly IStudentRepository _studentRepo; // Added dependency
 
+<<<<<<< HEAD
         // Constructor Injection: The Service asks for the Repositories it needs
         public GradingService(IAssignmentRepository assignmentRepo, ISubmissionRepository submissionRepo)
+=======
+        // Update Constructor to inject StudentRepository
+        public GradingService(IAssignmentRepository assignmentRepo,
+                              ISubmissionRepository submissionRepo,
+                              IStudentRepository studentRepo)
+>>>>>>> master
         {
             _assignmentRepo = assignmentRepo;
             _submissionRepo = submissionRepo;
+            _studentRepo = studentRepo;
         }
 
         public void ProcessBulkGrades(BulkGradeViewModel model)
@@ -41,6 +52,44 @@ namespace SIMS_FPT.Business.Services
 
                 _submissionRepo.SaveSubmission(submission);
             }
+        }
+
+        // [NEW] Logic moved from Controller
+        public BulkGradeViewModel PrepareGradingView(string assignmentId, string currentTeacherId)
+        {
+            var assignment = _assignmentRepo.GetById(assignmentId);
+            if (assignment == null) return null;
+
+            // Security check passed from controller, or check here
+            if (assignment.TeacherId != currentTeacherId) return null;
+
+            var students = _studentRepo.GetBySubject(assignment.SubjectId);
+            var submissions = _submissionRepo.GetByAssignmentId(assignmentId);
+
+            var model = new BulkGradeViewModel
+            {
+                AssignmentId = assignment.AssignmentId,
+                AssignmentTitle = assignment.Title,
+                MaxPoints = assignment.MaxPoints,
+                IsPublished = assignment.AreGradesPublished,
+                StudentGrades = new List<StudentGradeItem>()
+            };
+
+            foreach (var s in students)
+            {
+                var sub = submissions.FirstOrDefault(x => x.StudentId == s.StudentId);
+                model.StudentGrades.Add(new StudentGradeItem
+                {
+                    StudentId = s.StudentId,
+                    StudentName = s.FullName,
+                    HasSubmitted = sub != null && !string.IsNullOrEmpty(sub.FilePath),
+                    SubmissionFilePath = sub?.FilePath,
+                    Grade = sub?.Grade,
+                    Feedback = sub?.TeacherComments
+                });
+            }
+
+            return model;
         }
     }
 }

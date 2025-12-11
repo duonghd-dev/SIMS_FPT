@@ -1,0 +1,97 @@
+@model IEnumerable<SIMS_FPT.Models.ViewModels.StudentAssignmentViewModel>
+
+@{
+    ViewData["Title"] = "My Assignments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h3 class="page-title">Assignments</h3>
+            <p class="text-muted">Submit work and see grades with teacher comments.</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">All Assignments</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Subject</th>
+                            <th>Due</th>
+                            <th>Max Points</th>
+                            <th>Submission</th>
+                            <th>Grade</th>
+                            <th>Teacher Comments</th>
+                            <th style="width: 140px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Assignment.Title</td>
+                                <td>@item.Assignment.SubjectId</td>
+                                <td>@item.Assignment.DueDate.ToString("MMM dd, yyyy")</td>
+                                <td>@item.Assignment.MaxPoints</td>
+                                <td>
+                                    @if (item.HasSubmission)
+                                    {
+                                        <div>
+                                            <span class="badge badge-success">Submitted</span>
+                                            <div class="small text-muted">@item.SubmittedAt?.ToString("g")</div>
+                                            <a class="btn btn-link btn-sm p-0" target="_blank" href="~/@item.Submission.FilePath">View file</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-warning">Not submitted</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Assignment.AreGradesPublished && item.HasGrade)
+                                    {
+                                        <strong>@item.Grade</strong>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not published</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Assignment.AreGradesPublished && !string.IsNullOrWhiteSpace(item.TeacherComments))
+                                    {
+                                        @item.TeacherComments
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Submit"
+                                       asp-route-id="@item.Assignment.AssignmentId"
+                                       class="btn btn-primary btn-sm">
+                                        @(item.HasSubmission ? "Update" : "Submit")
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

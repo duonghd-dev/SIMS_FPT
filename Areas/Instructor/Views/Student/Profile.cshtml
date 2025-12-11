@@ -1,0 +1,99 @@
+@model SIMS_FPT.Models.ViewModels.StudentProfileViewModel
+@{
+    ViewData["Title"] = "Student Profile";
+    Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Student Profile</h1>
+        <a asp-area="Instructor" asp-controller="Assignment" asp-action="Index" class="btn btn-secondary btn-sm">
+            Back to Assignments
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">@Model.Student.FullName</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>ID:</strong> @Model.Student.StudentId</p>
+                    <p><strong>Class:</strong> @Model.Student.ClassName</p>
+                    <p><strong>Email:</strong> @Model.Student.Email</p>
+                    <p><strong>Mobile:</strong> @Model.Student.MobileNumber</p>
+                    <p><strong>Address:</strong> @Model.Student.Address</p>
+                    <p><strong>Permanent Address:</strong> @Model.Student.PermanentAddress</p>
+                    <p><strong>Religion:</strong> @Model.Student.Religion</p>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Emergency Contacts</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Father:</strong> @Model.Student.FatherName (@Model.Student.FatherMobile)</p>
+                    <p><strong>Father Email:</strong> @Model.Student.FatherEmail</p>
+                    <p><strong>Mother:</strong> @Model.Student.MotherName (@Model.Student.MotherMobile)</p>
+                    <p><strong>Mother Email:</strong> @Model.Student.MotherEmail</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Academic History (Your Classes)</h6>
+                    <span class="badge badge-info">Avg: @Model.AverageScorePercent.ToString("0.0")%</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Assignment</th>
+                                    <th>Subject</th>
+                                    <th>Grade</th>
+                                    <th>Teacher Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.AssignmentHistory.Any())
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No history yet.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var item in Model.AssignmentHistory)
+                                    {
+                                        <tr>
+                                            <td>@item.AssignmentTitle</td>
+                                            <td>@item.SubjectId</td>
+                                            <td>
+                                                @if (item.Grade.HasValue)
+                                                {
+                                                    @($"{item.Grade}/{item.MaxPoints}")
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not graded</span>
+                                                }
+                                            </td>
+                                            <td>@(string.IsNullOrWhiteSpace(item.TeacherComments) ? "-" : item.TeacherComments)</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

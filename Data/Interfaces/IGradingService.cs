@@ -6,6 +6,7 @@ namespace SIMS_FPT.Business.Interfaces
 {
     public interface IGradingService
     {
-        void ProcessBulkGrades(BulkGradeViewModel model);
+        void ProcessGrades(BulkGradeViewModel model);
+        BulkGradeViewModel PrepareGradingView(string assignmentId, string currentTeacherId);
     }
 }

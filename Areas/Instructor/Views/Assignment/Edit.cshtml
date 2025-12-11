@@ -1,30 +1,29 @@
-﻿@model SIMS_FPT.Models.AssignmentModel
+@model SIMS_FPT.Models.AssignmentModel
 
 @{
-    ViewData["Title"] = "Create Assignment";
+    ViewData["Title"] = "Edit Assignment";
     Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
 }
 
-@* --- PAGE HEADER --- *@
 <div class="page-header">
     <div class="row align-items-center">
         <div class="col">
-            <h3 class="page-title">Add Assignment</h3>
+            <h3 class="page-title">Edit Assignment</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Assignment" asp-action="Index">Assignments</a></li>
-                <li class="breadcrumb-item active">Add Assignment</li>
+                <li class="breadcrumb-item active">Edit</li>
             </ul>
         </div>
     </div>
 </div>
 
-@* --- FORM CARD --- *@
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
             <div class="card-body">
-                <form asp-action="Create" method="post">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="AssignmentId" />
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row">
@@ -32,11 +31,9 @@
                             <h5 class="form-title"><span>Assignment Details</span></h5>
                         </div>
 
-                        @* 1. Subject Selection *@
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label asp-for="SubjectId" class="form-label">Subject</label>
-                                @* Assuming you populate ViewBag.SubjectId in your Controller *@
                                 <select asp-for="SubjectId" class="form-control"
                                         asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectId"))">
                                     <option value="">-- Select Subject --</option>
@@ -45,16 +42,14 @@
                             </div>
                         </div>
 
-                        @* 2. Assignment Title *@
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label asp-for="Title" class="form-label">Assignment Title</label>
-                                <input asp-for="Title" class="form-control" placeholder="e.g. Mid-term Project" />
+                                <input asp-for="Title" class="form-control" />
                                 <span asp-validation-for="Title" class="text-danger"></span>
                             </div>
                         </div>
 
-                        @* 3. Due Date *@
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label asp-for="DueDate" class="form-label">Due Date</label>
@@ -63,23 +58,17 @@
                             </div>
                         </div>
 
-<<<<<<< HEAD
-                        @* 4. Description (Full Width) *@
-=======
-                        @* 4. Max Points (ADDED) *@
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label asp-for="MaxPoints" class="form-label">Max Points</label>
-                                <input asp-for="MaxPoints" class="form-control" type="number" value="100" />
+                                <input asp-for="MaxPoints" class="form-control" type="number" />
                                 <span asp-validation-for="MaxPoints" class="text-danger"></span>
                             </div>
                         </div>
 
-                        @* 5. Allowed File Types (ADDED) *@
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label asp-for="AllowedFileTypes" class="form-label">Allowed File Types</label>
-
                                 <select asp-for="AllowedFileTypes" class="form-control">
                                     <option value="">-- Select File Restrictions --</option>
                                     <option value=".pdf, .docx, .doc, .txt">Documents (.pdf, .docx, .txt)</option>
@@ -88,24 +77,20 @@
                                     <option value=".jpg, .jpeg, .png">Images (.jpg, .png)</option>
                                     <option value="*">All File Types</option>
                                 </select>
-
                                 <span asp-validation-for="AllowedFileTypes" class="text-danger"></span>
                             </div>
                         </div>
 
-                        @* 6. Description *@
->>>>>>> master
                         <div class="col-12">
                             <div class="form-group">
                                 <label asp-for="Description" class="form-label">Description</label>
-                                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter assignment instructions..."></textarea>
+                                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
                         </div>
 
-                        @* 5. Buttons *@
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                             <a asp-action="Index" class="btn btn-secondary">Cancel</a>
                         </div>
                     </div>
@@ -120,3 +105,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

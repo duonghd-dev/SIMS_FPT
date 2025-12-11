@@ -1,6 +1,7 @@
 Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
 1,duongteacher@gmail.com,123,Instructor,,Duonggv,Plain
 2,duongadmin@gmail.com,AQAAAAIAAYagAAAAEApWHEYImf/8wlPXshYO3IGPVomJ5T9rSfyKOXQbrKgJNbe0WSHZ2mjWFzmHFe3PLQ==,Admin,,DuongAdmin,PBKDF2
+<<<<<<< HEAD
 3,duongstudent@gmail.com,AQAAAAIAAYagAAAAEEc2yrOQBW9nOLPPx+/w7NNB8unrdJVo8qP0YF9jVcw9foGQ0NkARXMxP/oF/Pe3Bw==,Student,,Duongstudent,PBKDF2
 10,hung.nguyen@school.edu,Pass12311,Instructor,,Nguyen Van Hung,Plain
 11,mai.tran@school.edu,Secure789,Instructor,,Tran Thi Mai,Plain
@@ -15,4 +16,8 @@ Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
 20,321@gmail.com,AQAAAAIAAYagAAAAEBoNL5GWMfEpaOvvLdTxCXXk3c3OWM9+wOFaJScGCpxfonVLrFWeRVGLqL/O/L4ihQ==,Instructor,,qêw,PBKDF2
 21,321@gmail.com,AQAAAAIAAYagAAAAED3LpnuzDl5HZdHuj8dqUi8/zSqXroDzxwukyAobn3kjkYoI6xJMr5q6FwwMnANQiA==,Instructor,,321312,PBKDF2
 22,bnm915915@gmail.com,AQAAAAIAAYagAAAAEFgyKwYTa7CpWu12CoZGjV4uWDRuG/TnO6aFkJhzrCRYAd0wsl9AcYSoYGbnU9WGEg==,Admin,,Long,PBKDF2
+=======
+3,duongstudent@gmail.com,AQAAAAIAAYagAAAAEFppbLfbNxEkJo/XpPpTnWOhRH+t4WBf0DGFhDPwc4U3b+be8VrRShGJebAq6BH5JQ==,Student,,Duongstudent,PBKDF2
+4,testing123@gmail.com,AQAAAAIAAYagAAAAEES/lLyKifGHGOs5Xj1csIOXnO2kK1Y8j5lfoMG7q3Exy+DDBA0Zgf++W5iPYxyEzQ==,Instructor,test,Testing123,PBKDF2
+>>>>>>> master
 23,liubu1412@gmail.com,AQAAAAIAAYagAAAAEPEwvtmmCnoYjYQnZBSfaqglhXuIk9fHdA3crCF3kniyy1G4WRZ0ODMvwNo3gypPOw==,Instructor,,liubu,PBKDF2
