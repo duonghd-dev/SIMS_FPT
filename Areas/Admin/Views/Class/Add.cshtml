@@ -1,0 +1,84 @@
+@using SIMS_FPT.Models
+@model ClassModel
+
+@{
+    ViewData["Title"] = "Add Class";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Add Class</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="List">Class</a></li>
+                        <li class="breadcrumb-item active">Add Class</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-action="Add" method="post">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>Class Details</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Class ID</label>
+                                        <input asp-for="ClassId" class="form-control" required>
+                                        <span asp-validation-for="ClassId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Class Name</label>
+                                        <input asp-for="ClassName" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Subject</label>
+                                        <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.Subjects" required>
+                                            <option value="">-- Select Subject --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Teacher</label>
+                                        <select asp-for="TeacherId" class="form-control" asp-items="ViewBag.Teachers" required>
+                                            <option value="">-- Select Teacher --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Semester</label>
+                                        <input asp-for="Semester" class="form-control" placeholder="e.g. Spring2025" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>No. of Students</label>
+                                        <input asp-for="NumberOfStudents" type="number" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

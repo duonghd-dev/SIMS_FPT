@@ -1,1 +1,2 @@
-class_id,class_name,subject_id,teacher_id,semeter
+class_id,class_name,subject_id,teacher_id,semeter,number_of_students
+SE07202,DAICAHOANG,SUB003,TCH001,FALL,40

@@ -16,8 +16,12 @@ namespace SIMS_FPT.Models
 
         [Name("teacher_id")] // Liên kết với Teacher (User có Role Teacher)
         public string TeacherId { get; set; }
-        
+
         [Name("semeter")]
         public string Semester { get; set; } // Ví dụ: Spring2025
+
+        // Mới thêm: Số lượng sinh viên (Sĩ số)
+        [Name("number_of_students")]
+        public int NumberOfStudents { get; set; }
     }
 }
