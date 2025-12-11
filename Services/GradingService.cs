@@ -11,16 +11,19 @@ namespace SIMS_FPT.Business.Services
     {
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly ISubmissionRepository _submissionRepo;
-        private readonly IStudentRepository _studentRepo; // Added dependency
+        private readonly IStudentRepository _studentRepo;
+        private readonly IStudentClassRepository _studentClassRepo; // [1] Add this
 
-        // Update Constructor to inject StudentRepository
+        // [2] Update Constructor
         public GradingService(IAssignmentRepository assignmentRepo,
                               ISubmissionRepository submissionRepo,
-                              IStudentRepository studentRepo)
+                              IStudentRepository studentRepo,
+                              IStudentClassRepository studentClassRepo)
         {
             _assignmentRepo = assignmentRepo;
             _submissionRepo = submissionRepo;
             _studentRepo = studentRepo;
+            _studentClassRepo = studentClassRepo;
         }
 
         public void ProcessGrades(BulkGradeViewModel model)
@@ -46,16 +49,17 @@ namespace SIMS_FPT.Business.Services
             }
         }
 
-        // [NEW] Logic moved from Controller
         public BulkGradeViewModel PrepareGradingView(string assignmentId, string currentTeacherId)
         {
             var assignment = _assignmentRepo.GetById(assignmentId);
             if (assignment == null) return null;
 
-            // Security check passed from controller, or check here
             if (assignment.TeacherId != currentTeacherId) return null;
 
-            var students = _studentRepo.GetBySubject(assignment.SubjectId);
+            // [3] FIX: Get students from the specific CLASS, not the whole subject
+            // Old incorrect line: var students = _studentRepo.GetBySubject(assignment.SubjectId);
+
+            var enrollments = _studentClassRepo.GetByClassId(assignment.ClassId);
             var submissions = _submissionRepo.GetByAssignmentId(assignmentId);
 
             var model = new BulkGradeViewModel
@@ -67,13 +71,18 @@ namespace SIMS_FPT.Business.Services
                 StudentGrades = new List<StudentGradeItem>()
             };
 
-            foreach (var s in students)
+            // [4] Iterate through the enrolled students
+            foreach (var enrollment in enrollments)
             {
-                var sub = submissions.FirstOrDefault(x => x.StudentId == s.StudentId);
+                var studentInfo = _studentRepo.GetById(enrollment.StudentId);
+                if (studentInfo == null) continue; // Skip if student not found in main DB
+
+                var sub = submissions.FirstOrDefault(x => x.StudentId == enrollment.StudentId);
+
                 model.StudentGrades.Add(new StudentGradeItem
                 {
-                    StudentId = s.StudentId,
-                    StudentName = s.FullName,
+                    StudentId = studentInfo.StudentId,
+                    StudentName = studentInfo.FullName,
                     HasSubmitted = sub != null && !string.IsNullOrEmpty(sub.FilePath),
                     SubmissionFilePath = sub?.FilePath,
                     Grade = sub?.Grade,

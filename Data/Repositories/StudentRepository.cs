@@ -75,7 +75,6 @@ namespace SIMS_FPT.Data.Repositories
             var index = students.FindIndex(s => s.StudentId == student.StudentId);
             if (index != -1)
             {
-                // Giữ lại ảnh cũ nếu không up ảnh mới
                 if (string.IsNullOrEmpty(student.ImagePath))
                 {
                     student.ImagePath = students[index].ImagePath;

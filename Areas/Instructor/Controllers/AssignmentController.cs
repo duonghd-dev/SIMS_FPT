@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering; // Required for SelectList
 using SIMS_FPT.Business.Interfaces;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
@@ -16,24 +17,27 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
     {
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly ISubjectRepository _subjectRepo;
-        // Student and Submission repos removed as they are now handled by GradingService
+        private readonly IClassRepository _classRepo; // [NEW] Injected Class Repo
         private readonly IGradingService _gradingService;
-        private readonly ISubmissionRepository _submissionRepo; // Kept for Download
+        private readonly ISubmissionRepository _submissionRepo;
         private readonly IWebHostEnvironment _env;
 
         public AssignmentController(IAssignmentRepository assignmentRepo,
                                     ISubjectRepository subjectRepo,
+                                    IClassRepository classRepo, // [NEW]
                                     ISubmissionRepository submissionRepo,
                                     IGradingService gradingService,
                                     IWebHostEnvironment env)
         {
             _assignmentRepo = assignmentRepo;
             _subjectRepo = subjectRepo;
+            _classRepo = classRepo; // [NEW]
             _submissionRepo = submissionRepo;
             _gradingService = gradingService;
             _env = env;
         }
 
+        // [HELPER] Gets the logged-in Teacher's ID
         private string CurrentTeacherId
         {
             get
@@ -42,6 +46,23 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 if (!string.IsNullOrEmpty(linkedId)) return linkedId;
                 return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
             }
+        }
+
+        // [HELPER] Load Classes for this teacher into ViewBag
+        private void LoadTeacherClasses(string selectedClassId = null)
+        {
+            var teacherId = CurrentTeacherId;
+            // Get classes where the teacher matches the logged-in user
+            var myClasses = _classRepo.GetAll()
+                .Where(c => c.TeacherName == teacherId)
+                .Select(c => new
+                {
+                    ClassId = c.ClassId,
+                    DisplayText = $"{c.ClassId} - {c.ClassName} ({c.SubjectName})" // e.g. "SE0720 - Java (SUB01)"
+                })
+                .ToList();
+
+            ViewBag.Classes = new SelectList(myClasses, "ClassId", "DisplayText", selectedClassId);
         }
 
         public IActionResult Index()
@@ -55,55 +76,54 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
         public IActionResult Create()
         {
-            ViewBag.Subjects = _subjectRepo.GetAll();
+            LoadTeacherClasses();
             return View();
         }
 
         [HttpPost]
         public IActionResult Create(AssignmentModel model)
         {
+            // Remove fields we auto-generate or don't need from user input
             ModelState.Remove("TeacherId");
-
-            // Remove AssignmentId from validation so we can generate it ourselves
             ModelState.Remove("AssignmentId");
+            ModelState.Remove("SubjectId");
+
+            // 1. Validate that the teacher owns this class
+            var teacherId = CurrentTeacherId;
+            var targetClass = _classRepo.GetById(model.ClassId);
+
+            if (targetClass == null || targetClass.TeacherName != teacherId)
+            {
+                ModelState.AddModelError("ClassId", "Invalid class selected or you are not the teacher.");
+            }
 
             if (ModelState.IsValid)
             {
-                // --- NEW ID GENERATION LOGIC START ---
-
-                // 1. Get all existing assignments
+                // 2. Generate ID Logic
                 var allAssignments = _assignmentRepo.GetAll();
-
-                // 2. Find the highest existing "ASM-XXX" number
                 int nextIdNumber = 1;
                 foreach (var assign in allAssignments)
                 {
-                    // Check if ID starts with "ASM-"
                     if (!string.IsNullOrEmpty(assign.AssignmentId) && assign.AssignmentId.StartsWith("ASM-"))
                     {
-                        // Extract the number part (e.g., "ASM-005" -> "005")
                         string numberPart = assign.AssignmentId.Substring(4);
                         if (int.TryParse(numberPart, out int currentNum))
                         {
-                            if (currentNum >= nextIdNumber)
-                            {
-                                nextIdNumber = currentNum + 1;
-                            }
+                            if (currentNum >= nextIdNumber) nextIdNumber = currentNum + 1;
                         }
                     }
                 }
-
-                // 3. Create the new ID (e.g., ASM-001, ASM-002, etc.)
                 model.AssignmentId = $"ASM-{nextIdNumber:D3}";
 
-                // --- NEW ID GENERATION LOGIC END ---
+                // 3. Auto-fill Data
+                model.TeacherId = teacherId;
+                model.SubjectId = targetClass.SubjectName; // Get Subject from the selected Class
 
-                model.TeacherId = CurrentTeacherId;
                 _assignmentRepo.Add(model);
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Subjects = _subjectRepo.GetAll();
+            LoadTeacherClasses(model.ClassId); // Reload dropdown if validation fails
             return View(model);
         }
 
@@ -114,8 +134,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             {
                 return RedirectToAction("AccessDenied", "Login", new { area = "" });
             }
-
-            ViewBag.Subjects = _subjectRepo.GetAll();
+            LoadTeacherClasses(assignment.ClassId);
             return View(assignment);
         }
 
@@ -124,44 +143,50 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         public IActionResult Edit(AssignmentModel model)
         {
             ModelState.Remove("TeacherId");
+            ModelState.Remove("SubjectId");
+
             var existing = _assignmentRepo.GetById(model.AssignmentId);
             if (existing == null || existing.TeacherId != CurrentTeacherId)
             {
                 return RedirectToAction("AccessDenied", "Login", new { area = "" });
             }
 
+            // Verify class ownership again
+            var targetClass = _classRepo.GetById(model.ClassId);
+            if (targetClass == null || targetClass.TeacherName != CurrentTeacherId)
+            {
+                ModelState.AddModelError("ClassId", "Invalid class selected.");
+            }
+
             if (!ModelState.IsValid)
             {
-                ViewBag.Subjects = _subjectRepo.GetAll();
+                LoadTeacherClasses(model.ClassId);
                 return View(model);
             }
 
-            model.TeacherId = existing.TeacherId; // preserve ownership
-            model.AreGradesPublished = existing.AreGradesPublished; // do not overwrite publish status from edit form
+            // Preserve and Update
+            model.TeacherId = existing.TeacherId;
+            model.AreGradesPublished = existing.AreGradesPublished;
+            model.SubjectId = targetClass.SubjectName; // Update subject if class changed
+
             _assignmentRepo.Update(model);
             return RedirectToAction("Index");
         }
 
-        // [REFACTORED] Much thinner Grade action
         [HttpGet]
         public IActionResult Grade(string id)
         {
-            // Logic moved to GradingService.PrepareGradingView
             var model = _gradingService.PrepareGradingView(id, CurrentTeacherId);
-
             if (model == null)
             {
-                // If null, it means assignment not found OR unauthorized
                 return RedirectToAction("AccessDenied", "Login", new { area = "" });
             }
-
             return View(model);
         }
 
         [HttpPost]
         public IActionResult Grade(BulkGradeViewModel model)
         {
-            // Verify ownership again before saving
             var assignment = _assignmentRepo.GetById(model.AssignmentId);
             if (assignment == null || assignment.TeacherId != CurrentTeacherId)
             {
@@ -194,7 +219,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             if (!System.IO.File.Exists(filePath))
             {
-                return NotFound($"File not found on server: {submission.FilePath}");
+                return NotFound($"File not found on server.");
             }
 
             var fileBytes = System.IO.File.ReadAllBytes(filePath);

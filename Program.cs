@@ -2,6 +2,7 @@ using SIMS_FPT.Business.Interfaces;
 using SIMS_FPT.Business.Services;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Data.Repositories;
+using SIMS_FPT.Models;
 using SIMS_FPT.Services;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace SIMS_FPT.Areas.Student.Controllers
 {
@@ -16,14 +17,20 @@ namespace SIMS_FPT.Areas.Student.Controllers
     {
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly ISubmissionRepository _submissionRepo;
+        private readonly IClassRepository _classRepo;
+        private readonly IStudentClassRepository _studentClassRepo;
         private readonly IWebHostEnvironment _env;
 
         public AssignmentController(IAssignmentRepository assignmentRepo,
                                     ISubmissionRepository submissionRepo,
+                                    IClassRepository classRepo,
+                                    IStudentClassRepository studentClassRepo,
                                     IWebHostEnvironment env)
         {
             _assignmentRepo = assignmentRepo;
             _submissionRepo = submissionRepo;
+            _classRepo = classRepo;
+            _studentClassRepo = studentClassRepo;
             _env = env;
         }
 
@@ -37,11 +44,42 @@ namespace SIMS_FPT.Areas.Student.Controllers
             }
         }
 
+        // [UPDATED] Helper: Check if student is allowed to access this assignment
+        private bool IsStudentEligibleForAssignment(string studentId, AssignmentModel assignment)
+        {
+            // 1. [NEW LOGIC] If Assignment is linked to a specific Class, check enrollment directly
+            // This ensures a student in "Class A" cannot see assignments for "Class B", 
+            // even if they share the same Subject and Teacher.
+            if (!string.IsNullOrEmpty(assignment.ClassId))
+            {
+                return _studentClassRepo.IsEnrolled(assignment.ClassId, studentId);
+            }
+
+            // 2. [FALLBACK] For old assignments created before the ClassId update
+            // Check if any of the student's classes match the assignment's Subject AND Teacher
+            var enrollments = _studentClassRepo.GetByStudentId(studentId);
+            var enrolledClassIds = enrollments.Select(e => e.ClassId).ToList();
+
+            var studentClasses = _classRepo.GetAll()
+                .Where(c => enrolledClassIds.Contains(c.ClassId))
+                .ToList();
+
+            return studentClasses.Any(c => c.SubjectName == assignment.SubjectId && c.TeacherName == assignment.TeacherId);
+        }
+
         public IActionResult Index()
         {
             var studentId = CurrentStudentId;
-            var assignments = _assignmentRepo.GetAll();
-            var viewModel = assignments
+
+            // 1. Get all assignments
+            var allAssignments = _assignmentRepo.GetAll();
+
+            // 2. Filter: Only show assignments for classes the student is enrolled in
+            var visibleAssignments = allAssignments
+                .Where(a => IsStudentEligibleForAssignment(studentId, a))
+                .ToList();
+
+            var viewModel = visibleAssignments
                 .Select(a => new StudentAssignmentViewModel
                 {
                     Assignment = a,
@@ -59,6 +97,12 @@ namespace SIMS_FPT.Areas.Student.Controllers
             var assignment = _assignmentRepo.GetById(id);
             if (assignment == null) return NotFound();
 
+            // [SECURITY] Check if student is allowed to access this assignment
+            if (!IsStudentEligibleForAssignment(CurrentStudentId, assignment))
+            {
+                return RedirectToAction("AccessDenied", "Login", new { area = "" });
+            }
+
             var studentId = CurrentStudentId;
             var submission = _submissionRepo.GetByStudentAndAssignment(studentId, id);
 
@@ -71,6 +115,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
             return View(vm);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Submit(string id, IFormFile uploadFile)
@@ -78,13 +123,18 @@ namespace SIMS_FPT.Areas.Student.Controllers
             var assignment = _assignmentRepo.GetById(id);
             if (assignment == null) return NotFound();
 
+            // [SECURITY] Check eligibility again on POST
+            if (!IsStudentEligibleForAssignment(CurrentStudentId, assignment))
+            {
+                return RedirectToAction("AccessDenied", "Login", new { area = "" });
+            }
+
             if (uploadFile == null || uploadFile.Length == 0)
             {
                 ModelState.AddModelError(string.Empty, "Please select a file to upload.");
             }
             else
             {
-                // Validate allowed file types based on assignment settings
                 var ext = Path.GetExtension(uploadFile.FileName)?.ToLowerInvariant();
                 var allowed = assignment.AllowedFileTypes;
                 if (!string.IsNullOrWhiteSpace(allowed) && allowed.Trim() != "*")
@@ -119,7 +169,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
             var fileName = $"{studentId}_{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
-            // Remove previous submission file if it exists
+            // Clean up old file
             var existing = _submissionRepo.GetByStudentAndAssignment(studentId, id);
             if (existing != null && !string.IsNullOrEmpty(existing.FilePath))
             {
@@ -146,4 +196,3 @@ namespace SIMS_FPT.Areas.Student.Controllers
         }
     }
 }
-
