@@ -4,7 +4,7 @@ using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
 using SIMS_FPT.Services;
 using System;
-using System.Linq; // Cần thiết để dùng Where
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
@@ -22,24 +22,21 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             _service = service;
         }
 
-        // SỬA: Thêm tham số className để lọc
-        public IActionResult List(string className)
+        // Action xem danh sách sinh viên
+        public IActionResult List(string className) // Lưu ý: Tham số này thực chất là từ khóa tìm kiếm chung
         {
             var data = _repo.GetAll();
 
-            // Logic lọc theo lớp (hoặc tên)
             if (!string.IsNullOrEmpty(className))
             {
-                // Chuyển về chữ thường để tìm không phân biệt hoa/thường
-                className = className.Trim().ToLower();
+                var keyword = className.Trim().ToLower();
 
                 data = data.Where(s =>
-                    (s.ClassName != null && s.ClassName.ToLower().Contains(className)) ||
-                    (s.StudentId != null && s.StudentId.ToLower().Contains(className)) ||
-                    (s.FullName != null && s.FullName.ToLower().Contains(className))
+                    // ĐÃ XÓA DÒNG s.ClassName VÌ TRƯỜNG NÀY KHÔNG CÒN TRONG MODEL
+                    (s.StudentId != null && s.StudentId.ToLower().Contains(keyword)) ||
+                    (s.FullName != null && s.FullName.ToLower().Contains(keyword))
                 ).ToList();
 
-                // Lưu lại từ khóa để hiển thị lại trên ô tìm kiếm
                 ViewBag.SearchTerm = className;
             }
 
@@ -55,6 +52,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(StudentCSVModel model)
         {
+            // Kiểm tra trùng ID
             var existing = _repo.GetById(model.StudentId);
             if (existing != null)
             {

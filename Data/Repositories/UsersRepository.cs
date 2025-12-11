@@ -53,6 +53,7 @@ namespace SIMS_FPT.Data.Repositories
         }
 
         // --- LOGIN BẰNG EMAIL ---
+        // --- LOGIN BẰNG EMAIL ---
         public Users? Login(string email, string password)
         {
             var users = ReadAllUsersInternal();
@@ -61,20 +62,39 @@ namespace SIMS_FPT.Data.Repositories
             var user = users.FirstOrDefault(u => u.Email.Trim().Equals(email.Trim(), StringComparison.OrdinalIgnoreCase));
             if (user == null) return null;
 
+            // Kiểm tra giải thuật hash
             if (string.Equals(user.HashAlgorithm, "PBKDF2", StringComparison.OrdinalIgnoreCase))
             {
-                if (PasswordHasherHelper.Verify(password, user.Password)) return user;
+                // SỬA LỖI: Lấy mật khẩu và loại bỏ khoảng trắng thừa (nguyên nhân chính gây lỗi Base64)
+                var cleanHash = user.Password?.Trim();
+
+                if (!string.IsNullOrEmpty(cleanHash))
+                {
+                    try
+                    {
+                        // Thử verify, nếu hash trong CSV bị lỗi format thì sẽ nhảy vào catch thay vì crash app
+                        if (PasswordHasherHelper.Verify(password, cleanHash)) return user;
+                    }
+                    catch (FormatException)
+                    {
+                        // Hash trong file CSV bị lỗi format base64 nghiêm trọng -> Coi như sai pass
+                        return null;
+                    }
+                }
             }
             else if (string.IsNullOrEmpty(user.HashAlgorithm) || user.HashAlgorithm == "Plain")
             {
-                if (user.Password == password)
+                // Logic cho mật khẩu chưa hash (Plain text)
+                if (user.Password == password) // So sánh trực tiếp
                 {
+                    // Tự động cập nhật sang hash mới
                     user.Password = PasswordHasherHelper.Hash(password);
                     user.HashAlgorithm = "PBKDF2";
-                    WriteAllUsersInternal(users);
+                    WriteAllUsersInternal(users); // Lưu lại vào CSV
                     return user;
                 }
             }
+
             return null;
         }
 

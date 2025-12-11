@@ -47,11 +47,14 @@ namespace SIMS_FPT.Services
             {
                 var newUser = new Users
                 {
-                    Email = model.Email,        // Email chính
-                    Password = model.StudentId, // Mật khẩu mặc định là Mã SV
+                    Email = model.Email,
+                    Password = model.StudentId, // Mật khẩu thô
                     FullName = model.FullName,
                     Role = "Student",
-                    LinkedId = model.StudentId
+                    LinkedId = model.StudentId,
+
+                    // --- THÊM DÒNG NÀY ---
+                    HashAlgorithm = "Plain" // Bắt buộc để Repository biết cần hash password này
                 };
                 _userRepo.AddUser(newUser);
             }

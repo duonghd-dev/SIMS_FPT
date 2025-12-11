@@ -23,7 +23,34 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         // 1. Xem danh sách lớp
         public IActionResult List()
         {
-            return View(_classRepo.GetAll());
+            // 1. Lấy tất cả dữ liệu
+            var classes = _classRepo.GetAll();
+            var subjects = _subjectRepo.GetAll();
+            var teachers = _teacherRepo.GetAll();
+
+            // 2. Kết hợp dữ liệu (Mapping) sử dụng LINQ
+            // Dùng Left Join để nếu ID không tồn tại thì không bị lỗi chết trang
+            var listViewModel = from c in classes
+                                join s in subjects on c.SubjectName equals s.SubjectId into subjectGroup
+                                from sub in subjectGroup.DefaultIfEmpty() // Nếu không tìm thấy môn, sub sẽ null
+
+                                join t in teachers on c.TeacherName equals t.TeacherId into teacherGroup
+                                from teach in teacherGroup.DefaultIfEmpty() // Nếu không tìm thấy GV, teach sẽ null
+
+                                select new ClassModel
+                                {
+                                    ClassId = c.ClassId,
+                                    ClassName = c.ClassName,
+                                    Semester = c.Semester,
+                                    NumberOfStudents = c.NumberOfStudents,
+
+                                    // Nếu tìm thấy tên thì lấy, không thì báo lỗi hoặc hiện lại ID
+                                    SubjectName = sub != null ? sub.SubjectName : $"Unknown ({c.SubjectName})",
+                                    TeacherName = teach != null ? teach.Name : $"Unknown ({c.TeacherName})"
+                                };
+
+            // 3. Trả về danh sách ViewModel
+            return View(listViewModel.ToList());
         }
 
         // 2. Tạo lớp mới (Giao diện)
@@ -83,10 +110,10 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             var item = _classRepo.GetById(id);
             if (item == null) return NotFound();
 
-            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", item.SubjectId);
+            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", item.SubjectName);
 
             var teachers = _teacherRepo.GetAll().Select(t => new { Id = t.TeacherId, Name = $"{t.TeacherId} - {t.Name}" });
-            ViewBag.Teachers = new SelectList(teachers, "Id", "Name", item.TeacherId);
+            ViewBag.Teachers = new SelectList(teachers, "Id", "Name", item.TeacherName);
 
             return View(item);
         }
@@ -101,9 +128,9 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", model.SubjectId);
+            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", model.SubjectName);
             var teachers = _teacherRepo.GetAll().Select(t => new { Id = t.TeacherId, Name = $"{t.TeacherId} - {t.Name}" });
-            ViewBag.Teachers = new SelectList(teachers, "Id", "Name", model.TeacherId);
+            ViewBag.Teachers = new SelectList(teachers, "Id", "Name", model.TeacherName);
 
             return View(model);
         }

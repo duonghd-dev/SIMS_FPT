@@ -18,29 +18,22 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">@Model.Student.FullName</h6>
                 </div>
-                <div class="card-body">
-                    <p><strong>ID:</strong> @Model.Student.StudentId</p>
-                    <p><strong>Class:</strong> @Model.Student.ClassName</p>
-                    <p><strong>Email:</strong> @Model.Student.Email</p>
-                    <p><strong>Mobile:</strong> @Model.Student.MobileNumber</p>
-                    <p><strong>Address:</strong> @Model.Student.Address</p>
-                    <p><strong>Permanent Address:</strong> @Model.Student.PermanentAddress</p>
-                    <p><strong>Religion:</strong> @Model.Student.Religion</p>
+                <div class="card-body text-center">
+                    <img src="@(string.IsNullOrEmpty(Model.Student.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : Model.Student.ImagePath)" 
+                         alt="Avatar" class="img-profile rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    
+                    <hr>
+                    
+                    <div class="text-left">
+                        <p><strong>ID:</strong> @Model.Student.StudentId</p>
+                        <p><strong>Email:</strong> @Model.Student.Email</p>
+                        <p><strong>Gender:</strong> @Model.Student.Gender</p>
+                        <p><strong>Date of Birth:</strong> @Model.Student.DateOfBirth.ToString("dd/MM/yyyy")</p>
+                    </div>
                 </div>
             </div>
-
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Emergency Contacts</h6>
-                </div>
-                <div class="card-body">
-                    <p><strong>Father:</strong> @Model.Student.FatherName (@Model.Student.FatherMobile)</p>
-                    <p><strong>Father Email:</strong> @Model.Student.FatherEmail</p>
-                    <p><strong>Mother:</strong> @Model.Student.MotherName (@Model.Student.MotherMobile)</p>
-                    <p><strong>Mother Email:</strong> @Model.Student.MotherEmail</p>
-                </div>
+            
             </div>
-        </div>
 
         <div class="col-lg-8">
             <div class="card shadow mb-4">
@@ -95,5 +88,3 @@
         </div>
     </div>
 </div>
-
-

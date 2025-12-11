@@ -51,7 +51,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
 
             // Newest Students
             model.NewestStudents = students
-                .OrderByDescending(s => s.AdmissionDate)
+                .OrderByDescending(s => s.StudentId)
                 .Take(5)
                 .ToList();
 

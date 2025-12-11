@@ -28,7 +28,7 @@
                 <form asp-action="List" method="get">
                     <div class="input-group">
                         <input type="text" class="form-control" name="className"
-                            placeholder="Search by Class (e.g. SE0120), ID or Name..." value="@ViewBag.SearchTerm">
+                            placeholder="Search by ID or Name..." value="@ViewBag.SearchTerm">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="submit">Search</button>
                             <a asp-action="List" class="btn btn-secondary ml-1">Reset</a>
@@ -47,11 +47,8 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Class</th>
+                                        <th>Gender</th>
                                         <th>DOB</th>
-                                        <th>Parent</th>
-                                        <th>Mobile</th>
-                                        <th>Address</th>
                                         <th class="text-right">Action</th>
                                     </tr>
                                 </thead>
@@ -73,17 +70,12 @@
                                                         <a asp-action="Detail" asp-route-id="@item.StudentId">@item.FullName</a>
                                                     </h2>
                                                 </td>
-                                                <td>
-                                                    <span class="badge badge-info">@item.ClassName</span>
-                                                </td>
+                                                <td>@item.Gender</td>
                                                 <td>@item.DateOfBirth.ToString("dd/MM/yyyy")</td>
-                                                <td>@item.FatherName</td>
-                                                <td>@item.MobileNumber</td>
-                                                <td>@item.Address</td>
                                                 <td class="text-right">
                                                     <div class="actions">
                                                         <a asp-action="Edit" asp-route-id="@item.StudentId"
-                                                            class="btn btn-sm bg-success-light ">
+                                                            class="btn btn-sm bg-success-light mr-2">
                                                             <i class="fas fa-pen"></i>
                                                         </a>
 
@@ -100,7 +92,7 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="8" class="text-center">No students found matching your search.</td>
+                                            <td colspan="5" class="text-center">No students found matching your search.</td>
                                         </tr>
                                     }
                                 </tbody>

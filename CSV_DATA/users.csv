@@ -4,3 +4,7 @@ Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
 3,duongstudent@gmail.com,AQAAAAIAAYagAAAAEFppbLfbNxEkJo/XpPpTnWOhRH+t4WBf0DGFhDPwc4U3b+be8VrRShGJebAq6BH5JQ==,Student,,Duongstudent,PBKDF2
 4,testing123@gmail.com,AQAAAAIAAYagAAAAEES/lLyKifGHGOs5Xj1csIOXnO2kK1Y8j5lfoMG7q3Exy+DDBA0Zgf++W5iPYxyEzQ==,Instructor,test,Testing123,PBKDF2
 23,liubu1412@gmail.com,AQAAAAIAAYagAAAAEPEwvtmmCnoYjYQnZBSfaqglhXuIk9fHdA3crCF3kniyy1G4WRZ0ODMvwNo3gypPOw==,Instructor,,liubu,PBKDF2
+24,phucxo262@gmail.com,BD00671,Student,BD00671,Phuc Nguyen Viet,PBKDF2
+25,phucadmin@gmail.com,123,Student,123,Phuc  Nguyen Viet,PBKDF2
+26,phucadmin1@gmail.com,123,Student,123,Phuc  Nguyen Viet,PBKDF2
+27,phuc@gmail.com,AQAAAAIAAYagAAAAEE8yba7Y5tEgx3pCnfTdl7uZjpuvEL8pWYVleSiqTGAbOdOVCDBU3SprnZm7DwAtEg==,Student,BD00672,"PHUC NGUYEN ",PBKDF2
