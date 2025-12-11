@@ -1,0 +1,4 @@
+Id,ClassName,SubjectId,subject_id,subject_name,department_id,credits,TeacherId,Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm,Semester
+1,SE07202,SUB002,,,,0,312312,1,,,,,,,Fall
+2,SE07202,SUB001,,,,0,312312,2,,,,,,,Fall
+3,SE07202,SUB002,,,,0,TCH003,0,,,,,,,Fall

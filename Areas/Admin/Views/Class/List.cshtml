@@ -1,0 +1,62 @@
+@model IEnumerable<SIMS_FPT.Models.Class>
+@{
+    ViewData["Title"] = "Class List";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    
+    // [THÊM MỚI] Hứng danh sách giáo viên từ Controller
+    var teachers = ViewBag.Teachers as List<SIMS_FPT.Models.TeacherCSVModel>;
+}
+
+<div class="content container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <table class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
+                        <thead class="student-thread">
+                            <tr>
+                                <th>ID</th>
+                                <th>Class Name</th>
+                                <th>Subject ID</th>
+                                <th>Teacher Name</th> <th>Semester</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.ClassName</td>
+                                    <td>@item.SubjectId</td>
+                                    
+                                    <td>
+                                        @{
+                                            // Tìm giáo viên có ID trùng khớp (chuyển int sang string để so sánh)
+                                            var teacherObj = teachers?.FirstOrDefault(t => t.TeacherId == item.TeacherId.ToString());
+                                        }
+                                        @(teacherObj != null ? teacherObj.Name : item.TeacherId)
+                                    </td>
+                                    
+                                    <td>@item.Semester</td>
+                                    <td class="text-end">
+                                        <div class="actions">
+                                            <a href="@Url.Action("Edit", "Class", new { id = item.Id })" class="btn btn-sm bg-danger-light">
+                                                <i class="feather-edit"></i>
+                                            </a>
+                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm bg-danger-light" onclick="return confirm('Are you sure?');">
+                                                    <i class="feather-trash-2"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

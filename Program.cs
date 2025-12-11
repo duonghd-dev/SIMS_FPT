@@ -35,6 +35,9 @@ builder.Services.AddScoped<TeacherService>();
 // // Department Repository
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
+// Class Repository
+builder.Services.AddScoped<IClassRepository, ClassRepository>();
+
 
 // Assignment & Submission Repositories
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();

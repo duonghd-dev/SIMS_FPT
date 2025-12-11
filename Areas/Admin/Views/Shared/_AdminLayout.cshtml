@@ -218,11 +218,11 @@
                                     Student Add
                                 </a>
                             </li>
-                             <!-- Student Enrollment -->
+                            <!-- Student Enrollment -->
                             <li class="@(currentController == "Enrollment" ? "active" : "")">
                                 <a asp-area="Admin" asp-controller="Enrollment" asp-action="Index">
-                                 <span>Student Enrollment</span>
-                               </a>
+                                    <span>Student Enrollment</span>
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -251,20 +251,16 @@
                         </a>
                     </li>
 
-                    <!-- Class Management -->
+                    <!-- Class -->
                     <li class="submenu @(currentController == "Class" ? "active" : "")">
                         <a href="#">
                             <i class="fas fa-school"></i>
-                            <span>Class Student</span>
+                            <span>Classes</span>
                             <span class="menu-arrow"></span>
                         </a>
                         <ul>
-                            <li>
-                                <a asp-area="Admin" asp-controller="Class" asp-action="List">Class List</a>
-                            </li>
-                            <li>
-                                <a asp-area="Admin" asp-controller="Class" asp-action="Add">Class Add</a>
-                            </li>
+                            <li><a asp-area="Admin" asp-controller="Class" asp-action="List" class="@(currentAction == "List" ? "active" : "")">Class List</a></li>
+                            <li><a asp-area="Admin" asp-controller="Class" asp-action="Add" class="@(currentAction == "Add" ? "active" : "")">Class Add</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -274,9 +270,11 @@
 
 
     <!-- MAIN -->
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
+    <div class="page-wrapper">
+        <div class="content container-fluid">
+            @RenderBody()
+        </div>
+    </div>
 
 
     <!-- Scripts -->

@@ -1,0 +1,64 @@
+@model IEnumerable<SIMS_FPT.Models.Enrollment>
+@{
+    ViewData["Title"] = "My Courses";
+    Layout = "~/Areas/Student/Views/Shared/_StudentLayout.cshtml";
+}
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <h3 class="page-title">My Enrolled Courses</h3>
+    </div>
+    
+    @if(TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <table class="table table-hover table-center mb-0">
+                        <thead>
+                            <tr>
+                                <th>Class Name</th>
+                                <th>Subject</th>
+                                <th>Joined Date</th>
+                                <th>Grade</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@(item.Class?.ClassName ?? "Unknown Class")</td>
+                                    <td>@(item.Class?.Subject?.SubjectName ?? item.Class?.SubjectId)</td>
+                                    <td>@item.EnrollmentDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if(item.Grade.HasValue)
+                                        {
+                                            <span class="fw-bold text-dark">@item.Grade</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">--</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if(item.Grade.HasValue)
+                                        {
+                                            if(item.Grade >= 5.0) { <span class="badge bg-success">Passed</span> }
+                                            else { <span class="badge bg-danger">Failed</span> }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">In Progress</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

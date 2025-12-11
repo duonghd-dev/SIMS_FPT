@@ -1,0 +1,89 @@
+@model SIMS_FPT.Models.Class
+@{
+    ViewData["Title"] = "Edit Class";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var subjects = ViewBag.Subjects as List<SIMS_FPT.Models.SubjectModel>;
+    var teachers = ViewBag.Teachers as List<SIMS_FPT.Models.TeacherCSVModel>;
+}
+
+<div class="content container-fluid">
+
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Edit Class</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="subjects.html">Class</a></li>
+                    <li class="breadcrumb-item active">Edit Class</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="form-title"><span>Class Information</span></h5>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <div class="form-group local-forms">
+                                    <label>Class Name <span class="login-danger">*</span></label>
+                                    <input asp-for="ClassName" type="text" class="form-control">
+                                    <span asp-validation-for="ClassName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <div class="form-group local-forms">
+                                    <label>Subject <span class="login-danger">*</span></label>
+                                    <select asp-for="SubjectId" class="form-control select">
+                                        <option value="">Please Select Subject</option>
+                                        @if (subjects != null)
+                                        {
+                                            @foreach (var subject in subjects)
+                                            {
+                                                <option value="@subject.SubjectId" selected="@(Model.SubjectId == subject.SubjectId)">@subject.SubjectName</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="SubjectId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <div class="form-group local-forms">
+                                    <label>Teacher <span class="login-danger">*</span></label>
+                                    <select asp-for="TeacherId" class="form-control select">
+                                        <option value="">Please Select Teacher</option>
+                                        @if (teachers != null)
+                                        {
+                                            @foreach (var teacher in teachers)
+                                            {
+                                                                                                 <option value="@teacher.TeacherId" selected="@(Model.TeacherId.ToString() == teacher.TeacherId)">@teacher.Name</option>                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="TeacherId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <div class="form-group local-forms">
+                                    <label>Semester <span class="login-danger">*</span></label>
+                                    <input asp-for="Semester" type="text" class="form-control">
+                                    <span asp-validation-for="Semester" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="student-submit">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
