@@ -34,25 +34,25 @@ namespace SIMS_FPT.Services
 
         public async Task Add(TeacherCSVModel model)
         {
-            // 1. Upload ảnh
+            // 1. Upload image
             model.ImagePath = (model.TeacherImageFile != null)
                 ? await UploadImage(model.TeacherImageFile)
                 : "/assets/img/profiles/avatar-02.jpg";
 
-            // 2. Lưu Teacher vào CSV
+            // 2. Save Teacher to CSV
             _repo.Add(model);
 
-            // 3. TỰ ĐỘNG TẠO USER (Giống Student)
-            // Đăng nhập bằng Email, Mật khẩu là TeacherId
+            // 3. AUTOMATICALLY CREATE USER
             if (!string.IsNullOrEmpty(model.Email) && !_userRepo.UsernameExists(model.Email))
             {
                 var newUser = new Users
                 {
-                    Email = model.Email,        // Email dùng để đăng nhập
-                    Password = model.TeacherId, // Mật khẩu mặc định là Mã GV
+                    Email = model.Email,
+                    Password = model.TeacherId, // Default password is Teacher ID
                     FullName = model.Name,
                     Role = "Instructor",
-                    LinkedId = model.TeacherId
+                    LinkedId = model.TeacherId,
+                    HashAlgorithm = "Plain" // <--- ADD THIS LINE to trigger hashing in the repo
                 };
                 _userRepo.AddUser(newUser);
             }

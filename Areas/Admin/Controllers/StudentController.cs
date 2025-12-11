@@ -22,8 +22,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             _service = service;
         }
 
-        // Action xem danh sách sinh viên
-        public IActionResult List(string className) // Lưu ý: Tham số này thực chất là từ khóa tìm kiếm chung
+        public IActionResult List(string className) 
         {
             var data = _repo.GetAll();
 
@@ -32,7 +31,6 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                 var keyword = className.Trim().ToLower();
 
                 data = data.Where(s =>
-                    // ĐÃ XÓA DÒNG s.ClassName VÌ TRƯỜNG NÀY KHÔNG CÒN TRONG MODEL
                     (s.StudentId != null && s.StudentId.ToLower().Contains(keyword)) ||
                     (s.FullName != null && s.FullName.ToLower().Contains(keyword))
                 ).ToList();

@@ -27,20 +27,15 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row">
-                        <div class="col-12">
-                            <h5 class="form-title"><span>Assignment Details</span></h5>
-                        </div>
-
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label asp-for="SubjectId" class="form-label">Subject</label>
-                                <select asp-for="SubjectId" class="form-control"
-                                        asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectId"))">
-                                    <option value="">-- Select Subject --</option>
-                                </select>
+                                <input asp-for="SubjectId" class="form-control" readonly />
                                 <span asp-validation-for="SubjectId" class="text-danger"></span>
                             </div>
                         </div>
+
+                       
 
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
@@ -78,6 +73,14 @@
                                     <option value="*">All File Types</option>
                                 </select>
                                 <span asp-validation-for="AllowedFileTypes" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label asp-for="ClassId" class="form-label">Class</label>
+                                <select asp-for="ClassId" class="form-control" asp-items="ViewBag.Classes">
+                                    <option value="">-- Select Class --</option>
+                                </select>
                             </div>
                         </div>
 

@@ -17,7 +17,8 @@ namespace SIMS_FPT.Data.Repositories
             _csvFilePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "assignments.csv");
             if (!File.Exists(_csvFilePath))
             {
-                File.WriteAllText(_csvFilePath, "AssignmentId,SubjectId,Title,Description,DueDate,MaxPoints,AllowedFileTypes,AreGradesPublished,TeacherId" + Environment.NewLine);
+                // Updated header with ClassId
+                File.WriteAllText(_csvFilePath, "AssignmentId,SubjectId,Title,Description,DueDate,MaxPoints,AllowedFileTypes,AreGradesPublished,TeacherId,ClassId" + Environment.NewLine);
             }
         }
 
@@ -33,7 +34,7 @@ namespace SIMS_FPT.Data.Repositories
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;
                 var matches = csvRegex.Matches(line);
-                if (matches.Count < 8) continue; 
+                if (matches.Count < 8) continue;
 
                 string ParseCol(int index)
                 {
@@ -58,7 +59,8 @@ namespace SIMS_FPT.Data.Repositories
                         MaxPoints = int.Parse(ParseCol(5)),
                         AllowedFileTypes = ParseCol(6),
                         AreGradesPublished = bool.Parse(ParseCol(7)),
-                        TeacherId = ParseCol(8)
+                        TeacherId = ParseCol(8),
+                        ClassId = ParseCol(9) // [NEW] Read ClassId
                     });
                 }
                 catch { continue; }
@@ -98,11 +100,11 @@ namespace SIMS_FPT.Data.Repositories
             File.WriteAllLines(_csvFilePath, newLines);
         }
 
-       
         private string Format(AssignmentModel m)
         {
             string Escape(string s) => s?.Replace("\"", "\"\"") ?? "";
-            return $"{m.AssignmentId},{m.SubjectId},\"{Escape(m.Title)}\",\"{Escape(m.Description)}\",{m.DueDate:yyyy-MM-dd},{m.MaxPoints},\"{Escape(m.AllowedFileTypes)}\",{m.AreGradesPublished},{m.TeacherId}";
+            // Added ClassId at the end
+            return $"{m.AssignmentId},{m.SubjectId},\"{Escape(m.Title)}\",\"{Escape(m.Description)}\",{m.DueDate:yyyy-MM-dd},{m.MaxPoints},\"{Escape(m.AllowedFileTypes)}\",{m.AreGradesPublished},{m.TeacherId},{m.ClassId}";
         }
     }
 }

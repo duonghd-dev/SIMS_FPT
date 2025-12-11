@@ -1,3 +1,4 @@
-StudentId,AssignmentId,Grade,TeacherComments,SubmissionDate,FilePath
-BD00772,ASG1001,85,"Good work overall, but needs improvement in analysis section.","2024-05-10","/submissions/sample_submission.pdff"
-STD001,ASG001,,"Processing...","2025-10-10","/submissions/sample_submission.pdf"
+SubmissionId,AssignmentId,StudentId,FilePath,SubmissionDate,Grade,TeacherComments
+d54fa781-9801-40cb-b87a-d61d60bcc9da,ASG1001,BD00671,/submissions/sample_submission.pdff,05/10/2024 00:00:00,85,"Good work overall, but needs improvement in analysis section."
+8669bed3-e567-43a6-bbd0-ea3a8477cda8,ASG001,STD001,/submissions/sample_submission.pdf,10/10/2025 00:00:00,,Processing...
+ee59de26-efc8-4343-a771-af7db0aa3249,e331fe49-d6fa-4223-a8e9-0cb362ae8b70,3,submissions/e331fe49-d6fa-4223-a8e9-0cb362ae8b70/3_753f84cb-19ef-4c5a-8402-69363f4c0418.pdf,12/11/2025 20:58:54,,
