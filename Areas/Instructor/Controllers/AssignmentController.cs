@@ -17,27 +17,26 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
     {
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly ISubjectRepository _subjectRepo;
-        private readonly IClassRepository _classRepo; // [NEW] Injected Class Repo
+        private readonly IClassRepository _classRepo; 
         private readonly IGradingService _gradingService;
         private readonly ISubmissionRepository _submissionRepo;
         private readonly IWebHostEnvironment _env;
 
         public AssignmentController(IAssignmentRepository assignmentRepo,
                                     ISubjectRepository subjectRepo,
-                                    IClassRepository classRepo, // [NEW]
+                                    IClassRepository classRepo, 
                                     ISubmissionRepository submissionRepo,
                                     IGradingService gradingService,
                                     IWebHostEnvironment env)
         {
             _assignmentRepo = assignmentRepo;
             _subjectRepo = subjectRepo;
-            _classRepo = classRepo; // [NEW]
+            _classRepo = classRepo; 
             _submissionRepo = submissionRepo;
             _gradingService = gradingService;
             _env = env;
         }
 
-        // [HELPER] Gets the logged-in Teacher's ID
         private string CurrentTeacherId
         {
             get
@@ -48,7 +47,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
         }
 
-        // [HELPER] Load Classes for this teacher into ViewBag
         private void LoadTeacherClasses(string selectedClassId = null)
         {
             var teacherId = CurrentTeacherId;
@@ -199,7 +197,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult DownloadSubmission(string assignmentId, string studentId)
         {
             var assignment = _assignmentRepo.GetById(assignmentId);
@@ -222,11 +220,15 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 return NotFound($"File not found on server.");
             }
 
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            // Use FileStream for efficiency with potentially large files
+            var stream = System.IO.File.OpenRead(filePath);
             var fileName = Path.GetFileName(filePath);
-            return File(fileBytes, "application/octet-stream", fileName);
+
+            // Return as a download attachment
+            return File(stream, "application/octet-stream", fileName);
         }
 
+        // [UPDATED] Handles inline viewing of submissions
         [HttpGet]
         public IActionResult PreviewSubmission(string assignmentId, string studentId)
         {
@@ -257,6 +259,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 ".jpg" => "image/jpeg",
                 ".jpeg" => "image/jpeg",
                 ".txt" => "text/plain",
+                ".html" => "text/html",
                 _ => "application/octet-stream"
             };
 
