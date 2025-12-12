@@ -13,6 +13,7 @@ using System.Collections.Generic;
 namespace SIMS_FPT.Areas.Student.Controllers
 {
     [Area("Student")]
+    // [Authorize(Roles = "Student")]
     public class AssignmentController : Controller
     {
         private readonly IAssignmentRepository _assignmentRepo;
@@ -75,26 +76,20 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 .Where(a => IsStudentEligibleForAssignment(studentId, a))
                 .ToList();
 
-<<<<<<< Updated upstream
             var viewModel = visibleAssignments
                 .Select(a => new StudentAssignmentViewModel
                 {
                     Assignment = a,
                     Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId)
-=======
-            // 3. ViewModel
-            var viewModel = visibleAssignments
-                .Select(a => {
                     var classInfo = _classRepo.GetById(a.ClassId);
                     return new StudentAssignmentViewModel
                     {
                         Assignment = a,
                         Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId),
-                        ClassName = classInfo?.ClassName ?? "Unknown Class"
+                        ClassName = classInfo?.ClassName ?? "Unknown Class" // Gán tên lớp
                     };
->>>>>>> Stashed changes
                 })
-                .OrderByDescending(x => x.Assignment.DueDate)
+                .OrderByDescending(x => x.Assignment.DueDate) // Lưu ý: Đảm bảo AssignmentModel dùng 'DueDate' (hoặc 'Deadline')
                 .ToList();
 
             return View(viewModel);
@@ -201,16 +196,11 @@ namespace SIMS_FPT.Areas.Student.Controllers
             submission.FilePath = Path.Combine("submissions", assignment.ClassId, assignment.AssignmentId, fileName).Replace("\\", "/");
             submission.SubmissionDate = DateTime.Now;
 
-<<<<<<< Updated upstream
-=======
-            // Reset grade on re-submission if desired
             if (existing != null)
             {
                 submission.Grade = null;
                 submission.TeacherComments = null;
             }
-
->>>>>>> Stashed changes
             _submissionRepo.SaveSubmission(submission);
 
             TempData["Success"] = "Submission uploaded successfully.";
