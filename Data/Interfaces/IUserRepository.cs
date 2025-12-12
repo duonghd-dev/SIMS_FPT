@@ -15,5 +15,7 @@ namespace SIMS_FPT.Data.Interfaces
         void AddTeacherUser(TeacherCSVModel teacher);
         void UpdateUserFromTeacher(TeacherCSVModel teacher, string? oldUsername = null);
         void DeleteUserByUsername(string username);
+        void Update(Users user);
+        Users? GetByLinkedId(string linkedId);
     }
 }

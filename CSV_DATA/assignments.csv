@@ -1,3 +1,2 @@
 AssignmentId,SubjectId,Title,Description,DueDate,MaxPoints,AllowedFileTypes,AreGradesPublished
 ASM-001,SUB007,"Test","Tesada",2025-12-19,100,".pdf, .docx, .doc, .txt",True,TCH011,SE0111
-

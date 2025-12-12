@@ -1,0 +1,98 @@
+﻿@model SIMS_FPT.Models.ViewModels.InstructorProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Edit Profile</h6>
+            </div>
+            <div class="card-body">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Success"]</div>
+                }
+
+                <form asp-action="Profile" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="TeacherId" />
+                    <input type="hidden" asp-for="ExistingImagePath" />
+
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="mb-3">
+                                <img src="@(string.IsNullOrEmpty(Model.ExistingImagePath) ? Url.Content("~/assets/img/603A6862.JPG") : Url.Content(Model.ExistingImagePath))"
+                                     alt="Profile Image"
+                                     class="img-thumbnail rounded-circle"
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            </div>
+                            <div class="custom-file text-left">
+                                <label asp-for="ProfileImage" class="form-label">Change Photo</label>
+                                <input asp-for="ProfileImage" class="form-control" type="file" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <h5 class="mb-3 text-secondary border-bottom pb-2">Personal Details</h5>
+
+                            <div class="form-group row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="FullName" class="font-weight-bold"></label>
+                                    <input asp-for="FullName" class="form-control" />
+                                    <span asp-validation-for="FullName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Email" class="font-weight-bold"></label>
+                                    <input asp-for="Email" class="form-control" readonly />
+                                    <small class="text-muted">Email cannot be changed directly.</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Mobile" class="font-weight-bold"></label>
+                                    <input asp-for="Mobile" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Address" class="font-weight-bold"></label>
+                                    <input asp-for="Address" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="City" class="font-weight-bold"></label>
+                                    <input asp-for="City" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Country" class="font-weight-bold"></label>
+                                    <input asp-for="Country" class="form-control" />
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3 mt-4 text-secondary border-bottom pb-2">Security (Optional)</h5>
+                            <div class="form-group row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="NewPassword" class="font-weight-bold"></label>
+                                    <input asp-for="NewPassword" type="password" class="form-control" placeholder="Leave blank to keep current" />
+                                    <span asp-validation-for="NewPassword" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ConfirmPassword" class="font-weight-bold"></label>
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="text-right mt-3">
+                                <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

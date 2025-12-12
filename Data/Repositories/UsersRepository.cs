@@ -137,5 +137,28 @@ namespace SIMS_FPT.Data.Repositories
         public void AddTeacherUser(TeacherCSVModel t) { }
         public void UpdateUserFromTeacher(TeacherCSVModel t, string? old) { }
         public void DeleteUserByUsername(string u) => DeleteUserByEmail(u);
+        // [NEW] Update User
+        public void Update(Users user)
+        {
+            var users = ReadAllUsersInternal();
+            var index = users.FindIndex(u => u.Id == user.Id);
+            if (index != -1)
+            {
+                // Ensure password is hashed if it was changed to plain text
+                if (user.HashAlgorithm == "Plain")
+                {
+                    user.Password = PasswordHasherHelper.Hash(user.Password);
+                    user.HashAlgorithm = "PBKDF2";
+                }
+                users[index] = user;
+                WriteAllUsersInternal(users);
+            }
+        }
+
+        // [NEW] Get by LinkedId (TeacherId)
+        public Users? GetByLinkedId(string linkedId)
+        {
+            return ReadAllUsersInternal().FirstOrDefault(u => u.LinkedId == linkedId);
+        }
     }
 }

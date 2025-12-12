@@ -45,7 +45,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
             }
         }
 
-        // [UPDATED] Helper: Check if student is allowed to access this assignment
+        // Helper: Check if student is allowed to access this assignment
         private bool IsStudentEligibleForAssignment(string studentId, AssignmentModel assignment)
         {
             if (!string.IsNullOrEmpty(assignment.ClassId))
@@ -76,20 +76,19 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 .Where(a => IsStudentEligibleForAssignment(studentId, a))
                 .ToList();
 
+            // 3. ViewModel
             var viewModel = visibleAssignments
-                .Select(a => new StudentAssignmentViewModel
-                {
-                    Assignment = a,
-                    Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId)
+                .Select(a => {
+                    // Corrected Logic: Use a code block to get ClassName before creating the ViewModel
                     var classInfo = _classRepo.GetById(a.ClassId);
                     return new StudentAssignmentViewModel
                     {
                         Assignment = a,
                         Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId),
-                        ClassName = classInfo?.ClassName ?? "Unknown Class" // Gán tên lớp
+                        ClassName = classInfo?.ClassName ?? "Unknown Class"
                     };
                 })
-                .OrderByDescending(x => x.Assignment.DueDate) // Lưu ý: Đảm bảo AssignmentModel dùng 'DueDate' (hoặc 'Deadline')
+                .OrderByDescending(x => x.Assignment.DueDate)
                 .ToList();
 
             return View(viewModel);
@@ -166,7 +165,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
 
             var studentId = CurrentStudentId;
 
-            // [UPDATED] Create structure: submissions/{ClassId}/{AssignmentId}
+            // Create structure: submissions/{ClassId}/{AssignmentId}
             var uploadsFolder = Path.Combine(_env.WebRootPath, "submissions", assignment.ClassId, assignment.AssignmentId);
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
@@ -196,11 +195,13 @@ namespace SIMS_FPT.Areas.Student.Controllers
             submission.FilePath = Path.Combine("submissions", assignment.ClassId, assignment.AssignmentId, fileName).Replace("\\", "/");
             submission.SubmissionDate = DateTime.Now;
 
+            // Reset grade on re-submission if desired
             if (existing != null)
             {
                 submission.Grade = null;
                 submission.TeacherComments = null;
             }
+
             _submissionRepo.SaveSubmission(submission);
 
             TempData["Success"] = "Submission uploaded successfully.";
