@@ -13,6 +13,7 @@ using System.Collections.Generic;
 namespace SIMS_FPT.Areas.Student.Controllers
 {
     [Area("Student")]
+    // [Authorize(Roles = "Student")]
     public class AssignmentController : Controller
     {
         private readonly IAssignmentRepository _assignmentRepo;
@@ -79,13 +80,19 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 .Where(a => IsStudentEligibleForAssignment(studentId, a))
                 .ToList();
 
+            // 3. Đổ dữ liệu vào ViewModel (có lấy thêm Tên Lớp)
             var viewModel = visibleAssignments
-                .Select(a => new StudentAssignmentViewModel
-                {
-                    Assignment = a,
-                    Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId)
+                .Select(a => {
+                    // Lấy tên lớp để hiển thị
+                    var classInfo = _classRepo.GetById(a.ClassId);
+                    return new StudentAssignmentViewModel
+                    {
+                        Assignment = a,
+                        Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId),
+                        ClassName = classInfo?.ClassName ?? "Unknown Class" // Gán tên lớp
+                    };
                 })
-                .OrderByDescending(x => x.Assignment.DueDate)
+                .OrderByDescending(x => x.Assignment.DueDate) // Lưu ý: Đảm bảo AssignmentModel dùng 'DueDate' (hoặc 'Deadline')
                 .ToList();
 
             return View(viewModel);
@@ -188,6 +195,13 @@ namespace SIMS_FPT.Areas.Student.Controllers
             var submission = existing ?? new SubmissionModel { AssignmentId = id, StudentId = studentId };
             submission.FilePath = Path.Combine("submissions", assignment.AssignmentId, fileName).Replace("\\", "/");
             submission.SubmissionDate = DateTime.Now;
+
+            // Nếu nộp lại thì reset điểm (tuỳ logic trường bạn, thường nộp lại giáo viên phải chấm lại)
+            if (existing != null)
+            {
+                submission.Grade = null;
+                submission.TeacherComments = null;
+            }
 
             _submissionRepo.SaveSubmission(submission);
 
