@@ -1,0 +1,58 @@
+@model List<SIMS_FPT.Models.StudentCSVModel>
+
+@{
+    ViewData["Title"] = "Classmates";
+    Layout = "~/Areas/Student/Views/Shared/_StudentLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Classmates: @ViewBag.ClassName</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index">Enrollment</a></li>
+                        <li class="breadcrumb-item active">Classmates</li>
+                    </ul>
+                </div>
+                <div class="col-auto text-end float-end ms-auto">
+                    <a asp-action="Index" class="btn btn-outline-primary me-2"><i class="fas fa-arrow-left"></i> Back to List</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            @if (Model.Count == 0)
+            {
+                <div class="col-12">
+                    <div class="alert alert-info text-center">No students found in this class yet.</div>
+                </div>
+            }
+            else
+            {
+                @foreach (var student in Model)
+                {
+                    <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div class="student-box flex-fill">
+                                    <div class="student-img">
+                                        <div class="student-img-bg">
+                                            <img class="img-fluid img-circle" src="~/assets/img/profiles/avatar-01.jpg" alt="Student Image">
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title mb-1">@student.FullName</h5>
+                                    <small class="text-muted">Student ID: @student.StudentId</small>
+                                    <div class="mt-2 text-break">
+                                        <i class="far fa-envelope"></i> @student.Email
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

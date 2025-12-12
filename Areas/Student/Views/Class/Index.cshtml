@@ -1,0 +1,96 @@
+@model List<SIMS_FPT.Areas.Student.Controllers.ClassViewModel>
+
+@{
+    ViewData["Title"] = "Class Enrollment";
+    Layout = "~/Areas/Student/Views/Shared/_StudentLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Available Classes</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Enrollment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0 datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Class ID</th>
+                                        <th>Class Name</th>
+                                        <th>Subject</th>
+                                        <th>Lecturer</th>
+                                        <th>Semester</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Class.ClassId</td>
+                                            <td>
+                                                <h2 class="table-avatar">
+                                                    <a>@item.Class.ClassName</a>
+                                                </h2>
+                                            </td>
+                                            <td>@item.Class.SubjectName</td>
+                                            <td>@item.Class.TeacherName</td>
+                                            <td>@item.Class.Semester</td>
+                                            <td class="text-end">
+                                                @if (item.IsJoined)
+                                                {
+                                                    <button class="btn btn-sm bg-success-light me-2" disabled>
+                                                        <i class="fas fa-check"></i> Enrolled
+                                                    </button>
+                                                    <a asp-action="Classmates" asp-route-classId="@item.Class.ClassId" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-users"></i> Classmates
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <form asp-action="Join" method="post" style="display:inline;">
+                                                        <input type="hidden" name="classId" value="@item.Class.ClassId" />
+                                                        <button type="submit" class="btn btn-sm bg-danger-light">
+                                                            <i class="fas fa-plus"></i> Enroll Now
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
