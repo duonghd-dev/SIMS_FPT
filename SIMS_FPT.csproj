@@ -17,4 +17,8 @@
     <Folder Include="wwwroot\submissions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\submissions\" />
+  </ItemGroup>
+
 </Project>

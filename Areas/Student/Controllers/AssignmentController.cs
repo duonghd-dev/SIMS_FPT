@@ -13,6 +13,7 @@ using System.Collections.Generic;
 namespace SIMS_FPT.Areas.Student.Controllers
 {
     [Area("Student")]
+    // [Authorize(Roles = "Student")]
     public class AssignmentController : Controller
     {
         private readonly IAssignmentRepository _assignmentRepo;
@@ -75,13 +76,6 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 .Where(a => IsStudentEligibleForAssignment(studentId, a))
                 .ToList();
 
-<<<<<<< Updated upstream
-            var viewModel = visibleAssignments
-                .Select(a => new StudentAssignmentViewModel
-                {
-                    Assignment = a,
-                    Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId)
-=======
             // 3. ViewModel
             var viewModel = visibleAssignments
                 .Select(a => {
@@ -92,7 +86,6 @@ namespace SIMS_FPT.Areas.Student.Controllers
                         Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId),
                         ClassName = classInfo?.ClassName ?? "Unknown Class"
                     };
->>>>>>> Stashed changes
                 })
                 .OrderByDescending(x => x.Assignment.DueDate)
                 .ToList();
@@ -201,8 +194,6 @@ namespace SIMS_FPT.Areas.Student.Controllers
             submission.FilePath = Path.Combine("submissions", assignment.ClassId, assignment.AssignmentId, fileName).Replace("\\", "/");
             submission.SubmissionDate = DateTime.Now;
 
-<<<<<<< Updated upstream
-=======
             // Reset grade on re-submission if desired
             if (existing != null)
             {
@@ -210,7 +201,6 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 submission.TeacherComments = null;
             }
 
->>>>>>> Stashed changes
             _submissionRepo.SaveSubmission(submission);
 
             TempData["Success"] = "Submission uploaded successfully.";

@@ -51,7 +51,10 @@
                                 <p class="text-muted mb-0">Instructor</p>
                             </div>
                         </div>
-                        <a class="dropdown-item" href="#">Profile</a>
+
+                        @* [UPDATED] Link to the Profile Action *@
+                        <a class="dropdown-item" asp-area="Instructor" asp-controller="Home" asp-action="Profile">Profile</a>
+
                         <a class="dropdown-item text-danger" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
                     </div>
                 </li>
