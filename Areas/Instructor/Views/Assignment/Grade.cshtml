@@ -11,10 +11,23 @@
             <h6 class="m-0 font-weight-bold text-primary">Grading: @Model.AssignmentTitle</h6>
         </div>
         <div class="card-body">
-            @* CHANGED: asp-action is now "Grade" *@
+
+            @* 1. Add Validation Summary to see WHY it is not saving *@
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <strong>Unable to save changes:</strong>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            }
+
             <form asp-action="Grade" method="post">
+                @* 2. Hidden Fields to preserve data on Save *@
                 <input type="hidden" asp-for="AssignmentId" />
                 <input type="hidden" asp-for="AssignmentTitle" />
+
+                @* CRITICAL FIX: Persist MaxPoints so it doesn't reset to 0 *@
+                <input type="hidden" asp-for="MaxPoints" />
 
                 <div class="form-check mb-4 p-3 bg-light border rounded">
                     <input class="form-check-input" type="checkbox" asp-for="IsPublished" id="publishToggle">
@@ -40,9 +53,11 @@
                             @for (int i = 0; i < Model.StudentGrades.Count; i++)
                             {
                                 <tr>
+                                    @* 3. Bind properties for the list *@
                                     <input type="hidden" asp-for="StudentGrades[i].StudentId" />
                                     <input type="hidden" asp-for="StudentGrades[i].StudentName" />
                                     <input type="hidden" asp-for="StudentGrades[i].SubmissionFilePath" />
+                                    <input type="hidden" asp-for="StudentGrades[i].HasSubmitted" />
 
                                     <td class="align-middle">
                                         @Model.StudentGrades[i].StudentName
@@ -79,14 +94,16 @@
 
                                     <td class="align-middle">
                                         <div class="input-group">
+                                            @* 4. Ensure min/max match the model limits *@
                                             <input type="number"
                                                    class="form-control"
                                                    asp-for="StudentGrades[i].Grade"
                                                    min="0"
                                                    max="@Model.MaxPoints"
-                                                   step="0.5"
-                                                   placeholder="0" />
+                                                   step="0.1"
+                                                   placeholder="-" />
                                         </div>
+                                        <span asp-validation-for="StudentGrades[i].Grade" class="text-danger small"></span>
                                     </td>
 
                                     <td class="align-middle">

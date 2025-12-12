@@ -1,4 +1,9 @@
 SubmissionId,AssignmentId,StudentId,FilePath,SubmissionDate,Grade,TeacherComments
+<<<<<<< Updated upstream
 d54fa781-9801-40cb-b87a-d61d60bcc9da,ASG1001,BD00671,/submissions/ASG1001/file.pdf,05/10/2024 00:00:00,85,"Good work overall, but needs improvement in analysis section."
 01521904-bede-4311-a67c-4d84c7774ef6,ASG1001,BD00772,submissions/ASG1001/BD00772_c001c005-348c-4d89-96c0-4a1cb382553e.pdf,12/12/2025 10:08:44,,
 364564c8-442a-480a-8c1d-209843bccb14,ASM-001,BD00772,submissions/ASM-001/BD00772_0dee5b1b-121a-49ff-9276-9fdb68a90b98.pdf,12/12/2025 10:33:22,,
+=======
+ba745d18-7f48-4cd3-9e1c-a69a6aaedec1,ASM-001,BD008,submissions/SE0111/ASM-001/BD008_08ee403b-0d51-4d24-a84b-f25efd681393.pdf,12/12/2025 19:14:58,80,das
+60869e26-195c-41ec-8502-fd11f6da913d,ASM-001,BD009,submissions/SE0111/ASM-001/BD009_3087635e-b195-437e-8b92-4ab7e08971ad.pdf,12/12/2025 19:21:52,,
+>>>>>>> Stashed changes

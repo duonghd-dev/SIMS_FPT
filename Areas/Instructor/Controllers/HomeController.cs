@@ -17,16 +17,23 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly ISubmissionRepository _submissionRepo;
         private readonly IStudentRepository _studentRepo;
+        // 1. Add new repositories
+        private readonly IClassRepository _classRepo;
+        private readonly IStudentClassRepository _studentClassRepo;
 
         public HomeController(ISubjectRepository subjectRepo,
                               IAssignmentRepository assignmentRepo,
                               ISubmissionRepository submissionRepo,
-                              IStudentRepository studentRepo)
+                              IStudentRepository studentRepo,
+                              IClassRepository classRepo,             // Inject Class Repo
+                              IStudentClassRepository studentClassRepo) // Inject StudentClass Repo
         {
             _subjectRepo = subjectRepo;
             _assignmentRepo = assignmentRepo;
             _submissionRepo = submissionRepo;
             _studentRepo = studentRepo;
+            _classRepo = classRepo;
+            _studentClassRepo = studentClassRepo;
         }
 
         private string CurrentTeacherId
@@ -50,18 +57,29 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 .OrderBy(a => a.DueDate)
                 .ToList();
 
-            // Build student list across subjects taught by this instructor
+            // 2. Build student list based on classes taught by this instructor
             var students = new List<Models.StudentCSVModel>();
-            foreach (var assn in teacherAssignments)
+
+            // Get all classes where the teacher_id matches the current instructor
+            var teacherClasses = _classRepo.GetAll()
+                .Where(c => c.TeacherName == teacherId)
+                .ToList();
+
+            // Get students enrolled in these specific classes
+            var enrolledIds = new HashSet<string>(); // Use HashSet to prevent duplicates
+
+            foreach (var cls in teacherClasses)
             {
-                var subjectStudents = _studentRepo.GetBySubject(assn.SubjectId);
-                if (subjectStudents != null)
+                var enrollments = _studentClassRepo.GetByClassId(cls.ClassId);
+                foreach (var enr in enrollments)
                 {
-                    foreach (var s in subjectStudents)
+                    if (!enrolledIds.Contains(enr.StudentId))
                     {
-                        if (students.All(x => x.StudentId != s.StudentId))
+                        var student = _studentRepo.GetById(enr.StudentId);
+                        if (student != null)
                         {
-                            students.Add(s);
+                            students.Add(student);
+                            enrolledIds.Add(enr.StudentId);
                         }
                     }
                 }
@@ -163,7 +181,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             .OrderByDescending(x => x.RiskLevel)
             .ToList();
 
-            // 1. Fetch Data
             return View(model);
         }
 
