@@ -48,16 +48,12 @@ namespace SIMS_FPT.Areas.Student.Controllers
         // [UPDATED] Helper: Check if student is allowed to access this assignment
         private bool IsStudentEligibleForAssignment(string studentId, AssignmentModel assignment)
         {
-            // 1. [NEW LOGIC] If Assignment is linked to a specific Class, check enrollment directly
-            // This ensures a student in "Class A" cannot see assignments for "Class B", 
-            // even if they share the same Subject and Teacher.
             if (!string.IsNullOrEmpty(assignment.ClassId))
             {
                 return _studentClassRepo.IsEnrolled(assignment.ClassId, studentId);
             }
 
-            // 2. [FALLBACK] For old assignments created before the ClassId update
-            // Check if any of the student's classes match the assignment's Subject AND Teacher
+            // Fallback for old assignments
             var enrollments = _studentClassRepo.GetByStudentId(studentId);
             var enrolledClassIds = enrollments.Select(e => e.ClassId).ToList();
 
@@ -80,10 +76,11 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 .Where(a => IsStudentEligibleForAssignment(studentId, a))
                 .ToList();
 
-            // 3. Đổ dữ liệu vào ViewModel (có lấy thêm Tên Lớp)
             var viewModel = visibleAssignments
-                .Select(a => {
-                    // Lấy tên lớp để hiển thị
+                .Select(a => new StudentAssignmentViewModel
+                {
+                    Assignment = a,
+                    Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId)
                     var classInfo = _classRepo.GetById(a.ClassId);
                     return new StudentAssignmentViewModel
                     {
@@ -104,7 +101,6 @@ namespace SIMS_FPT.Areas.Student.Controllers
             var assignment = _assignmentRepo.GetById(id);
             if (assignment == null) return NotFound();
 
-            // [SECURITY] Check if student is allowed to access this assignment
             if (!IsStudentEligibleForAssignment(CurrentStudentId, assignment))
             {
                 return RedirectToAction("AccessDenied", "Login", new { area = "" });
@@ -169,14 +165,16 @@ namespace SIMS_FPT.Areas.Student.Controllers
             }
 
             var studentId = CurrentStudentId;
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "submissions", assignment.AssignmentId);
+
+            // [UPDATED] Create structure: submissions/{ClassId}/{AssignmentId}
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "submissions", assignment.ClassId, assignment.AssignmentId);
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
             var extension = Path.GetExtension(uploadFile.FileName);
             var fileName = $"{studentId}_{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
-            // Clean up old file
+            // Clean up old file if exists
             var existing = _submissionRepo.GetByStudentAndAssignment(studentId, id);
             if (existing != null && !string.IsNullOrEmpty(existing.FilePath))
             {
@@ -193,16 +191,16 @@ namespace SIMS_FPT.Areas.Student.Controllers
             }
 
             var submission = existing ?? new SubmissionModel { AssignmentId = id, StudentId = studentId };
-            submission.FilePath = Path.Combine("submissions", assignment.AssignmentId, fileName).Replace("\\", "/");
+
+            // Save relative path using the new structure
+            submission.FilePath = Path.Combine("submissions", assignment.ClassId, assignment.AssignmentId, fileName).Replace("\\", "/");
             submission.SubmissionDate = DateTime.Now;
 
-            // Nếu nộp lại thì reset điểm (tuỳ logic trường bạn, thường nộp lại giáo viên phải chấm lại)
             if (existing != null)
             {
                 submission.Grade = null;
                 submission.TeacherComments = null;
             }
-
             _submissionRepo.SaveSubmission(submission);
 
             TempData["Success"] = "Submission uploaded successfully.";
