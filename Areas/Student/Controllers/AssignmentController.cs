@@ -45,7 +45,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
             }
         }
 
-        // [UPDATED] Helper: Check if student is allowed to access this assignment
+        // Helper: Check if student is allowed to access this assignment
         private bool IsStudentEligibleForAssignment(string studentId, AssignmentModel assignment)
         {
             if (!string.IsNullOrEmpty(assignment.ClassId))
@@ -79,6 +79,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
             // 3. ViewModel
             var viewModel = visibleAssignments
                 .Select(a => {
+                    // Corrected Logic: Use a code block to get ClassName before creating the ViewModel
                     var classInfo = _classRepo.GetById(a.ClassId);
                     return new StudentAssignmentViewModel
                     {
@@ -164,7 +165,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
 
             var studentId = CurrentStudentId;
 
-            // [UPDATED] Create structure: submissions/{ClassId}/{AssignmentId}
+            // Create structure: submissions/{ClassId}/{AssignmentId}
             var uploadsFolder = Path.Combine(_env.WebRootPath, "submissions", assignment.ClassId, assignment.AssignmentId);
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
