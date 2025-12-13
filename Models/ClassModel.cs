@@ -12,7 +12,7 @@ namespace SIMS_FPT.Models
         public string ClassName { get; set; }
 
         [Name("subject_id")] // Liên kết với SubjectModel
-        public string SubjectName { get; set; }
+        public string SubjectId { get; set; }
 
         [Name("teacher_id")] // Liên kết với Teacher (User có Role Teacher)
         public string TeacherName { get; set; }
@@ -23,5 +23,8 @@ namespace SIMS_FPT.Models
         // Mới thêm: Số lượng sinh viên (Sĩ số)
         [Name("number_of_students")]
         public int NumberOfStudents { get; set; }
+
+        [Ignore]
+        public string SubjectName { get; set; }
     }
 }

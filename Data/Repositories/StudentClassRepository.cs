@@ -87,5 +87,25 @@ namespace SIMS_FPT.Data.Repositories
         {
             return ReadAll().Any(x => x.ClassId == classId && x.StudentId == studentId);
         }
+
+        // ... (các hàm GetAll, Add có sẵn giữ nguyên) ...
+
+        public void DeleteByClassAndStudent(string classId, string studentId)
+        {
+            var allRecords = ReadAll();
+            var recordToDelete = allRecords.FirstOrDefault(x => x.ClassId == classId && x.StudentId == studentId);
+
+            if (recordToDelete != null)
+            {
+                allRecords.Remove(recordToDelete);
+                // Ghi đè lại file CSV
+                using (var writer = new StreamWriter(_filePath))
+                using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
+                {
+                    csv.WriteRecords(allRecords);
+                }
+            }
+        }
+        // ...
     }
 }

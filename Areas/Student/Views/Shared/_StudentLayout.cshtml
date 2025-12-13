@@ -209,9 +209,9 @@
                         </a>
                     </li>
 
-                    <li>
-                        <a href="#">
-                            <i class="fas fa-book-reader"></i> <span>My Classes</span>
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Course" ? "active" : "")">
+                        <a asp-area="Student" asp-controller="Course" asp-action="Index">
+                            <i class="fas fa-book-reader"></i> <span>My Courses</span>
                         </a>
                     </li>
                 </ul>

@@ -16,34 +16,57 @@ namespace SIMS_FPT.Areas.Student.Controllers
         private readonly IClassRepository _classRepo;
         private readonly IStudentClassRepository _studentClassRepo;
         private readonly IStudentRepository _studentRepo;
+        // Thêm vào Constructor
+        private readonly ITeacherRepository _teacherRepo;
+        private readonly ISubjectRepository _subjectRepo;
 
-        public ClassController(IClassRepository classRepo, 
+        public ClassController(IClassRepository classRepo,
                                IStudentClassRepository studentClassRepo,
-                               IStudentRepository studentRepo)
+                               IStudentRepository studentRepo, ITeacherRepository teacherRepo, ISubjectRepository subjectRepo)
         {
             _classRepo = classRepo;
             _studentClassRepo = studentClassRepo;
             _studentRepo = studentRepo;
-        }
 
+            _teacherRepo = teacherRepo;
+            _subjectRepo = subjectRepo;
+        }
+        //update Action Index
         public IActionResult Index()
         {
             var studentId = User.FindFirst("LinkedId")?.Value;
-
             if (string.IsNullOrEmpty(studentId))
             {
-                TempData["Error"] = "Your account is not linked to any student profile.";
+                TempData["Error"] = "Student ID not found.";
                 return View(new List<ClassViewModel>());
             }
 
             var allClasses = _classRepo.GetAll();
-            var model = allClasses.Select(c => new ClassViewModel
+            var model = new List<ClassViewModel>();
+
+            // LOGIC SỬA ĐỔI: Không cần lookup Teacher/Subject nữa vì ClassModel đã có sẵn Name
+            foreach (var c in allClasses)
             {
-                Class = c,
-                IsJoined = _studentClassRepo.IsEnrolled(c.ClassId, studentId) 
-            }).ToList();
+                model.Add(new ClassViewModel
+                {
+                    Class = c,
+                    IsJoined = _studentClassRepo.IsEnrolled(c.ClassId, studentId)
+                });
+            }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Leave(string classId)
+        {
+            var studentId = User.FindFirst("LinkedId")?.Value;
+            if (string.IsNullOrEmpty(studentId)) return RedirectToAction("Index");
+
+            // Gọi hàm xóa mới thêm
+            _studentClassRepo.DeleteByClassAndStudent(classId, studentId);
+            TempData["Success"] = "You have left the class.";
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -66,7 +89,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
                     StudentId = studentId,
                     JoinedDate = DateTime.Now
                 };
-                _studentClassRepo.Add(enrollment); 
+                _studentClassRepo.Add(enrollment);
                 TempData["Success"] = "Enrolled successfully!";
             }
             else
@@ -84,7 +107,6 @@ namespace SIMS_FPT.Areas.Student.Controllers
 
             var enrollments = _studentClassRepo.GetByClassId(classId);
             var students = new List<StudentCSVModel>();
-            
             foreach (var item in enrollments)
             {
                 var student = _studentRepo.GetById(item.StudentId);
