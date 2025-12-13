@@ -117,6 +117,43 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 SelectedStudentId = selectedStudent?.StudentId,
                 SelectedStudentName = selectedStudent?.FullName ?? "No students"
             };
+            var allActivities = new List<RecentActivityItem>();
+
+            if (teacherAssignments.Any())
+            {
+                foreach (var assn in teacherAssignments)
+                {
+                    // ... (Existing Chart Logic: PerformanceLabels, Counts, etc.) ...
+
+                    // Fetch submissions for this assignment
+                    var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
+
+                    // ... (Existing Total counts logic) ...
+
+                    // [NEW] Collect submissions for the feed
+                    foreach (var sub in submissions)
+                    {
+                        var student = _studentRepo.GetById(sub.StudentId);
+                        if (student != null)
+                        {
+                            allActivities.Add(new RecentActivityItem
+                            {
+                                StudentName = student.FullName,
+                                StudentId = sub.StudentId,
+                                AssignmentTitle = assn.Title,
+                                SubmissionDate = sub.SubmissionDate,
+                                TimeAgo = CalculateTimeAgo(sub.SubmissionDate)
+                            });
+                        }
+                    }
+                }
+            }
+         model.RecentActivities = allActivities
+        .OrderByDescending(x => x.SubmissionDate)
+        .Take(5)
+        .ToList();
+            int totalSubmissions = 0;
+            int totalGraded = 0;
 
             if (teacherAssignments.Any())
             {
@@ -125,19 +162,33 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                     model.PerformanceLabels.Add(assn.Title);
 
                     var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
+
+                    // [NEW] Update total counts
+                    totalSubmissions += submissions.Count;
+                    totalGraded += submissions.Count(s => s.Grade.HasValue);
+
                     model.SubmissionCounts.Add(submissions.Count);
                     model.GradedCounts.Add(submissions.Count(s => s.Grade.HasValue));
+
+                    // --- FIX 1: Calculate Percentage Scores for Performance Chart ---
+                    // Use 1 to prevent division by zero, though this implies a max point assignment is 1.
+                    double maxPoints = assn.MaxPoints > 0 ? assn.MaxPoints : 1;
 
                     var graded = submissions.Where(s => s.Grade.HasValue).ToList();
                     double classAvg = graded.Any()
                         ? graded.Average(s => s.Grade.GetValueOrDefault(0))
                         : 0;
-                    model.ClassAverageSeries.Add(Math.Round(classAvg, 2));
+                    // Store as percentage
+                    double classAvgPercentage = (classAvg / maxPoints) * 100;
+                    model.ClassAverageSeries.Add(Math.Round(classAvgPercentage, 2));
 
                     if (selectedStudent != null)
                     {
                         var studentSub = submissions.FirstOrDefault(s => s.StudentId == selectedStudent.StudentId);
-                        model.StudentSeries.Add(Math.Round(studentSub?.Grade ?? 0, 2));
+                        double studentScore = studentSub?.Grade ?? 0;
+                        // Store as percentage
+                        double studentPercentage = (studentScore / maxPoints) * 100;
+                        model.StudentSeries.Add(Math.Round(studentPercentage, 2));
                     }
                     else
                     {
@@ -153,6 +204,10 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 model.SubmissionCounts.Add(0);
                 model.GradedCounts.Add(0);
             }
+
+            // [NEW] Assign total counts to model
+            model.TotalSubmissions = totalSubmissions;
+            model.TotalGraded = totalGraded;
 
             model.AtRiskStudents = students.Select(s =>
             {
@@ -306,6 +361,15 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             // Reload model to show new image/data
             model.ExistingImagePath = teacher.ImagePath;
             return View(model);
+        }
+        private string CalculateTimeAgo(DateTime date)
+        {
+            var span = DateTime.Now - date;
+            if (span.TotalMinutes < 60)
+                return $"{(int)span.TotalMinutes} mins ago";
+            if (span.TotalHours < 24)
+                return $"{(int)span.TotalHours} hours ago";
+            return $"{(int)span.TotalDays} days ago";
         }
     }
 }
