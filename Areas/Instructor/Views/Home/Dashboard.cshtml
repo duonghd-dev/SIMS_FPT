@@ -92,6 +92,47 @@
     </div>
 </div>
 
+<!-- Recent Activity-->
+<div class="row">
+    <div class="col-12 col-lg-8">
+    </div>
+
+    <div class="col-12 col-lg-4 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <ul class="activity-feed">
+                    @if (Model.RecentActivities.Any())
+                    {
+                        foreach (var activity in Model.RecentActivities)
+                        {
+                            <li class="feed-item">
+                                <div class="feed-date">@activity.TimeAgo</div>
+                                <span class="feed-text">
+                                    <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@activity.StudentId">
+                                        @activity.StudentName
+                                    </a>
+                                    submitted
+                                    <strong>@activity.AssignmentTitle</strong>
+                                </span>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="feed-item">
+                            <span class="feed-text text-muted">No recent submissions found.</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="row">
     <div class="col-md-12 col-lg-6 d-flex">
         <div class="card card-chart flex-fill w-100">

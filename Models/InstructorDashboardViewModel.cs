@@ -4,6 +4,7 @@ namespace SIMS_FPT.Models.ViewModels
 {
     public class InstructorDashboardViewModel
     {
+        public List<RecentActivityItem> RecentActivities { get; set; } = new List<RecentActivityItem>();
         // 2. Classroom & Schedule Management
         public List<ClassScheduleItem> TodayClasses { get; set; } = new List<ClassScheduleItem>();
 
@@ -24,6 +25,7 @@ namespace SIMS_FPT.Models.ViewModels
         // 5. Personal/Administrative Summary
         public int LeaveDaysRemaining { get; set; }
         public string LastSalaryMonth { get; set; }
+
     }
 
     public class ClassScheduleItem
@@ -46,5 +48,13 @@ namespace SIMS_FPT.Models.ViewModels
     {
         public string StudentId { get; set; }
         public string StudentName { get; set; }
+    }
+    public class RecentActivityItem
+    {
+        public string StudentName { get; set; }
+        public string StudentId { get; set; } // For linking to profile
+        public string AssignmentTitle { get; set; }
+        public DateTime SubmissionDate { get; set; }
+        public string TimeAgo { get; set; } // e.g., "2 hours ago"
     }
 }
