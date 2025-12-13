@@ -118,6 +118,10 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 SelectedStudentName = selectedStudent?.FullName ?? "No students"
             };
 
+            // [NEW] Variables to hold total counts for the Doughnut Chart
+            int totalSubmissions = 0;
+            int totalGraded = 0;
+
             if (teacherAssignments.Any())
             {
                 foreach (var assn in teacherAssignments)
@@ -125,19 +129,33 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                     model.PerformanceLabels.Add(assn.Title);
 
                     var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
+
+                    // [NEW] Update total counts
+                    totalSubmissions += submissions.Count;
+                    totalGraded += submissions.Count(s => s.Grade.HasValue);
+
                     model.SubmissionCounts.Add(submissions.Count);
                     model.GradedCounts.Add(submissions.Count(s => s.Grade.HasValue));
+
+                    // --- FIX 1: Calculate Percentage Scores for Performance Chart ---
+                    // Use 1 to prevent division by zero, though this implies a max point assignment is 1.
+                    double maxPoints = assn.MaxPoints > 0 ? assn.MaxPoints : 1;
 
                     var graded = submissions.Where(s => s.Grade.HasValue).ToList();
                     double classAvg = graded.Any()
                         ? graded.Average(s => s.Grade.GetValueOrDefault(0))
                         : 0;
-                    model.ClassAverageSeries.Add(Math.Round(classAvg, 2));
+                    // Store as percentage
+                    double classAvgPercentage = (classAvg / maxPoints) * 100;
+                    model.ClassAverageSeries.Add(Math.Round(classAvgPercentage, 2));
 
                     if (selectedStudent != null)
                     {
                         var studentSub = submissions.FirstOrDefault(s => s.StudentId == selectedStudent.StudentId);
-                        model.StudentSeries.Add(Math.Round(studentSub?.Grade ?? 0, 2));
+                        double studentScore = studentSub?.Grade ?? 0;
+                        // Store as percentage
+                        double studentPercentage = (studentScore / maxPoints) * 100;
+                        model.StudentSeries.Add(Math.Round(studentPercentage, 2));
                     }
                     else
                     {
@@ -153,6 +171,10 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 model.SubmissionCounts.Add(0);
                 model.GradedCounts.Add(0);
             }
+
+            // [NEW] Assign total counts to model
+            model.TotalSubmissions = totalSubmissions;
+            model.TotalGraded = totalGraded;
 
             model.AtRiskStudents = students.Select(s =>
             {
