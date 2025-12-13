@@ -81,10 +81,18 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 .Select(a => {
                     // Corrected Logic: Use a code block to get ClassName before creating the ViewModel
                     var classInfo = _classRepo.GetById(a.ClassId);
+                    var submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId);
+
+                    if (submission != null && !a.AreGradesPublished)
+                    {
+                        submission.Grade = null;        // Hide the grade
+                        submission.TeacherComments = null; // Hide the feedback
+                    }
+
                     return new StudentAssignmentViewModel
                     {
                         Assignment = a,
-                        Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId),
+                        Submission = submission,
                         ClassName = classInfo?.ClassName ?? "Unknown Class"
                     };
                 })
@@ -146,7 +154,9 @@ namespace SIMS_FPT.Areas.Student.Controllers
                         .Select(x => x.Trim().ToLowerInvariant())
                         .ToList();
 
-                    if (ext == null || !allowedList.Contains(ext))
+                    // FIX 2: Remove the dot from the extension before comparing it to the allowed list.
+                    var cleanExt = ext?.TrimStart('.');
+                    if (ext == null || !allowedList.Contains(cleanExt))
                     {
                         ModelState.AddModelError(string.Empty, $"File type {ext} is not allowed for this assignment.");
                     }
