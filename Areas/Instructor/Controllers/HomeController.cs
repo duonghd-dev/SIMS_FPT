@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Helpers;
+using SIMS_FPT.Models;
 using SIMS_FPT.Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 
@@ -17,16 +21,33 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly ISubmissionRepository _submissionRepo;
         private readonly IStudentRepository _studentRepo;
+        private readonly IClassRepository _classRepo;
+        private readonly IStudentClassRepository _studentClassRepo;
+
+        // [NEW] Repositories for Profile
+        private readonly ITeacherRepository _teacherRepo;
+        private readonly IUserRepository _userRepo;
+        private readonly IWebHostEnvironment _env;
 
         public HomeController(ISubjectRepository subjectRepo,
                               IAssignmentRepository assignmentRepo,
                               ISubmissionRepository submissionRepo,
-                              IStudentRepository studentRepo)
+                              IStudentRepository studentRepo,
+                              IClassRepository classRepo,
+                              IStudentClassRepository studentClassRepo,
+                              ITeacherRepository teacherRepo, // Inject
+                              IUserRepository userRepo,       // Inject
+                              IWebHostEnvironment env)
         {
             _subjectRepo = subjectRepo;
             _assignmentRepo = assignmentRepo;
             _submissionRepo = submissionRepo;
             _studentRepo = studentRepo;
+            _classRepo = classRepo;
+            _studentClassRepo = studentClassRepo;
+            _teacherRepo = teacherRepo;
+            _userRepo = userRepo;
+            _env = env;
         }
 
         private string CurrentTeacherId
@@ -39,9 +60,9 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
         }
 
-        // RENAMED FROM Index TO Dashboard
         public IActionResult Dashboard(string studentId = null)
         {
+            // ... (Existing Dashboard Logic - kept same as your previous requests) ...
             var teacherId = CurrentTeacherId;
 
             // Pull assignments owned by this instructor
@@ -50,24 +71,34 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 .OrderBy(a => a.DueDate)
                 .ToList();
 
-            // Build student list across subjects taught by this instructor
+            // 2. Build student list based on classes taught by this instructor
             var students = new List<Models.StudentCSVModel>();
-            foreach (var assn in teacherAssignments)
+
+            // Get all classes where the teacher_id matches the current instructor
+            var teacherClasses = _classRepo.GetAll()
+                .Where(c => c.TeacherName == teacherId)
+                .ToList();
+
+            // Get students enrolled in these specific classes
+            var enrolledIds = new HashSet<string>();
+
+            foreach (var cls in teacherClasses)
             {
-                var subjectStudents = _studentRepo.GetBySubject(assn.SubjectId);
-                if (subjectStudents != null)
+                var enrollments = _studentClassRepo.GetByClassId(cls.ClassId);
+                foreach (var enr in enrollments)
                 {
-                    foreach (var s in subjectStudents)
+                    if (!enrolledIds.Contains(enr.StudentId))
                     {
-                        if (students.All(x => x.StudentId != s.StudentId))
+                        var student = _studentRepo.GetById(enr.StudentId);
+                        if (student != null)
                         {
-                            students.Add(s);
+                            students.Add(student);
+                            enrolledIds.Add(enr.StudentId);
                         }
                     }
                 }
             }
 
-            // Default selected student
             var selectedStudent = !string.IsNullOrEmpty(studentId)
                 ? students.FirstOrDefault(s => s.StudentId == studentId)
                 : students.FirstOrDefault();
@@ -86,8 +117,44 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 SelectedStudentId = selectedStudent?.StudentId,
                 SelectedStudentName = selectedStudent?.FullName ?? "No students"
             };
+            var allActivities = new List<RecentActivityItem>();
 
-            // Build performance + submissions chart data
+            if (teacherAssignments.Any())
+            {
+                foreach (var assn in teacherAssignments)
+                {
+                    // ... (Existing Chart Logic: PerformanceLabels, Counts, etc.) ...
+
+                    // Fetch submissions for this assignment
+                    var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
+
+                    // ... (Existing Total counts logic) ...
+
+                    // [NEW] Collect submissions for the feed
+                    foreach (var sub in submissions)
+                    {
+                        var student = _studentRepo.GetById(sub.StudentId);
+                        if (student != null)
+                        {
+                            allActivities.Add(new RecentActivityItem
+                            {
+                                StudentName = student.FullName,
+                                StudentId = sub.StudentId,
+                                AssignmentTitle = assn.Title,
+                                SubmissionDate = sub.SubmissionDate,
+                                TimeAgo = CalculateTimeAgo(sub.SubmissionDate)
+                            });
+                        }
+                    }
+                }
+            }
+         model.RecentActivities = allActivities
+        .OrderByDescending(x => x.SubmissionDate)
+        .Take(5)
+        .ToList();
+            int totalSubmissions = 0;
+            int totalGraded = 0;
+
             if (teacherAssignments.Any())
             {
                 foreach (var assn in teacherAssignments)
@@ -95,19 +162,33 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                     model.PerformanceLabels.Add(assn.Title);
 
                     var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
+
+                    // [NEW] Update total counts
+                    totalSubmissions += submissions.Count;
+                    totalGraded += submissions.Count(s => s.Grade.HasValue);
+
                     model.SubmissionCounts.Add(submissions.Count);
                     model.GradedCounts.Add(submissions.Count(s => s.Grade.HasValue));
+
+                    // --- FIX 1: Calculate Percentage Scores for Performance Chart ---
+                    // Use 1 to prevent division by zero, though this implies a max point assignment is 1.
+                    double maxPoints = assn.MaxPoints > 0 ? assn.MaxPoints : 1;
 
                     var graded = submissions.Where(s => s.Grade.HasValue).ToList();
                     double classAvg = graded.Any()
                         ? graded.Average(s => s.Grade.GetValueOrDefault(0))
                         : 0;
-                    model.ClassAverageSeries.Add(Math.Round(classAvg, 2));
+                    // Store as percentage
+                    double classAvgPercentage = (classAvg / maxPoints) * 100;
+                    model.ClassAverageSeries.Add(Math.Round(classAvgPercentage, 2));
 
                     if (selectedStudent != null)
                     {
                         var studentSub = submissions.FirstOrDefault(s => s.StudentId == selectedStudent.StudentId);
-                        model.StudentSeries.Add(Math.Round(studentSub?.Grade ?? 0, 2));
+                        double studentScore = studentSub?.Grade ?? 0;
+                        // Store as percentage
+                        double studentPercentage = (studentScore / maxPoints) * 100;
+                        model.StudentSeries.Add(Math.Round(studentPercentage, 2));
                     }
                     else
                     {
@@ -117,7 +198,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
             else
             {
-                // Provide safe defaults so charts don't break
                 model.PerformanceLabels.Add("No assignments yet");
                 model.ClassAverageSeries.Add(0);
                 model.StudentSeries.Add(0);
@@ -125,7 +205,10 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 model.GradedCounts.Add(0);
             }
 
-            // Build at-risk list (avg grade < 50% or missing submissions on more than half assignments)
+            // [NEW] Assign total counts to model
+            model.TotalSubmissions = totalSubmissions;
+            model.TotalGraded = totalGraded;
+
             model.AtRiskStudents = students.Select(s =>
             {
                 double totalScore = 0;
@@ -163,7 +246,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             .OrderByDescending(x => x.RiskLevel)
             .ToList();
 
-            // 1. Fetch Data
             return View(model);
         }
 
@@ -182,6 +264,112 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         public IActionResult MyPayslips()
         {
             return View();
+        }
+
+        // [NEW] Profile Action (GET)
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            var teacherId = CurrentTeacherId;
+            var teacher = _teacherRepo.GetById(teacherId);
+            if (teacher == null) return NotFound("Teacher profile not found.");
+
+            // Find linked user for login info
+            var user = _userRepo.GetByLinkedId(teacherId);
+
+            var model = new InstructorProfileViewModel
+            {
+                TeacherId = teacher.TeacherId,
+                FullName = teacher.Name,
+                Email = teacher.Email,
+                Mobile = teacher.Mobile,
+                Address = teacher.Address,
+                City = teacher.City,
+                Country = teacher.Country,
+                ExistingImagePath = teacher.ImagePath
+            };
+
+            return View(model);
+        }
+
+        // [NEW] Profile Action (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Profile(InstructorProfileViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var teacherId = CurrentTeacherId;
+            if (model.TeacherId != teacherId) return Forbid();
+
+            var teacher = _teacherRepo.GetById(teacherId);
+            var user = _userRepo.GetByLinkedId(teacherId);
+
+            if (teacher == null) return NotFound();
+
+            // 1. Update Teacher Info
+            teacher.Name = model.FullName;
+            teacher.Email = model.Email;
+            teacher.Mobile = model.Mobile;
+            teacher.Address = model.Address;
+            teacher.City = model.City;
+            teacher.Country = model.Country;
+
+            // 2. Handle Image Upload
+            if (model.ProfileImage != null)
+            {
+                var folder = Path.Combine(_env.WebRootPath, "assets/img/profiles");
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+                var fileName = $"{teacherId}_{Guid.NewGuid()}{Path.GetExtension(model.ProfileImage.FileName)}";
+                var filePath = Path.Combine(folder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.ProfileImage.CopyTo(stream);
+                }
+                teacher.ImagePath = $"~/assets/img/profiles/{fileName}";
+            }
+
+            // 3. Handle Password Change (Sync to Teacher and User CSVs)
+            bool passwordChanged = !string.IsNullOrEmpty(model.NewPassword);
+            if (passwordChanged)
+            {
+                // Note: Teachers.csv usually stores plain/simple pass or none, while Users.csv stores Hash.
+                // We update both for consistency, though Users.csv is what matters for Login.
+                teacher.Password = model.NewPassword;
+            }
+
+            _teacherRepo.Update(teacher);
+
+            // 4. Sync to Users.csv
+            if (user != null)
+            {
+                user.FullName = teacher.Name;
+                user.Email = teacher.Email;
+
+                if (passwordChanged)
+                {
+                    user.Password = PasswordHasherHelper.Hash(model.NewPassword);
+                    user.HashAlgorithm = "PBKDF2";
+                }
+                _userRepo.Update(user);
+            }
+
+            TempData["Success"] = "Profile updated successfully.";
+
+            // Reload model to show new image/data
+            model.ExistingImagePath = teacher.ImagePath;
+            return View(model);
+        }
+        private string CalculateTimeAgo(DateTime date)
+        {
+            var span = DateTime.Now - date;
+            if (span.TotalMinutes < 60)
+                return $"{(int)span.TotalMinutes} mins ago";
+            if (span.TotalHours < 24)
+                return $"{(int)span.TotalHours} hours ago";
+            return $"{(int)span.TotalDays} days ago";
         }
     }
 }

@@ -7,6 +7,7 @@ Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
 25,phucadmin@gmail.com,123,Student,123,Phuc  Nguyen Viet,PBKDF2
 26,phucadmin1@gmail.com,123,Student,123,Phuc  Nguyen Viet,PBKDF2
 27,phuc@gmail.com,AQAAAAIAAYagAAAAEE8yba7Y5tEgx3pCnfTdl7uZjpuvEL8pWYVleSiqTGAbOdOVCDBU3SprnZm7DwAtEg==,Student,BD00672,"PHUC NGUYEN ",PBKDF2
-28,ntc915915@gmail.com,AQAAAAIAAYagAAAAEDUulJjYDjXCNm3XRVWNHApfoo8kBsd0WBCpsLjyu3OUklcsulqznrwdmnswmBeOHA==,Instructor,TCH011,Long,PBKDF2
-29,bnm915915@gmail.com,AQAAAAIAAYagAAAAEDUulJjYDjXCNm3XRVWNHApfoo8kBsd0WBCpsLjyu3OUklcsulqznrwdmnswmBeOHA==,Student,BD00772,Long,PBKDF2
-30,liubu1412@gmail.com,AQAAAAIAAYagAAAAEOM7Tdl0rwYEbwvFS14upCem9BpICT/gFxPRLGjzlqFrSeZpX8YghW9QJrIZtb9oiw==,Instructor,TCH012,Long,PBKDF2
+28,ntc915915@gmail.com,AQAAAAIAAYagAAAAENqcZ0kp/MdUVrIHmhBnan7YnGdfqJ5aSa6gTCJAPlligZweXD1x7XPzwYGcgWZ/RQ==,Instructor,TCH011,Long,PBKDF2
+29,bnm915915@gmail.com,AQAAAAIAAYagAAAAEPk/YohNIlVmy380c89XMricr/IQaBXImEP/bEA99j/2lPssS26YRBW2tM4P06yelw==,Student,BD008,Phu TuongLong,PBKDF2
+30,nguyenvietphuc@gmail.com,AQAAAAIAAYagAAAAEMkFHZIIEHhHFU0eUIN8caANmKXnMlVdNcxcJynaOOLSca6EEGZFKUYvcqoGzEadFQ==,Student,BD009,Phuc Viet,PBKDF2
+31,httduong@gmail.com,AQAAAAIAAYagAAAAEJu7RX8caC1xCUs8G9gBahWZGGDXt9zz2d4aezCV8DODacJ3bKb7ajOrUlFVFH30jw==,Student,BD007,Do Duong,PBKDF2

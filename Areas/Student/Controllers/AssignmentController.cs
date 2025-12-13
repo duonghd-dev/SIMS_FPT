@@ -45,19 +45,15 @@ namespace SIMS_FPT.Areas.Student.Controllers
             }
         }
 
-        // [UPDATED] Helper: Check if student is allowed to access this assignment
+        // Helper: Check if student is allowed to access this assignment
         private bool IsStudentEligibleForAssignment(string studentId, AssignmentModel assignment)
         {
-            // 1. [NEW LOGIC] If Assignment is linked to a specific Class, check enrollment directly
-            // This ensures a student in "Class A" cannot see assignments for "Class B", 
-            // even if they share the same Subject and Teacher.
             if (!string.IsNullOrEmpty(assignment.ClassId))
             {
                 return _studentClassRepo.IsEnrolled(assignment.ClassId, studentId);
             }
 
-            // 2. [FALLBACK] For old assignments created before the ClassId update
-            // Check if any of the student's classes match the assignment's Subject AND Teacher
+            // Fallback for old assignments
             var enrollments = _studentClassRepo.GetByStudentId(studentId);
             var enrolledClassIds = enrollments.Select(e => e.ClassId).ToList();
 
@@ -80,19 +76,28 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 .Where(a => IsStudentEligibleForAssignment(studentId, a))
                 .ToList();
 
-            // 3. Đổ dữ liệu vào ViewModel (có lấy thêm Tên Lớp)
+            // 3. ViewModel
             var viewModel = visibleAssignments
                 .Select(a => {
-                    // Lấy tên lớp để hiển thị
+                    // Corrected Logic: Use a code block to get ClassName before creating the ViewModel
                     var classInfo = _classRepo.GetById(a.ClassId);
+                    var submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId);
+
+                    // Fix Grade Visibility from previous step
+                    if (submission != null && !a.AreGradesPublished)
+                    {
+                        submission.Grade = null;        // Hide the grade
+                        submission.TeacherComments = null; // Hide the feedback
+                    }
+
                     return new StudentAssignmentViewModel
                     {
                         Assignment = a,
-                        Submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId),
-                        ClassName = classInfo?.ClassName ?? "Unknown Class" // Gán tên lớp
+                        Submission = submission,
+                        ClassName = classInfo?.ClassName ?? "Unknown Class"
                     };
                 })
-                .OrderByDescending(x => x.Assignment.DueDate) // Lưu ý: Đảm bảo AssignmentModel dùng 'DueDate' (hoặc 'Deadline')
+                .OrderByDescending(x => x.Assignment.DueDate)
                 .ToList();
 
             return View(viewModel);
@@ -104,7 +109,6 @@ namespace SIMS_FPT.Areas.Student.Controllers
             var assignment = _assignmentRepo.GetById(id);
             if (assignment == null) return NotFound();
 
-            // [SECURITY] Check if student is allowed to access this assignment
             if (!IsStudentEligibleForAssignment(CurrentStudentId, assignment))
             {
                 return RedirectToAction("AccessDenied", "Login", new { area = "" });
@@ -151,6 +155,9 @@ namespace SIMS_FPT.Areas.Student.Controllers
                         .Select(x => x.Trim().ToLowerInvariant())
                         .ToList();
 
+                    // REVERTED LOGIC (as requested by user): 
+                    // Compare the full extension (e.g., ".pdf") directly against the list.
+                    // This assumes the AllowedFileTypes setting includes the dot.
                     if (ext == null || !allowedList.Contains(ext))
                     {
                         ModelState.AddModelError(string.Empty, $"File type {ext} is not allowed for this assignment.");
@@ -169,14 +176,16 @@ namespace SIMS_FPT.Areas.Student.Controllers
             }
 
             var studentId = CurrentStudentId;
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "submissions", assignment.AssignmentId);
+
+            // Create structure: submissions/{ClassId}/{AssignmentId}
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "submissions", assignment.ClassId, assignment.AssignmentId);
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
             var extension = Path.GetExtension(uploadFile.FileName);
             var fileName = $"{studentId}_{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
-            // Clean up old file
+            // Clean up old file if exists
             var existing = _submissionRepo.GetByStudentAndAssignment(studentId, id);
             if (existing != null && !string.IsNullOrEmpty(existing.FilePath))
             {
@@ -193,10 +202,12 @@ namespace SIMS_FPT.Areas.Student.Controllers
             }
 
             var submission = existing ?? new SubmissionModel { AssignmentId = id, StudentId = studentId };
-            submission.FilePath = Path.Combine("submissions", assignment.AssignmentId, fileName).Replace("\\", "/");
+
+            // Save relative path using the new structure
+            submission.FilePath = Path.Combine("submissions", assignment.ClassId, assignment.AssignmentId, fileName).Replace("\\", "/");
             submission.SubmissionDate = DateTime.Now;
 
-            // Nếu nộp lại thì reset điểm (tuỳ logic trường bạn, thường nộp lại giáo viên phải chấm lại)
+            // Reset grade on re-submission if desired
             if (existing != null)
             {
                 submission.Grade = null;

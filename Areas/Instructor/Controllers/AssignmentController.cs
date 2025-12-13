@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering; // Required for SelectList
+using Microsoft.AspNetCore.Mvc.Rendering; 
 using SIMS_FPT.Business.Interfaces;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
@@ -191,7 +191,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 return RedirectToAction("AccessDenied", "Login", new { area = "" });
             }
 
-            if (!ModelState.IsValid) return View(model);
 
             _gradingService.ProcessGrades(model);
             return RedirectToAction("Index");
@@ -228,7 +227,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             return File(stream, "application/octet-stream", fileName);
         }
 
-        // [UPDATED] Handles inline viewing of submissions
         [HttpGet]
         public IActionResult PreviewSubmission(string assignmentId, string studentId)
         {
@@ -265,6 +263,20 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             var stream = System.IO.File.OpenRead(filePath);
             return File(stream, contentType);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(string id)
+        {
+            var assignment = _assignmentRepo.GetById(id);
+            if (assignment == null || assignment.TeacherId != CurrentTeacherId)
+            {
+                return RedirectToAction("AccessDenied", "Login", new { area = "" });
+            }
+
+            _assignmentRepo.Delete(id);
+            TempData["Success"] = "Assignment deleted successfully.";
+            return RedirectToAction("Index");
         }
     }
 }

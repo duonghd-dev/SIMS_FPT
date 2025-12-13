@@ -1,5 +1,4 @@
 student_id,email,first_name,last_name,gender,date_of_birth,image_path
-BD00671,phucxo262@gmail.com,Phuc,Nguyen Viet,Female,02/05/2005 00:00:00,/images/6f548936-af5e-4778-b6de-94615d05f9b9_484353037_667693502432069_2327044443945068246_n.jpg
-123,phucadmin@gmail.com,"Phuc ",Nguyen Viet,Female,05/24/2004 00:00:00,/images/9850e998-b881-4531-8fa1-5e3b292f97d5_484353037_667693502432069_2327044443945068246_n.jpg
-BD00672,phuc@gmail.com,PHUC,"NGUYEN ",Male,02/05/0022 00:00:00,/images/d360b225-96a6-44a5-bd37-10a8271a5f88_484353037_667693502432069_2327044443945068246_n.jpg
-BD00772,bnm915915@gmail.com,Phu,Long,Male,12/03/2025 00:00:00,/assets/img/profiles/avatar-01.jpg
+BD008,bnm915915@gmail.com,Phu,TuongLong,Male,12/17/2025 00:00:00,/assets/img/profiles/avatar-01.jpg
+BD009,nguyenvietphuc@gmail.com,Phuc,Viet,Male,12/07/2025 00:00:00,/assets/img/profiles/avatar-01.jpg
+BD007,httduong@gmail.com,Do,Duong,Male,12/03/2025 00:00:00,/assets/img/profiles/avatar-01.jpg

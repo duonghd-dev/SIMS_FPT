@@ -7,8 +7,6 @@ namespace SIMS_FPT.Models.ViewModels
     {
         public AssignmentModel Assignment { get; set; }
         public SubmissionModel? Submission { get; set; }
-
-        // MỚI THÊM: Để hiển thị tên lớp trên giao diện
         public string ClassName { get; set; }
         public bool HasSubmission => Submission != null && !string.IsNullOrEmpty(Submission.FilePath);
         public bool HasGrade => Submission?.Grade != null;

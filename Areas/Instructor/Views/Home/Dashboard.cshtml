@@ -92,6 +92,47 @@
     </div>
 </div>
 
+<!-- Recent Activity-->
+<div class="row">
+    <div class="col-12 col-lg-8">
+    </div>
+
+    <div class="col-12 col-lg-4 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <ul class="activity-feed">
+                    @if (Model.RecentActivities.Any())
+                    {
+                        foreach (var activity in Model.RecentActivities)
+                        {
+                            <li class="feed-item">
+                                <div class="feed-date">@activity.TimeAgo</div>
+                                <span class="feed-text">
+                                    <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@activity.StudentId">
+                                        @activity.StudentName
+                                    </a>
+                                    submitted
+                                    <strong>@activity.AssignmentTitle</strong>
+                                </span>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="feed-item">
+                            <span class="feed-text text-muted">No recent submissions found.</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="row">
     <div class="col-md-12 col-lg-6 d-flex">
         <div class="card card-chart flex-fill w-100">
@@ -149,7 +190,7 @@
             <div class="card-body d-flex flex-column justify-content-between">
                 <div id="submissionChart" style="flex-grow: 1;"></div>
                 <div class="text-center mt-2 text-muted" style="font-size: 0.9em;">
-                    Track how many submissions and graded items per assignment.
+                    Overview of Submissions vs Graded Items
                 </div>
             </div>
         </div>
@@ -232,8 +273,6 @@
     </div>
 </div>
 
-
-
 @section Scripts {
     <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
     <script>
@@ -244,9 +283,6 @@
             var classSeries = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClassAverageSeries));
             var studentSeries = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.StudentSeries));
 
-            var submissionCounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.SubmissionCounts));
-            var gradedCounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.GradedCounts));
-
             // 2. PERFORMANCE CHART (Area Chart)
             if (document.querySelector("#performanceChart")) {
                 var performanceOptions = {
@@ -256,8 +292,8 @@
                     ],
                     chart: {
                         height: 350,
-                        type: 'area',
-                        toolbar: { show: false }, // Hides the menu for a cleaner look
+                        type: 'area', // Maintained as Area per file content
+                        toolbar: { show: false },
                         zoom: { enabled: false }
                     },
                     dataLabels: { enabled: false },
@@ -267,21 +303,21 @@
                     },
                     xaxis: {
                         categories: labels,
-                        tooltip: { enabled: false } // Disable x-axis tooltip to reduce clutter
+                        tooltip: { enabled: false }
                     },
-                    // Blue for class average, Yellow for specific student (High Contrast)
+                    // Blue for class average, Yellow for specific student
                     colors: ['#4e73df', '#fdbb38'],
                     fill: {
                         type: 'solid',
-                        opacity: 0.2 // Lower opacity lets you see overlapping lines
+                        opacity: 0.2
                     },
                     markers: {
-                        size: 5, // Adds dots to make specific assignment points visible
+                        size: 5,
                         hover: { size: 7 }
                     },
                     yaxis: {
                         min: 0,
-                        max: 100, // Assuming grades are 0-100. Remove if points vary.
+                        max: 100,
                         title: { text: 'Score' }
                     },
                     tooltip: {
@@ -292,61 +328,36 @@
                         horizontalAlign: 'right'
                     }
                 };
-
                 var chartPerf = new ApexCharts(document.querySelector("#performanceChart"), performanceOptions);
                 chartPerf.render();
             }
 
-            // 3. SUBMISSIONS CHART (Bar Chart)
+            // 3. SUBMISSIONS CHART (Changed to Circle Chart)
             if (document.querySelector("#submissionChart")) {
                 var submissionOptions = {
-                    series: [
-                        { name: 'Submissions', data: submissionCounts },
-                        { name: 'Graded', data: gradedCounts }
-                    ],
+                    series: [@Model.TotalSubmissions, @Model.TotalGraded],
+                    labels: ['Total Submissions', 'Graded'],
                     chart: {
                         height: 350,
-                        type: 'bar',
+                        type: 'donut', // Changed to donut/circle chart
                         toolbar: { show: false }
                     },
-                    plotOptions: {
-                        bar: {
-                            horizontal: false,
-                            columnWidth: '50%',
-                            borderRadius: 4, // Rounded tops for modern look
-                            endingShape: 'rounded'
-                        }
-                    },
-                    dataLabels: { enabled: false },
-                    stroke: {
-                        show: true,
-                        width: 2,
-                        colors: ['transparent']
-                    },
-                    xaxis: {
-                        categories: labels
-                    },
-                    yaxis: {
-                        min: 0,
-                        forceNiceScale: true,
-                        title: { text: 'Count' }
-                    },
-                    // Green for Graded (Completed), Gray/Blue for Submissions
+                    dataLabels: { enabled: true },
                     colors: ['#19affb', '#1cc88a'],
                     fill: {
+                        type: 'solid',
                         opacity: 1
-                    },
-                    tooltip: {
-                        y: {
-                            formatter: function (val) { return val + ' items'; }
-                        }
                     },
                     legend: {
                         position: 'top',
                         horizontalAlign: 'right'
+                    },
+                    tooltip: {
+                         y: {
+                            formatter: function (val) { return val + ' items'; }
+                        }
                     }
                 };
-
                 var chartSub = new ApexCharts(document.querySelector("#submissionChart"), submissionOptions);
                 chartSub.render();
             }
