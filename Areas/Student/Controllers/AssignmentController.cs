@@ -83,6 +83,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
                     var classInfo = _classRepo.GetById(a.ClassId);
                     var submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId);
 
+                    // Fix Grade Visibility from previous step
                     if (submission != null && !a.AreGradesPublished)
                     {
                         submission.Grade = null;        // Hide the grade
@@ -154,9 +155,10 @@ namespace SIMS_FPT.Areas.Student.Controllers
                         .Select(x => x.Trim().ToLowerInvariant())
                         .ToList();
 
-                    // FIX 2: Remove the dot from the extension before comparing it to the allowed list.
-                    var cleanExt = ext?.TrimStart('.');
-                    if (ext == null || !allowedList.Contains(cleanExt))
+                    // REVERTED LOGIC (as requested by user): 
+                    // Compare the full extension (e.g., ".pdf") directly against the list.
+                    // This assumes the AllowedFileTypes setting includes the dot.
+                    if (ext == null || !allowedList.Contains(ext))
                     {
                         ModelState.AddModelError(string.Empty, $"File type {ext} is not allowed for this assignment.");
                     }
