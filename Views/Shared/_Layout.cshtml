@@ -4,153 +4,178 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SIMS_FPT</title>
+    <title>@ViewData["Title"] - SIMS FPT</title>
 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SIMS_FPT.styles.css" asp-append-version="true" />
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="~/assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="~/assets/css/style.css">
 </head>
 
-<body>
-    @* 2. Added Check for NoHeaderFooter (Used by Login Page) *@
+<body class="d-flex flex-column min-vh-100">
+
     @if (ViewData["NoHeaderFooter"] == null || (bool)ViewData["NoHeaderFooter"] == false)
     {
-        <header class="sticky-top">
-            <div class="header" style="@(!User.Identity.IsAuthenticated ? "justify-content: flex-end;" : "")">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <div class="header-left">
-                        <a href="index.html" class="logo">
-                            <img src="assets/img/logo.png" alt="Logo">
-                        </a>
-                        <a href="index.html" class="logo logo-small">
-                            <img src="assets/img/logo-small.png" alt="Logo" width="30" height="30">
-                        </a>
-                    </div>
-                    <a href="javascript:void(0);" id="toggle_btn">
-                        <i class="fas fa-align-left"></i>
-                    </a>
-                    <div class="top-nav-search">
-                        <form>
-                            <input type="text" class="form-control" placeholder="Search here">
-                            <button class="btn" type="submit"><i class="fas fa-search"></i></button>
-                        </form>
-                    </div>
-                    <a class="mobile_btn" id="mobile_btn">
-                        <i class="fas fa-bars"></i>
+        <header class="sticky-top bg-white shadow-sm">
+            <nav class="navbar navbar-expand-lg navbar-light py-3">
+                <div class="container">
+                    <a class="navbar-brand d-flex align-items-center fw-bold" asp-controller="Home" asp-action="Index">
+                        @* <span class="text-fpt fs-3 me-2"><i class="fas fa-dragon"></i></span> *@
+                        <div class="lh-1">
+                            <span class="d-block text-dark text-uppercase ls-1">FPT University</span>
+                            <small class="text-muted fs-7 fw-normal">Academic Portal</small>
+                        </div>
                     </a>
 
-                    <ul class="nav user-menu">
-                        <li class="nav-item dropdown noti-dropdown">
-                            <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                                <i class="far fa-bell"></i> <span class="badge badge-pill">3</span>
-                            </a>
-                            <div class="dropdown-menu notifications">
-                                <div class="topnav-dropdown-header">
-                                    <span class="notification-title">Notifications</span>
-                                    <a href="javascript:void(0)" class="clear-noti"> Clear All </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="mainNav">
+                        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-medium">
+                            <li class="nav-item">
+                                <a class="nav-link px-3 active" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="#">News</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="#">Admissions</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="#">Students</a>
+                            </li>
+                        </ul>
+
+                        <div class="d-flex align-items-center gap-3">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <div class="dropdown">
+                                    <a href="#" class="text-dark position-relative" data-bs-toggle="dropdown">
+                                        <i class="far fa-bell fs-5"></i>
+                                        <span
+                                            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-3">
+                                        <li>
+                                            <h6 class="dropdown-header">New Notifications</h6>
+                                        </li>
+                                        <li><a class="dropdown-item" href="#">Submit Assignment</a></li>
+                                        <li><a class="dropdown-item" href="#">Upcoming Exam Schedule</a></li>
+                                    </ul>
                                 </div>
-                                <div class="noti-content">
-                                    <ul class="notification-list">
-                                        <li class="notification-message">
-                                            <a href="#">
-                                                <div class="media">
-                                                    <span class="avatar avatar-sm">
-                                                        <img class="avatar-img rounded-circle" alt="User Image" src="assets/img/avatar-02.jpg">
-                                                    </span>
-                                                    <div class="media-body">
-                                                        <p class="noti-details">
-                                                            <span class="noti-title">Carlson Tech</span> has approved <span class="noti-title">your estimate</span>
-                                                        </p>
-                                                        <p class="noti-time"><span class="notification-time">4 mins ago</span></p>
-                                                    </div>
-                                                </div>
+
+                                <div class="dropdown">
+                                    <a href="#" class="d-flex align-items-center gap-2 text-decoration-none dropdown-toggle"
+                                        data-bs-toggle="dropdown">
+                                        <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=f26f21&color=fff"
+                                            class="rounded-circle" width="35" height="35">
+                                        <div class="d-none d-lg-block">
+                                            <div class="fw-bold fs-7 text-dark">@User.Identity.Name</div>
+                                        </div>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-3">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">
+                                                <i class="fas fa-chart-line me-2"></i>Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" asp-controller="Login" asp-action="Logout">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Logout
                                             </a>
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="topnav-dropdown-footer">
-                                    <a href="#">View all Notifications</a>
-                                </div>
-                            </div>
-                        </li>
-
-                        <li class="nav-item dropdown has-arrow">
-                            <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                                <span class="user-img">
-                                    <img class="rounded-circle" src="~/assets/img/603A6862.JPG" width="31" alt="User Name">
-                                </span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <div class="user-header">
-                                    <div class="avatar avatar-sm">
-                                        <img src="~/assets/img/603A6862.JPG" alt="User Image" class="avatar-img rounded-circle">
-                                    </div>
-                                    <div class="user-text">
-                                        <h6>@User.Identity.Name</h6>
-                                        @if (User.IsInRole("Admin"))
-                                        {
-                                            <p class="text-muted mb-0">Admin</p>
-                                        }
-                                        else if (User.IsInRole("Instructor"))
-                                        {
-                                            <p class="text-muted mb-0">Instructor</p>
-                                        }
-                                        else
-                                        {
-                                            <p class="text-muted mb-0">Student</p>
-                                        }
-                                    </div>
-                                </div>
-                                <a class="dropdown-item" href="profile.html">Hồ sơ</a>
-                                <a class="dropdown-item" href="inbox.html">Hộp thư</a>
-                                <a class="dropdown-item text-danger" asp-controller="Login" asp-action="Logout">Đăng xuất</a>
-                            </div>
-                        </li>
-                    </ul>
-                }
-                else
-                {
-                    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                        <div class="container-fluid">
-                            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SIMS_FPT</a>
-                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon"></span>
-                            </button>
-
-                            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                                <ul class="navbar-nav flex-grow-1">
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="btn btn-primary btn-sm me-3" asp-controller="Login" asp-action="Login">Đăng nhập</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            }
+                            else
+                            {
+                                <a class="btn btn-fpt btn-sm px-4" asp-controller="Login" asp-action="Login">Login</a>
+                            }
                         </div>
-                    </nav>
-                }
-            </div>
+                    </div>
+                </div>
+            </nav>
         </header>
     }
 
-    <main role="main" class="pb-3">
+    <main role="main" class="flex-shrink-0 p-0">
         @RenderBody()
     </main>
 
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (ViewData["NoHeaderFooter"] == null || (bool)ViewData["NoHeaderFooter"] == false)
+    {
+        <footer class="py-5 mt-auto">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <h5 class="mb-3 text-fpt">FPT UNIVERSITY</h5>
+                        <p class="small">
+                            FPT University provides high-quality human resource training in the integration era,
+                            equipping learners with global competitiveness.
+                        </p>
+                        <div class="d-flex gap-3 mt-3">
+                            <a href="#"><i class="fab fa-facebook fa-lg"></i></a>
+                            <a href="#"><i class="fab fa-youtube fa-lg"></i></a>
+                            <a href="#"><i class="fab fa-tiktok fa-lg"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-6">
+                        <h6>Explore</h6>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2"><a href="#">About Us</a></li>
+                            <li class="mb-2"><a href="#">Faculty</a></li>
+                            <li class="mb-2"><a href="#">Facilities</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 col-6">
+                        <h6>Students</h6>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2"><a href="#">Information Portal</a></li>
+                            <li class="mb-2"><a href="#">Blackboard</a></li>
+                            <li class="mb-2"><a href="#">Digital Library</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <h6>Contact</h6>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2">
+                                <i class="fas fa-map-marker-alt me-2 text-fpt"></i>
+                                Hoa Lac Hi-Tech Park, Thach That, Hanoi
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-phone me-2 text-fpt"></i>
+                                024 7300 1866
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-envelope me-2 text-fpt"></i>
+                                daihocfpt@fpt.edu.vn
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="border-secondary my-4">
+                <div class="text-center small">
+                    &copy; 2024 SIMS FPT Project. Designed by Students.
+                </div>
+            </div>
+        </footer>
+    }
 
     <script src="~/assets/js/jquery-3.6.0.min.js"></script>
+    <script src="~/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
     <script src="~/assets/js/popper.min.js"></script>
     <script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="~/assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
@@ -162,4 +187,5 @@
     <script src="~/assets/js/script.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
