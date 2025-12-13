@@ -191,7 +191,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 return RedirectToAction("AccessDenied", "Login", new { area = "" });
             }
 
-            if (!ModelState.IsValid) return View(model);
 
             _gradingService.ProcessGrades(model);
             return RedirectToAction("Index");
