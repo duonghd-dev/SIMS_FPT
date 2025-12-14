@@ -36,11 +36,12 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="SubjectId" class="form-label">Subject</label>
-                        <select asp-for="SubjectId" class="form-control"
-                                asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "SubjectId"))">
-                            <option value="">-- Select Subject --</option>
+                        <label asp-for="SubjectId" class="control-label">Class & Subject</label>
+
+                        <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.SubjectList">
+                            <option value="">-- Select a Class --</option>
                         </select>
+
                         <span asp-validation-for="SubjectId" class="text-danger"></span>
                     </div>
                 </div>
@@ -83,4 +84,3 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
-

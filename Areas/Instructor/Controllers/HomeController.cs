@@ -62,10 +62,9 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
         public IActionResult Dashboard(string studentId = null)
         {
-            // ... (Existing Dashboard Logic - kept same as your previous requests) ...
             var teacherId = CurrentTeacherId;
 
-            // Pull assignments owned by this instructor
+            // 1. Pull assignments owned by this instructor
             var teacherAssignments = _assignmentRepo.GetAll()
                 .Where(a => a.TeacherId == teacherId)
                 .OrderBy(a => a.DueDate)
@@ -78,6 +77,25 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             var teacherClasses = _classRepo.GetAll()
                 .Where(c => c.TeacherName == teacherId)
                 .ToList();
+
+            // --- NEW CODE: Populate Teaching Classes List ---
+            var myTeachingClasses = new List<TeachingClassInfo>();
+            foreach (var cls in teacherClasses)
+            {
+                // Assuming cls.SubjectName holds the Subject ID (e.g., SUB001)
+                var subject = _subjectRepo.GetById(cls.SubjectName);
+
+                myTeachingClasses.Add(new TeachingClassInfo
+                {
+                    ClassId = cls.ClassId,
+                    ClassName = cls.ClassName,
+                    SubjectCode = subject?.SubjectId ?? cls.SubjectName,
+                    SubjectName = subject?.SubjectName ?? "Unknown Subject",
+                    StudentCount = cls.NumberOfStudents,
+                    Semester = cls.Semester
+                });
+            }
+            // ------------------------------------------------
 
             // Get students enrolled in these specific classes
             var enrolledIds = new HashSet<string>();
@@ -108,29 +126,26 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 selectedStudent = students.First();
             }
 
+            // Init Model
             var model = new InstructorDashboardViewModel
             {
                 TodayClasses = BuildTodayClasses(),
+                TeachingClasses = myTeachingClasses, // <--- Assign the list here
                 LeaveDaysRemaining = 12,
                 LastSalaryMonth = "November 2025",
                 StudentOptions = students.Select(s => new StudentOption { StudentId = s.StudentId, StudentName = s.FullName }).ToList(),
                 SelectedStudentId = selectedStudent?.StudentId,
                 SelectedStudentName = selectedStudent?.FullName ?? "No students"
             };
-            var allActivities = new List<RecentActivityItem>();
 
+            // ... (Rest of the existing logic for Charts, Activity, AtRisk remains the same) ...
+
+            var allActivities = new List<RecentActivityItem>();
             if (teacherAssignments.Any())
             {
                 foreach (var assn in teacherAssignments)
                 {
-                    // ... (Existing Chart Logic: PerformanceLabels, Counts, etc.) ...
-
-                    // Fetch submissions for this assignment
                     var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
-
-                    // ... (Existing Total counts logic) ...
-
-                    // [NEW] Collect submissions for the feed
                     foreach (var sub in submissions)
                     {
                         var student = _studentRepo.GetById(sub.StudentId);
@@ -148,10 +163,9 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                     }
                 }
             }
-         model.RecentActivities = allActivities
-        .OrderByDescending(x => x.SubmissionDate)
-        .Take(5)
-        .ToList();
+            model.RecentActivities = allActivities.OrderByDescending(x => x.SubmissionDate).Take(5).ToList();
+
+            // Calculate Charts
             int totalSubmissions = 0;
             int totalGraded = 0;
 
@@ -160,35 +174,24 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 foreach (var assn in teacherAssignments)
                 {
                     model.PerformanceLabels.Add(assn.Title);
-
                     var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
 
-                    // [NEW] Update total counts
                     totalSubmissions += submissions.Count;
                     totalGraded += submissions.Count(s => s.Grade.HasValue);
-
                     model.SubmissionCounts.Add(submissions.Count);
                     model.GradedCounts.Add(submissions.Count(s => s.Grade.HasValue));
 
-                    // --- FIX 1: Calculate Percentage Scores for Performance Chart ---
-                    // Use 1 to prevent division by zero, though this implies a max point assignment is 1.
                     double maxPoints = assn.MaxPoints > 0 ? assn.MaxPoints : 1;
-
                     var graded = submissions.Where(s => s.Grade.HasValue).ToList();
-                    double classAvg = graded.Any()
-                        ? graded.Average(s => s.Grade.GetValueOrDefault(0))
-                        : 0;
-                    // Store as percentage
-                    double classAvgPercentage = (classAvg / maxPoints) * 100;
-                    model.ClassAverageSeries.Add(Math.Round(classAvgPercentage, 2));
+                    double classAvg = graded.Any() ? graded.Average(s => s.Grade.GetValueOrDefault(0)) : 0;
+
+                    model.ClassAverageSeries.Add(Math.Round((classAvg / maxPoints) * 100, 2));
 
                     if (selectedStudent != null)
                     {
                         var studentSub = submissions.FirstOrDefault(s => s.StudentId == selectedStudent.StudentId);
                         double studentScore = studentSub?.Grade ?? 0;
-                        // Store as percentage
-                        double studentPercentage = (studentScore / maxPoints) * 100;
-                        model.StudentSeries.Add(Math.Round(studentPercentage, 2));
+                        model.StudentSeries.Add(Math.Round((studentScore / maxPoints) * 100, 2));
                     }
                     else
                     {
@@ -198,67 +201,39 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
             else
             {
-                model.PerformanceLabels.Add("No assignments yet");
+                model.PerformanceLabels.Add("No assignments");
                 model.ClassAverageSeries.Add(0);
                 model.StudentSeries.Add(0);
-                model.SubmissionCounts.Add(0);
-                model.GradedCounts.Add(0);
             }
 
-            // [NEW] Assign total counts to model
             model.TotalSubmissions = totalSubmissions;
             model.TotalGraded = totalGraded;
 
+            // At Risk Logic
             model.AtRiskStudents = students.Select(s =>
             {
                 double totalScore = 0;
                 double totalMax = 0;
                 int missingCount = 0;
-
                 foreach (var assn in teacherAssignments)
                 {
                     totalMax += assn.MaxPoints;
                     var sub = _submissionRepo.GetByStudentAndAssignment(s.StudentId, assn.AssignmentId);
-                    if (sub?.Grade != null)
-                    {
-                        totalScore += sub.Grade.Value;
-                    }
-                    else
-                    {
-                        missingCount++;
-                    }
+                    if (sub?.Grade != null) totalScore += sub.Grade.Value;
+                    else missingCount++;
                 }
-
                 double percent = totalMax > 0 ? (totalScore / totalMax) * 100 : 0;
                 var atRisk = percent < 50 || missingCount > Math.Max(1, teacherAssignments.Count / 2);
-
                 return new AtRiskStudent
                 {
                     StudentId = s.StudentId,
                     StudentName = s.FullName,
                     RiskLevel = percent < 35 ? "High" : "Medium",
-                    Reason = atRisk
-                        ? $"Avg {(int)percent}% | Missing {missingCount} of {teacherAssignments.Count}"
-                        : null
+                    Reason = atRisk ? $"Avg {(int)percent}% | Missing {missingCount}" : null
                 };
-            })
-            .Where(x => x.Reason != null)
-            .OrderByDescending(x => x.RiskLevel)
-            .ToList();
+            }).Where(x => x.Reason != null).OrderByDescending(x => x.RiskLevel).ToList();
 
             return View(model);
-        }
-
-        private List<ClassScheduleItem> BuildTodayClasses()
-        {
-            var subjects = _subjectRepo.GetAll().Take(3).ToList();
-            return subjects.Select((s, index) => new ClassScheduleItem
-            {
-                SubjectName = s.SubjectName,
-                Time = $"{8 + (index * 2)}:00 AM - {10 + (index * 2)}:00 AM",
-                Room = $"Room A-{101 + index}",
-                ClassName = s.SubjectId
-            }).ToList();
         }
 
         public IActionResult MyPayslips()
@@ -370,6 +345,19 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             if (span.TotalHours < 24)
                 return $"{(int)span.TotalHours} hours ago";
             return $"{(int)span.TotalDays} days ago";
+        }
+        private List<ClassScheduleItem> BuildTodayClasses()
+        {
+            // Fetch a few subjects to simulate a schedule
+            var subjects = _subjectRepo.GetAll().Take(3).ToList();
+
+            return subjects.Select((s, index) => new ClassScheduleItem
+            {
+                SubjectName = s.SubjectName,
+                Time = $"{8 + (index * 2)}:00 AM - {10 + (index * 2)}:00 AM",
+                Room = $"Room A-{101 + index}",
+                ClassName = s.SubjectId
+            }).ToList();
         }
     }
 }
