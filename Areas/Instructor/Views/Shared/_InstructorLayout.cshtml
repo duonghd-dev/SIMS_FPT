@@ -1,5 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@* @model SIMS_FPT.Models.ViewModels.InstructorProfileViewModel *@
+
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,6 +15,7 @@
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="~/assets/css/style.css">
 </head>
+
 <body>
     <header class="sticky-top">
         <div class="header">
@@ -36,21 +40,27 @@
                 <li class="nav-item dropdown has-arrow">
                     <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                         <span class="user-img">
-                            <img class="rounded-circle" src="~/assets/img/603A6862.JPG" width="31" alt="User Image">
+                            <img class="rounded-circle" width="32" height="32"
+                                src="@(string.IsNullOrEmpty(ViewBag.ProfileImage) ? Url.Content("~/assets/img/default-avatar-1-32.svg") : Url.Content(ViewBag.ProfileImage))"
+                                alt="Profile Image">
+
                         </span>
                     </a>
                     <div class="dropdown-menu">
                         <div class="user-header">
                             <div class="avatar avatar-sm">
-                                <img src="~/assets/img/603A6862.JPG" alt="User Image" class="avatar-img rounded-circle">
+                                <img src="~/assets/img/default-avatar-1-32.svg" alt="User Image"
+                                    class="avatar-img rounded-circle">
                             </div>
                             <div class="user-text">
                                 <h6>@User.Identity.Name</h6>
                                 <p class="text-muted mb-0">Instructor</p>
                             </div>
                         </div>
-                        <a class="dropdown-item" asp-area="Instructor" asp-controller="Home" asp-action="Profile">Profile</a>
-                        <a class="dropdown-item text-danger" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
+                        <a class="dropdown-item" asp-area="Instructor" asp-controller="Home"
+                            asp-action="Profile">Profile</a>
+                        <a class="dropdown-item text-danger" asp-area="" asp-controller="Login"
+                            asp-action="Logout">Logout</a>
                     </div>
                 </li>
             </ul>
@@ -90,15 +100,16 @@
 
                     @* Assignment Links *@
                     <li class="submenu @(currentController == "Assignment" ? "active" : "")">
-                        <a href="#"><i class="fas fa-clipboard-list"></i> <span>Assignments</span> <span class="menu-arrow"></span></a>
+                        <a href="#"><i class="fas fa-clipboard-list"></i> <span>Assignments</span> <span
+                                class="menu-arrow"></span></a>
                         <ul>
                             <li>
                                 <a asp-area="Instructor" asp-controller="Assignment" asp-action="Create"
-                                   class="@(currentAction == "Create" ? "active" : "")">Create New</a>
+                                    class="@(currentAction == "Create" ? "active" : "")">Create New</a>
                             </li>
                             <li>
                                 <a asp-area="Instructor" asp-controller="Assignment" asp-action="Index"
-                                   class="@(currentAction == "Index" ? "active" : "")">View All & Grade</a>
+                                    class="@(currentAction == "Index" ? "active" : "")">View All & Grade</a>
                             </li>
                         </ul>
                     </li>
@@ -133,4 +144,5 @@
     <script src="~/assets/js/script.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
