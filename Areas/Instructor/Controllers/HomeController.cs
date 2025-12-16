@@ -64,6 +64,13 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         {
             var teacherId = CurrentTeacherId;
 
+            // Set ViewBag for header avatar
+            var teacher = _teacherRepo.GetById(teacherId);
+            if (teacher != null)
+            {
+                ViewBag.ProfileImage = teacher.ImagePath;
+            }
+
             // 1. Pull assignments owned by this instructor
             var teacherAssignments = _assignmentRepo.GetAll()
                 .Where(a => a.TeacherId == teacherId)
@@ -168,10 +175,10 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                     }
                 }
             }
-         model.RecentActivities = allActivities
-        .OrderByDescending(x => x.SubmissionDate)
-        .Take(5)
-        .ToList();
+            model.RecentActivities = allActivities
+           .OrderByDescending(x => x.SubmissionDate)
+           .Take(5)
+           .ToList();
             int totalSubmissions = 0;
             int totalGraded = 0;
 
@@ -201,7 +208,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
             model.RecentActivities = allActivities.OrderByDescending(x => x.SubmissionDate).Take(5).ToList();
 
-       
+
 
             if (teacherAssignments.Any())
             {
@@ -298,6 +305,9 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 ExistingImagePath = teacher.ImagePath
             };
 
+            // Set ViewBag for header avatar
+            ViewBag.ProfileImage = teacher.ImagePath;
+
             return View(model);
         }
 
@@ -369,6 +379,10 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             // Reload model to show new image/data
             model.ExistingImagePath = teacher.ImagePath;
+
+            // Set ViewBag for header avatar
+            ViewBag.ProfileImage = teacher.ImagePath;
+
             return View(model);
         }
         private string CalculateTimeAgo(DateTime date)
