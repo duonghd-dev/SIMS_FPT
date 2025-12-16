@@ -1400,6 +1400,7 @@ div.dataTables_wrapper div.dataTables_info {
   border-right: 1px solid #ececf5;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .mini-sidebar .header .header-left {
   justify-content: center;
@@ -1407,9 +1408,12 @@ div.dataTables_wrapper div.dataTables_info {
 .header .header-left .logo {
   display: inline-block;
   line-height: 60px;
+  overflow: hidden;
+  max-width: 280px;
 }
 .header .header-left .logo img {
   max-height: 40px;
+  max-width: 100%;
   width: auto;
 }
 .header-left .logo.logo-small {
@@ -3112,6 +3116,7 @@ table.table-inbox tbody tr.checked {
   .mini-sidebar .header-left .logo img {
     height: auto;
     max-height: 40px;
+    max-width: 50px;
     width: auto;
   }
   .mini-sidebar .header .header-left .logo {
@@ -3123,6 +3128,7 @@ table.table-inbox tbody tr.checked {
   .mini-sidebar .header .header-left {
     padding: 0 5px;
     width: 78px;
+    transition: all 0.2s ease-in-out;
   }
   .mini-sidebar .sidebar {
     width: 78px;

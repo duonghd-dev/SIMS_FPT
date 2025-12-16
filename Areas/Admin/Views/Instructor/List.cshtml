@@ -60,8 +60,9 @@
                                                         <a asp-action="Detail" asp-route-id="@item.TeacherId"
                                                             class="avatar avatar-sm mr-2">
                                                             <img class="avatar-img rounded-circle"
-                                                                src="@(string.IsNullOrEmpty(item.ImagePath) ? "/assets/img/603A6862.JPG" : item.ImagePath)"
-                                                                alt="User Image" onerror="this.src='/assets/img/603A6862.JPG'">
+                                                                src="@(string.IsNullOrEmpty(item.ImagePath) ? "/assets/img/default-avatar-1-32.svg" : item.ImagePath)"
+                                                                alt="User Image"
+                                                                onerror="this.src='/assets/img/default-avatar-1-32.svg'">
                                                         </a>
                                                         <a asp-action="Detail" asp-route-id="@item.TeacherId">@item.Name</a>
                                                     </h2>

@@ -42,7 +42,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             // 2. Kết hợp dữ liệu (Mapping) sử dụng LINQ
             // Dùng Left Join để nếu ID không tồn tại thì không bị lỗi chết trang
             var listViewModel = from c in classes
-                                join s in subjects on c.SubjectName equals s.SubjectId into subjectGroup
+                                join s in subjects on c.SubjectId equals s.SubjectId into subjectGroup
                                 from sub in subjectGroup.DefaultIfEmpty() // Nếu không tìm thấy môn, sub sẽ null
 
                                 join t in teachers on c.TeacherName equals t.TeacherId into teacherGroup
@@ -56,7 +56,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                                     NumberOfStudents = c.NumberOfStudents,
 
                                     // Nếu tìm thấy tên thì lấy, không thì báo lỗi hoặc hiện lại ID
-                                    SubjectName = sub != null ? sub.SubjectName : $"Unknown ({c.SubjectName})",
+                                    SubjectName = sub != null ? sub.SubjectName : $"Unknown ({c.SubjectId})",
                                     TeacherName = teach != null ? teach.Name : $"Unknown ({c.TeacherName})"
                                 };
 
@@ -198,7 +198,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                         _studentClassRepo.Add(newEnrollment);
                     }
                 }
-                
+
                 // Cập nhật lại sỉ số lớp (Optional)
                 UpdateClassCount(classId);
             }
@@ -220,7 +220,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         private void UpdateClassCount(string classId)
         {
             var currentClass = _classRepo.GetById(classId);
-            if(currentClass != null)
+            if (currentClass != null)
             {
                 var count = _studentClassRepo.GetByClassId(classId).Count;
                 currentClass.NumberOfStudents = count;

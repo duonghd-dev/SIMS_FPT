@@ -5,10 +5,12 @@ namespace SIMS_FPT.Models.ViewModels
     public class InstructorDashboardViewModel
     {
         public List<RecentActivityItem> RecentActivities { get; set; } = new List<RecentActivityItem>();
-        // 2. Classroom & Schedule Management
+
+
         public List<ClassScheduleItem> TodayClasses { get; set; } = new List<ClassScheduleItem>();
 
-        // 3. Student Monitoring & Analytics ("At-Risk" Alerts)
+        // NEW: List of all classes taught by the instructor
+        public List<TeachingClassInfo> TeachingClasses { get; set; } = new List<TeachingClassInfo>();
         public List<AtRiskStudent> AtRiskStudents { get; set; } = new List<AtRiskStudent>();
 
         // Data for performance chart
@@ -22,10 +24,20 @@ namespace SIMS_FPT.Models.ViewModels
         public List<int> GradedCounts { get; set; } = new();
         public int TotalSubmissions { get; set; }
         public int TotalGraded { get; set; }
-        // 5. Personal/Administrative Summary
+
         public int LeaveDaysRemaining { get; set; }
         public string LastSalaryMonth { get; set; }
 
+    }
+
+    public class TeachingClassInfo
+    {
+        public string ClassId { get; set; }
+        public string ClassName { get; set; }
+        public string SubjectCode { get; set; }
+        public string SubjectName { get; set; }
+        public int StudentCount { get; set; }
+        public string Semester { get; set; }
     }
 
     public class ClassScheduleItem
@@ -39,8 +51,8 @@ namespace SIMS_FPT.Models.ViewModels
     public class AtRiskStudent
     {
         public string StudentName { get; set; }
-        public string Reason { get; set; } // e.g., "Low Attendance (< 75%)"
-        public string RiskLevel { get; set; } // "High", "Medium"
+        public string Reason { get; set; }
+        public string RiskLevel { get; set; }
         public string StudentId { get; set; }
     }
 
@@ -49,12 +61,13 @@ namespace SIMS_FPT.Models.ViewModels
         public string StudentId { get; set; }
         public string StudentName { get; set; }
     }
+
     public class RecentActivityItem
     {
         public string StudentName { get; set; }
-        public string StudentId { get; set; } // For linking to profile
+        public string StudentId { get; set; }
         public string AssignmentTitle { get; set; }
         public DateTime SubmissionDate { get; set; }
-        public string TimeAgo { get; set; } // e.g., "2 hours ago"
+        public string TimeAgo { get; set; }
     }
 }
