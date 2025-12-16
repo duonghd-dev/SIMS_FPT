@@ -5,147 +5,163 @@
     Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
 }
 
-<div class="page-header">
+<style>
+    .card-modern {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        transition: transform 0.2s;
+    }
+
+        .card-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+        }
+
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .bg-soft-primary {
+        background-color: #e3f2fd;
+        color: #007bff;
+    }
+
+    .bg-soft-success {
+        background-color: #e8f5e9;
+        color: #28a745;
+    }
+
+    .bg-soft-warning {
+        background-color: #fff3e0;
+        color: #ff9800;
+    }
+
+    .bg-soft-danger {
+        background-color: #ffebee;
+        color: #dc3545;
+    }
+
+    .table-modern thead th {
+        border-top: none;
+        border-bottom: 1px solid #f0f0f0;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    .table-modern td {
+        vertical-align: middle;
+        font-size: 0.9rem;
+    }
+
+    .activity-feed .feed-item {
+        border-left: 2px solid #e9ecef;
+        padding-bottom: 20px;
+    }
+
+        .activity-feed .feed-item:last-child {
+            border-left: 2px solid transparent;
+        }
+</style>
+
+<div class="page-header mb-4">
     <div class="row align-items-center">
         <div class="col">
-            <h3 class="page-title">Welcome, @User.Identity.Name!</h3>
-            <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                <li class="breadcrumb-item active">Dashboard</li>
-            </ul>
+            <span class="text-muted small text-uppercase">Overview</span>
+            <h3 class="page-title font-weight-bold text-dark">Welcome back, @User.Identity.Name</h3>
         </div>
-        <div class="col-auto text-right float-right ml-auto">
-            <a asp-area="Instructor" asp-controller="Assignment" asp-action="Create" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Create Assignment
+        <div class="col-auto">
+            <a asp-area="Instructor" asp-controller="Assignment" asp-action="Create" class="btn btn-primary shadow-sm rounded-pill px-4">
+                <i class="fas fa-plus mr-2"></i>New Assignment
             </a>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-xl-4 col-sm-6 col-12 d-flex">
-        <div class="card bg-one w-100">
+<div class="row mb-4">
+    <div class="col-xl-4 col-md-6 mb-3">
+        <div class="card card-modern h-100">
             <div class="card-body">
-                <div class="db-widgets d-flex justify-content-between align-items-center">
-                    <div class="db-icon">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="text-muted mb-1">Total Assignments</h6>
+                        <h3 class="mb-0 font-weight-bold">@Model.PerformanceLabels.Count</h3>
+                    </div>
+                    <div class="icon-box bg-soft-warning">
                         <i class="fas fa-layer-group"></i>
                     </div>
-                    <div class="db-info">
-                        <h3>Assignments</h3>
-                        <h6>Manage Coursework</h6>
-                    </div>
                 </div>
-                <div class="mt-3">
-                    <a asp-area="Instructor" asp-controller="Assignment" asp-action="Create" class="btn btn-sm btn-white text-warning mr-2">
-                        <i class="fas fa-plus"></i> New
-                    </a>
-                    <a asp-area="Instructor" asp-controller="Assignment" asp-action="Index" class="btn btn-sm btn-white text-warning">
-                        View All
-                    </a>
-                </div>
+                <a asp-area="Instructor" asp-controller="Assignment" asp-action="Index" class="text-warning small font-weight-bold text-decoration-none">
+                    View All Assignments <i class="fas fa-arrow-right ml-1"></i>
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-4 col-sm-6 col-12 d-flex">
-        <div class="card bg-two w-100">
+    <div class="col-xl-4 col-md-6 mb-3">
+        <div class="card card-modern h-100">
             <div class="card-body">
-                <div class="db-widgets d-flex justify-content-between align-items-center">
-                    <div class="db-icon">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="text-muted mb-1">Pending Grading</h6>
+                        <h3 class="mb-0 font-weight-bold">@(Model.TotalSubmissions - Model.TotalGraded)</h3>
+                    </div>
+                    <div class="icon-box bg-soft-success">
                         <i class="fas fa-clipboard-check"></i>
                     </div>
-                    <div class="db-info">
-                        <h3>Grading</h3>
-                        <h6>Review Submissions</h6>
-                    </div>
                 </div>
-                <div class="mt-3">
-                    <a asp-area="Instructor" asp-controller="Assignment" asp-action="Index" class="btn btn-sm btn-white text-info">
-                        <i class="fas fa-arrow-right"></i> Go to Grading
-                    </a>
+                <div class="progress" style="height: 5px;">
+                    @{
+                        var progress = Model.TotalSubmissions > 0 ? (int)((double)Model.TotalGraded / Model.TotalSubmissions * 100) : 0;
+                    }
+                    <div class="progress-bar bg-success" role="progressbar" style="width: @progress%" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
+                <small class="text-muted mt-2 d-block">@progress% graded</small>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-4 col-sm-6 col-12 d-flex">
-        <div class="card bg-three w-100">
+    <div class="col-xl-4 col-md-6 mb-3">
+        <div class="card card-modern h-100">
             <div class="card-body">
-                <div class="db-widgets d-flex justify-content-between align-items-center">
-                    <div class="db-icon">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="text-muted mb-1">Course Materials</h6>
+                        <h3 class="mb-0 font-weight-bold">Manage</h3>
+                    </div>
+                    <div class="icon-box bg-soft-primary">
                         <i class="fas fa-folder-open"></i>
                     </div>
-                    <div class="db-info">
-                        <h3>Materials</h3>
-                        <h6>Upload & Share</h6>
-                    </div>
                 </div>
-                <div class="mt-3">
-                    <a asp-area="Instructor" asp-controller="CourseMaterial" asp-action="Create" class="btn btn-sm btn-white text-primary mr-2">
-                        <i class="fas fa-upload"></i> Add
-                    </a>
-                    <a asp-area="Instructor" asp-controller="CourseMaterial" asp-action="Index" class="btn btn-sm btn-white text-primary">
-                        <i class="fas fa-folder"></i> Repository
-                    </a>
-                </div>
+                <a asp-area="Instructor" asp-controller="CourseMaterial" asp-action="Index" class="text-primary small font-weight-bold text-decoration-none">
+                    Go to Repository <i class="fas fa-arrow-right ml-1"></i>
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Recent Activity-->
 <div class="row">
-    <div class="col-12 col-lg-8">
-    </div>
-
-    <div class="col-12 col-lg-4 d-flex">
-        <div class="card flex-fill">
-            <div class="card-header">
-                <h5 class="card-title">Recent Activity</h5>
+    <div class="col-lg-8 col-md-12 d-flex">
+        <div class="card card-modern flex-fill w-100">
+            <div class="card-header bg-transparent border-0 pt-4 pb-2">
+                <h5 class="card-title mb-0 font-weight-bold">My Teaching Classes</h5>
             </div>
-            <div class="card-body">
-                <ul class="activity-feed">
-                    @if (Model.RecentActivities.Any())
-                    {
-                        foreach (var activity in Model.RecentActivities)
-                        {
-                            <li class="feed-item">
-                                <div class="feed-date">@activity.TimeAgo</div>
-                                <span class="feed-text">
-                                    <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@activity.StudentId">
-                                        @activity.StudentName
-                                    </a>
-                                    submitted
-                                    <strong>@activity.AssignmentTitle</strong>
-                                </span>
-                            </li>
-                        }
-                    }
-                    else
-                    {
-                        <li class="feed-item">
-                            <span class="feed-text text-muted">No recent submissions found.</span>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="row">
-    <div class="col-12">
-        <div class="card flex-fill">
-            <div class="card-header">
-                <h5 class="card-title">My Teaching Classes</h5>
-            </div>
-            <div class="card-body">
+            <div class="card-body pt-0">
                 <div class="table-responsive">
-                    <table class="table table-hover table-center mb-0">
+                    <table class="table table-modern table-hover mb-0">
                         <thead>
                             <tr>
-                                <th>Class Name</th>
+                                <th>Class</th>
                                 <th>Subject Code</th>
                                 <th>Subject Name</th>
                                 <th>Semester</th>
@@ -158,14 +174,12 @@
                                 foreach (var cls in Model.TeachingClasses)
                                 {
                                     <tr>
-                                        <td>
-                                            <strong>@cls.ClassName</strong>
-                                        </td>
-                                        <td>@cls.SubjectCode</td>
+                                        <td><span class="font-weight-bold text-dark">@cls.ClassName</span></td>
+                                        <td><span class="badge badge-light border">@cls.SubjectCode</span></td>
                                         <td>@cls.SubjectName</td>
                                         <td>@cls.Semester</td>
                                         <td class="text-center">
-                                            <span class="badge badge-pill bg-primary-light">@cls.StudentCount</span>
+                                            <span class="badge badge-pill bg-soft-primary px-3 py-2">@cls.StudentCount</span>
                                         </td>
                                     </tr>
                                 }
@@ -173,8 +187,161 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted">
-                                        No classes assigned for this instructor.
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        <i class="fas fa-school fa-2x mb-2 text-light"></i><br />
+                                        No classes assigned.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-12 d-flex">
+        <div class="card card-modern flex-fill w-100">
+            <div class="card-header bg-transparent border-0 pt-4 pb-2">
+                <h5 class="card-title mb-0 font-weight-bold">Recent Submissions</h5>
+            </div>
+            <div class="card-body pt-0">
+                <ul class="activity-feed list-unstyled mt-2 pl-2">
+                    @if (Model.RecentActivities.Any())
+                    {
+                        foreach (var activity in Model.RecentActivities)
+                        {
+                            <li class="feed-item position-relative pl-4 pb-4">
+                                <div class="feed-icon position-absolute" style="left: -5px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #007bff;"></div>
+                                <span class="d-block text-muted small mb-1">@activity.TimeAgo</span>
+                                <p class="mb-0 text-dark">
+                                    <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@activity.StudentId" class="font-weight-bold text-dark">
+                                        @activity.StudentName
+                                    </a>
+                                    submitted
+                                    <span class="text-primary">@activity.AssignmentTitle</span>
+                                </p>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="text-center text-muted py-4">No recent activity.</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12 col-lg-7 d-flex">
+        <div class="card card-modern flex-fill w-100">
+            <div class="card-header bg-transparent border-0 pt-4 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 font-weight-bold">Class Performance</h5>
+
+                @if (Model.StudentOptions.Any())
+                {
+                    <form method="get" class="d-inline-block">
+                        <select name="studentId" class="custom-select custom-select-sm border-0 shadow-sm bg-light" style="width: auto;" onchange="this.form.submit()">
+                            @foreach (var s in Model.StudentOptions)
+                            {
+                                if (s.StudentId == Model.SelectedStudentId)
+                                {
+                                    <option value="@s.StudentId" selected>@s.StudentName</option>
+                                }
+                                else
+                                {
+                                    <option value="@s.StudentId">@s.StudentName</option>
+                                }
+                            }
+                        </select>
+                    </form>
+                }
+            </div>
+            <div class="card-body">
+                <div id="performanceChart" style="min-height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-lg-5 d-flex">
+        <div class="card card-modern flex-fill w-100">
+            <div class="card-header bg-transparent border-0 pt-4">
+                <h5 class="card-title mb-0 font-weight-bold">Submission Status</h5>
+            </div>
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <div id="submissionChart" class="w-100 d-flex justify-content-center"></div>
+                <div class="text-center mt-3">
+                    <h4 class="font-weight-bold">@Model.TotalSubmissions</h4>
+                    <span class="text-muted">Total Submissions Received</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4 mb-5">
+    <div class="col-12">
+        <div class="card card-modern">
+            <div class="card-header bg-transparent border-0 pt-4 pb-2 d-flex align-items-center">
+                <h5 class="card-title mb-0 font-weight-bold">At-Risk Students</h5>
+                @if (Model.AtRiskStudents.Any())
+                {
+                    <span class="badge badge-danger ml-2 px-2 py-1 rounded">@Model.AtRiskStudents.Count Attention Needed</span>
+                }
+            </div>
+            <div class="card-body pt-0">
+                <div class="table-responsive">
+                    <table class="table table-modern table-borderless align-middle mb-0">
+                        <thead class="bg-light rounded">
+                            <tr>
+                                <th class="pl-3 rounded-left">Student Name</th>
+                                <th>Risk Factor</th>
+                                <th>Severity</th>
+                                <th class="text-right pr-3 rounded-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.AtRiskStudents.Any())
+                            {
+                                foreach (var s in Model.AtRiskStudents)
+                                {
+                                    <tr class="border-bottom">
+                                        <td class="pl-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar avatar-sm mr-3 bg-soft-danger text-danger rounded-circle d-flex align-items-center justify-content-center font-weight-bold">
+                                                    @s.StudentName.Substring(0, 1)
+                                                </div>
+                                                <div>
+                                                    <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@s.StudentId" class="text-dark font-weight-bold">
+                                                        @s.StudentName
+                                                    </a>
+                                                    <div class="small text-muted">ID: @s.StudentId</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-muted">@s.Reason</td>
+                                        <td>
+                                            <span class="badge @(s.RiskLevel == "High" ? "bg-soft-danger" : "bg-soft-warning") px-3 py-2">
+                                                @s.RiskLevel Risk
+                                            </span>
+                                        </td>
+                                        <td class="text-right pr-3">
+                                            <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@s.StudentId" class="btn btn-sm btn-outline-primary rounded-pill">
+                                                View Profile
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <div class="text-success mb-2"><i class="fas fa-check-circle fa-2x"></i></div>
+                                        <h6 class="font-weight-bold">All students are performing well!</h6>
+                                        <span class="text-muted">No at-risk students detected at this time.</span>
                                     </td>
                                 </tr>
                             }
@@ -186,157 +353,16 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12 col-lg-6 d-flex">
-        <div class="card card-chart flex-fill w-100">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <h5 class="card-title">Performance</h5>
-                    </div>
-                    <div class="col-6 text-right">
-                        @if (Model.StudentOptions.Any())
-                        {
-                            <form method="get" class="d-inline-block">
-                                <select name="studentId" class="form-control form-control-sm"
-                                        style="width: auto; display: inline-block;"
-                                        onchange="this.form.submit()">
-                                    @foreach (var s in Model.StudentOptions)
-                                    {
-                                        if (s.StudentId == Model.SelectedStudentId)
-                                        {
-                                            <option value="@s.StudentId" selected>@s.StudentName</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@s.StudentId">@s.StudentName</option>
-                                        }
-                                    }
-                                </select>
-                            </form>
-                        }
-                        else
-                        {
-                            <span class="text-muted small">No students yet</span>
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="card-body d-flex flex-column justify-content-between">
-                <div id="performanceChart" style="flex-grow: 1;"></div>
-                <div class="text-center mt-2 text-muted" style="font-size: 0.9em;">
-                    Comparison: Class Average vs @Model.SelectedStudentName
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-12 col-lg-6 d-flex">
-        <div class="card card-chart flex-fill w-100">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <h5 class="card-title">Submissions vs Graded</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body d-flex flex-column justify-content-between">
-                <div id="submissionChart" style="flex-grow: 1;"></div>
-                <div class="text-center mt-2 text-muted" style="font-size: 0.9em;">
-                    Overview of Submissions vs Graded Items
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-12">
-        <div class="card card-table">
-            <div class="card-header">
-                <h5 class="card-title">
-                    At-Risk Students
-                    @if (Model.AtRiskStudents.Any())
-                    {
-                        <span class="badge badge-danger ml-2">@Model.AtRiskStudents.Count</span>
-                    }
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover table-center mb-0">
-                        <thead>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Risk Factor</th>
-                                <th>Severity</th>
-                                <th class="text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.AtRiskStudents.Any())
-                            {
-                                foreach (var s in Model.AtRiskStudents)
-                                {
-                                    <tr>
-                                        <td>
-                                            <h2 class="table-avatar">
-                                                <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@s.StudentId" class="avatar avatar-sm mr-2">
-                                                    <img class="avatar-img rounded-circle" src="~/assets/img/603A6862.JPG" alt="User Image">
-                                                </a>
-                                                <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@s.StudentId">
-                                                    @s.StudentName
-                                                </a>
-                                            </h2>
-                                        </td>
-                                        <td>@s.Reason</td>
-                                        <td>
-                                            <span class="badge badge-pill @(s.RiskLevel == "High" ? "bg-danger-light" : "bg-warning-light")">
-                                                @s.RiskLevel
-                                            </span>
-                                        </td>
-                                        <td class="text-right">
-                                            <a asp-area="Instructor" asp-controller="Student" asp-action="Profile" asp-route-id="@s.StudentId" class="btn btn-sm bg-success-light">
-                                                <i class="fas fa-eye"></i> View Profile
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="4" class="text-center">Great job! No at-risk students detected.</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title">Sample Monthly Stats</h5>
-    </div>
-    <div class="card-body">
-        <div id="sample-chart"></div>
-    </div>
-</div>
-
 @section Scripts {
     <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
     <script>
         $(document).ready(function() {
-            // 1. DATA BINDING
-            // Deserialize Razor data into JavaScript variables
+            // Data
             var labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PerformanceLabels));
             var classSeries = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClassAverageSeries));
             var studentSeries = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.StudentSeries));
 
-            // 2. PERFORMANCE CHART (Area Chart)
+            // Modern Performance Chart Configuration
             if (document.querySelector("#performanceChart")) {
                 var performanceOptions = {
                     series: [
@@ -345,70 +371,86 @@
                     ],
                     chart: {
                         height: 350,
-                        type: 'area', // Maintained as Area per file content
+                        type: 'area',
+                        fontFamily: 'inherit',
                         toolbar: { show: false },
                         zoom: { enabled: false }
                     },
                     dataLabels: { enabled: false },
                     stroke: {
                         curve: 'smooth',
-                        width: 3
+                        width: 2
                     },
                     xaxis: {
                         categories: labels,
-                        tooltip: { enabled: false }
-                    },
-                    // Blue for class average, Yellow for specific student
-                    colors: ['#4e73df', '#fdbb38'],
-                    fill: {
-                        type: 'solid',
-                        opacity: 0.2
-                    },
-                    markers: {
-                        size: 5,
-                        hover: { size: 7 }
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                        labels: { style: { colors: '#adb5bd' } }
                     },
                     yaxis: {
-                        min: 0,
                         max: 100,
-                        title: { text: 'Score' }
+                        tickAmount: 4,
+                        labels: { style: { colors: '#adb5bd' } }
                     },
+                    grid: {
+                        borderColor: '#f1f1f1',
+                        strokeDashArray: 4,
+                        xaxis: { lines: { show: true } }
+                    },
+                    colors: ['#4e73df', '#ff9800'], // Clean Blue & Vibrant Orange
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.4,
+                            opacityTo: 0.05,
+                            stops: [0, 90, 100]
+                        }
+                    },
+                    markers: { size: 0, hover: { size: 6 } },
                     tooltip: {
+                        theme: 'light',
                         y: { formatter: function (val) { return val + ' pts'; } }
                     },
-                    legend: {
-                        position: 'top',
-                        horizontalAlign: 'right'
-                    }
+                    legend: { position: 'top', horizontalAlign: 'right' }
                 };
                 var chartPerf = new ApexCharts(document.querySelector("#performanceChart"), performanceOptions);
                 chartPerf.render();
             }
 
-            // 3. SUBMISSIONS CHART (Changed to Circle Chart)
+            // Modern Donut Chart
             if (document.querySelector("#submissionChart")) {
                 var submissionOptions = {
                     series: [@Model.TotalSubmissions, @Model.TotalGraded],
-                    labels: ['Total Submissions', 'Graded'],
+                    labels: ['Total', 'Graded'],
                     chart: {
-                        height: 350,
-                        type: 'donut', // Changed to donut/circle chart
-                        toolbar: { show: false }
+                        height: 280,
+                        type: 'donut',
+                        fontFamily: 'inherit',
                     },
-                    dataLabels: { enabled: true },
-                    colors: ['#19affb', '#1cc88a'],
-                    fill: {
-                        type: 'solid',
-                        opacity: 1
-                    },
-                    legend: {
-                        position: 'top',
-                        horizontalAlign: 'right'
-                    },
-                    tooltip: {
-                         y: {
-                            formatter: function (val) { return val + ' items'; }
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '75%',
+                                labels: {
+                                    show: true,
+                                    total: {
+                                        show: false, // We show total outside
+                                        label: 'Submissions',
+                                        fontSize: '16px',
+                                        color: '#adb5bd'
+                                    }
+                                }
+                            }
                         }
+                    },
+                    stroke: { lineCap: 'round' },
+                    colors: ['#36b9cc', '#1cc88a'], // Teal and Green
+                    dataLabels: { enabled: false },
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        theme: 'light',
+                        y: { formatter: function (val) { return val + ' items'; } }
                     }
                 };
                 var chartSub = new ApexCharts(document.querySelector("#submissionChart"), submissionOptions);

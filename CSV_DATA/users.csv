@@ -11,3 +11,4 @@ Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
 29,bnm915915@gmail.com,AQAAAAIAAYagAAAAEPk/YohNIlVmy380c89XMricr/IQaBXImEP/bEA99j/2lPssS26YRBW2tM4P06yelw==,Student,BD008,Phu TuongLong,PBKDF2
 30,nguyenvietphuc@gmail.com,AQAAAAIAAYagAAAAEMkFHZIIEHhHFU0eUIN8caANmKXnMlVdNcxcJynaOOLSca6EEGZFKUYvcqoGzEadFQ==,Student,BD009,Phuc Viet,PBKDF2
 31,httduong@gmail.com,AQAAAAIAAYagAAAAEJu7RX8caC1xCUs8G9gBahWZGGDXt9zz2d4aezCV8DODacJ3bKb7ajOrUlFVFH30jw==,Student,BD007,Do Duong,PBKDF2
+32,123@gmail.com,AQAAAAIAAYagAAAAEDCNMjpeJnlTKU4G3bC8Gs1sqGVzna38dmA2oiiolepLD1MXcFrkiIKmriqHZQufhg==,Student,BD0010,Do An,PBKDF2
