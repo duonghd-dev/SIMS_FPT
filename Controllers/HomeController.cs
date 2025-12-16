@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Models;
+using System.Security.Claims; // Required for ClaimTypes
 
 namespace SIMS_FPT.Controllers
 {
@@ -8,6 +9,24 @@ namespace SIMS_FPT.Controllers
     {
         public IActionResult Index()
         {
+            // FIX: Check if the user is already logged in
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                // Get the user's role
+                var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                // Redirect to the correct dashboard based on role
+                // (This logic is copied from LoginController)
+                return role switch
+                {
+                    "Admin" => RedirectToAction("Dashboard", "Home", new { area = "Admin" }),
+                    "Instructor" => RedirectToAction("Dashboard", "Home", new { area = "Instructor" }),
+                    "Student" => RedirectToAction("Dashboard", "Home", new { area = "Student" }),
+                    _ => RedirectToAction("Login", "Login")
+                };
+            }
+
+            // If not logged in, show the landing page
             return View();
         }
 

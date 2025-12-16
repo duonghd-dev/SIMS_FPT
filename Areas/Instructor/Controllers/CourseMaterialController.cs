@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering; // Required for SelectListItem
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
 using System;
@@ -47,7 +48,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         private List<SubjectModel> GetAllowedSubjects()
         {
             var teacherId = CurrentTeacherId;
-            // Find all classes taught by this teacher
             var teacherClasses = _classRepo.GetAll()
                 .Where(c => c.TeacherName == teacherId)
                 .ToList();
@@ -63,13 +63,35 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             return allSubjects.Where(s => subjectIds.Contains(s.SubjectId)).ToList();
         }
 
+        // [NEW] Helper to generate the "Class Name - Subject Name" dropdown list
+        private List<SelectListItem> GetClassSelectionList()
+        {
+            var teacherId = CurrentTeacherId;
+            var teacherClasses = _classRepo.GetAll()
+                .Where(c => c.TeacherName == teacherId)
+                .ToList();
+
+            return teacherClasses.Select(c =>
+            {
+                // In ClassModel, SubjectName stores the Subject ID
+                var subject = _subjectRepo.GetById(c.SubjectName);
+                var subjectName = subject != null ? subject.SubjectName : c.SubjectName;
+
+                return new SelectListItem
+                {
+                    // The value submitted is the SubjectId
+                    Value = c.SubjectName,
+                    // The text shown is "Class - Subject"
+                    Text = $"{c.ClassName} - {subjectName}"
+                };
+            }).ToList();
+        }
+
         public IActionResult Index()
         {
-            // 1. Get the list of allowed subjects for the current instructor
             var allowedSubjects = GetAllowedSubjects();
             var allowedSubjectIds = allowedSubjects.Select(s => s.SubjectId).ToList();
 
-            // 2. Filter materials: Only show materials linked to subjects this instructor teaches
             var materials = _materialRepo.GetAll()
                 .Where(m => allowedSubjectIds.Contains(m.SubjectId))
                 .OrderByDescending(m => m.UploadDate)
@@ -81,8 +103,8 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
         public IActionResult Create()
         {
-            // Only populate the dropdown with subjects the instructor teaches
-            ViewBag.Subjects = GetAllowedSubjects();
+            // Use the new helper to populate ViewBag.SubjectList
+            ViewBag.SubjectList = GetClassSelectionList();
             return View();
         }
 
@@ -90,8 +112,8 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(CourseMaterialModel model, IFormFile uploadFile)
         {
-            ModelState.Remove("MaterialId"); // generated server-side
-            ModelState.Remove("UploadDate"); // set server-side
+            ModelState.Remove("MaterialId");
+            ModelState.Remove("UploadDate");
 
             if (uploadFile == null && string.IsNullOrWhiteSpace(model.VideoUrl))
             {
@@ -108,7 +130,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 }
             }
 
-            // Security Check: Ensure the instructor teaches the selected Subject
+            // Security Check
             var allowedSubjects = GetAllowedSubjects();
             if (!allowedSubjects.Any(s => s.SubjectId == model.SubjectId))
             {
@@ -117,7 +139,8 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Subjects = allowedSubjects;
+                // Repopulate list on error
+                ViewBag.SubjectList = GetClassSelectionList();
                 TempData["Error"] = "Please fix the errors below and try again.";
                 return View(model);
             }
@@ -147,7 +170,8 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = $"Save failed: {ex.Message}";
-                ViewBag.Subjects = allowedSubjects;
+                // Repopulate list on exception
+                ViewBag.SubjectList = GetClassSelectionList();
                 return View(model);
             }
             TempData["Success"] = "Material saved successfully.";
@@ -160,7 +184,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             var mat = _materialRepo.GetById(id);
             if (mat == null) return RedirectToAction("Index");
 
-            // Security Check: Ensure the instructor teaches the subject of the material they are trying to delete
             var allowedSubjects = GetAllowedSubjects();
             if (!allowedSubjects.Any(s => s.SubjectId == mat.SubjectId))
             {
