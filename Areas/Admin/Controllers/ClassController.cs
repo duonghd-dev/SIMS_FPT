@@ -82,7 +82,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             var model = viewModel.Class;
 
             // Validate Class ID format
-            if (!ValidationHelper.IsValidId(model.ClassId))
+            if (string.IsNullOrWhiteSpace(model.ClassId) || !ValidationHelper.IsValidId(model.ClassId))
             {
                 ModelState.AddModelError("ClassId", "Class ID must be 3-20 alphanumeric characters!");
                 ViewBag.AllSubjects = _subjectRepo.GetAll();
@@ -91,7 +91,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             }
 
             // Check for duplicate Class ID
-            if (_classRepo.GetById(model.ClassId) != null)
+            if (!string.IsNullOrWhiteSpace(model.ClassId) && _classRepo.GetById(model.ClassId) != null)
             {
                 ModelState.AddModelError("ClassId", "Class ID already exists in the system!");
                 ViewBag.AllSubjects = _subjectRepo.GetAll();

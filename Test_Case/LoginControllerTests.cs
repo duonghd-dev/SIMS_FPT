@@ -15,10 +15,10 @@ namespace SIMS_FPT.Tests
     [TestFixture]
     public class LoginControllerTests
     {
-        private Mock<IUserRepository> _mockUserRepo;
-        private Mock<IStudentRepository> _mockStudentRepo;
-        private Mock<ITeacherRepository> _mockTeacherRepo;
-        private LoginController _controller;
+        private Mock<IUserRepository> _mockUserRepo = null!;
+        private Mock<IStudentRepository> _mockStudentRepo = null!;
+        private Mock<ITeacherRepository> _mockTeacherRepo = null!;
+        private LoginController _controller = null!;
         [SetUp]
         public void Setup()
         {
@@ -74,7 +74,7 @@ namespace SIMS_FPT.Tests
             var result = await _controller.Login(email, password) as ViewResult;
             // Assert
             Assert.That(result, Is.Not.Null, "Result should be a ViewResult");
-            Assert.That(result.ViewData["Error"], Is.EqualTo("Invalid email or password!"));
+            Assert.That(result!.ViewData["Error"], Is.EqualTo("Invalid email or password!"));
         }
         // TC07: User Role Authorization Check (Redirect Logic)
         [Test]
@@ -91,9 +91,9 @@ namespace SIMS_FPT.Tests
             var result = await _controller.Login(email, password) as RedirectToActionResult;
             // Assert
             Assert.That(result, Is.Not.Null, "Result should be a RedirectToActionResult");
-            Assert.That(result.ActionName, Is.EqualTo("Dashboard"));
+            Assert.That(result!.ActionName, Is.EqualTo("Dashboard"));
             Assert.That(result.ControllerName, Is.EqualTo("Home"));
-            Assert.That(result.RouteValues["area"], Is.EqualTo("Student"), "Student should be redirected to Student Area");
+            Assert.That(result.RouteValues!["area"], Is.EqualTo("Student"), "Student should be redirected to Student Area");
         }
     }
 }

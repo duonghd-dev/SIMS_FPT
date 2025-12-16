@@ -41,13 +41,15 @@ namespace SIMS_FPT.Areas.Student.Controllers
             {
                 var linkedId = User.FindFirst("LinkedId")?.Value;
                 if (!string.IsNullOrEmpty(linkedId)) return linkedId;
-                return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
+                return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name ?? string.Empty;
             }
         }
 
         // Helper: Check if student is allowed to access this assignment
         private bool IsStudentEligibleForAssignment(string studentId, AssignmentModel assignment)
         {
+            if (string.IsNullOrEmpty(studentId) || assignment == null) return false;
+
             if (!string.IsNullOrEmpty(assignment.ClassId))
             {
                 return _studentClassRepo.IsEnrolled(assignment.ClassId, studentId);
@@ -160,9 +162,10 @@ namespace SIMS_FPT.Areas.Student.Controllers
                     // REVERTED LOGIC (as requested by user): 
                     // Compare the full extension (e.g., ".pdf") directly against the list.
                     // This assumes the AllowedFileTypes setting includes the dot.
-                    if (ext == null || !allowedList.Contains(ext))
+                    var safeExt = ext ?? string.Empty;
+                    if (string.IsNullOrEmpty(safeExt) || !allowedList.Contains(safeExt))
                     {
-                        ModelState.AddModelError(string.Empty, $"File type {ext} is not allowed for this assignment.");
+                        ModelState.AddModelError(string.Empty, $"File type {safeExt} is not allowed for this assignment.");
                     }
                 }
             }
@@ -180,7 +183,8 @@ namespace SIMS_FPT.Areas.Student.Controllers
             var studentId = CurrentStudentId;
 
             // Create structure: submissions/{ClassId}/{AssignmentId}
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "submissions", assignment.ClassId, assignment.AssignmentId);
+            var classSegment = assignment.ClassId ?? "unknown-class";
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "submissions", classSegment, assignment.AssignmentId);
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
             var extension = Path.GetExtension(uploadFile.FileName);
@@ -206,7 +210,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
             var submission = existing ?? new SubmissionModel { AssignmentId = id, StudentId = studentId };
 
             // Save relative path using the new structure
-            submission.FilePath = Path.Combine("submissions", assignment.ClassId, assignment.AssignmentId, fileName).Replace("\\", "/");
+            submission.FilePath = Path.Combine("submissions", classSegment, assignment.AssignmentId, fileName).Replace("\\", "/");
             submission.SubmissionDate = DateTime.Now;
 
             // Reset grade on re-submission if desired

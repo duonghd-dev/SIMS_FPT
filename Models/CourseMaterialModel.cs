@@ -9,10 +9,10 @@ namespace SIMS_FPT.Models
 
         // 2. Fixed syntax error: Combined [Required] and ErrorMessage correctly
         [Required(ErrorMessage = "Subject is required.")]
-        public string SubjectId { get; set; }
+        public string SubjectId { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Title is required.")]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         public string? FilePath { get; set; } // Stores "materials/week1_notes.pdf"
 

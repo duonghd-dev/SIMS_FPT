@@ -63,7 +63,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
         }
 
-        public IActionResult Dashboard(string studentId = null)
+        public IActionResult Dashboard(string? studentId = null)
         {
             var teacherId = CurrentTeacherId;
 

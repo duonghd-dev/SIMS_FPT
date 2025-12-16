@@ -43,6 +43,10 @@ namespace SIMS_FPT.Data.Repositories
 
         private void WriteAll(List<SubmissionModel> list)
         {
+            var dir = Path.GetDirectoryName(_filePath);
+            if (string.IsNullOrEmpty(dir)) dir = Directory.GetCurrentDirectory();
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
             using var writer = new StreamWriter(_filePath);
             using var csv = new CsvWriter(writer, _config);
             csv.WriteRecords(list);

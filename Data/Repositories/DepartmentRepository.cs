@@ -17,7 +17,7 @@ namespace SIMS_FPT.Data.Repositories
         public DepartmentRepository()
         {
             _filePath = Path.Combine(Directory.GetCurrentDirectory(), "CSV_DATA", "departments.csv");
-            
+
             _config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
@@ -44,6 +44,7 @@ namespace SIMS_FPT.Data.Repositories
         private void WriteAll(List<DepartmentModel> departments)
         {
             var dir = Path.GetDirectoryName(_filePath);
+            if (string.IsNullOrEmpty(dir)) dir = Directory.GetCurrentDirectory();
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
             using var writer = new StreamWriter(_filePath);

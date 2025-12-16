@@ -9,10 +9,10 @@ namespace SIMS_FPT.Tests
     [TestFixture]
     public class SubjectControllerTests
     {
-        private Mock<ISubjectRepository> _mockRepo;
-        private Mock<IDepartmentRepository> _mockDeptRepo;
-        private Mock<ITeacherRepository> _mockTeacherRepo;
-        private SubjectController _controller;
+        private Mock<ISubjectRepository> _mockRepo = null!;
+        private Mock<IDepartmentRepository> _mockDeptRepo = null!;
+        private Mock<ITeacherRepository> _mockTeacherRepo = null!;
+        private SubjectController _controller = null!;
 
         [SetUp]
         public void Setup()
@@ -34,7 +34,8 @@ namespace SIMS_FPT.Tests
             var result = _controller.Delete(subjectId) as RedirectToActionResult;
 
             // Assert
-            Assert.That(result.ActionName, Is.EqualTo("List"));
+            Assert.That(result!, Is.Not.Null);
+            Assert.That(result!.ActionName, Is.EqualTo("List"));
             _mockRepo.Verify(r => r.Delete(subjectId), Times.Once);
         }
     }

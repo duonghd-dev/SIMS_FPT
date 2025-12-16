@@ -24,10 +24,13 @@
 
 
 <body>
+    @{
+        var isAuth = User?.Identity?.IsAuthenticated == true;
+    }
     <header class="sticky-top">
-        <div class="header" style="@(!User.Identity.IsAuthenticated ? "justify-content:flex-end;" : "")">
+        <div class="header" style="@(isAuth ? "" : "justify-content:flex-end;")">
 
-            @if (User.Identity.IsAuthenticated)
+            @if (isAuth)
             {
                 <!-- LEFT LOGO -->
                 <div class="header-left">

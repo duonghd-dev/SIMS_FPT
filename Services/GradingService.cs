@@ -49,7 +49,7 @@ namespace SIMS_FPT.Business.Services
             }
         }
 
-        public BulkGradeViewModel PrepareGradingView(string assignmentId, string currentTeacherId)
+        public BulkGradeViewModel? PrepareGradingView(string assignmentId, string currentTeacherId)
         {
             var assignment = _assignmentRepo.GetById(assignmentId);
             if (assignment == null) return null;

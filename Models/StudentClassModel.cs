@@ -11,10 +11,10 @@ namespace SIMS_FPT.Models
         public string EnrollmentId { get; set; } = Guid.NewGuid().ToString();
 
         [Name("class_id")]
-        public string ClassId { get; set; }
+        public string ClassId { get; set; } = string.Empty;
 
         [Name("student_id")]
-        public string StudentId { get; set; }
+        public string StudentId { get; set; } = string.Empty;
 
         [Name("joined_date")]
         public DateTime JoinedDate { get; set; } = DateTime.Now;

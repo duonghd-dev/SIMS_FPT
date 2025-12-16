@@ -1,4 +1,2 @@
 student_id,email,first_name,last_name,gender,date_of_birth,image_path
-ST01,st01@gmail.com,Duc,Duong,Male,05/25/2003 00:00:00,/images/cd040b10-d64c-418f-a675-90febaecd946_BD00535_HDD.jpg
-ST02,st02@gmail.com,Phuc,Viet,Male,12/12/2004 00:00:00,/images/2dcbd8b0-98d5-4127-a432-3464228e4e70_Chữ ký.png
-ST03,st03@gmail.com,Long,Huynh,Male,02/21/2005 00:00:00,/images/8d3dfb03-b1d0-48f0-bb97-3dc10865d6c7_LogoFPT.png
+ST01,st01@gmail.com,Duc,Duong,Male,05/25/2003 00:00:00,/images/b28ce190-53e2-453f-8219-d08597fac0f1_293019880_1765101050496669_4445945294180322917_n.jpg

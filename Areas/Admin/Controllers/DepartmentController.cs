@@ -42,14 +42,14 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         public IActionResult Add(DepartmentModel model)
         {
             // Validate Department ID format
-            if (!ValidationHelper.IsValidId(model.DepartmentId))
+            if (string.IsNullOrWhiteSpace(model.DepartmentId) || !ValidationHelper.IsValidId(model.DepartmentId))
             {
                 ModelState.AddModelError("DepartmentId", "Department ID must be 3-20 alphanumeric characters!");
                 return View(model);
             }
 
             // Check for duplicate ID
-            if (_deptRepo.GetById(model.DepartmentId) != null)
+            if (!string.IsNullOrWhiteSpace(model.DepartmentId) && _deptRepo.GetById(model.DepartmentId) != null)
             {
                 ModelState.AddModelError("DepartmentId", "Department ID already exists in the system!");
                 return View(model);

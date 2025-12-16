@@ -23,7 +23,7 @@ namespace SIMS_FPT.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login(string? returnUrl = null)
         {
             if (User.Identity?.IsAuthenticated == true)
             {
@@ -36,11 +36,12 @@ namespace SIMS_FPT.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string password, bool rememberMe = false, string returnUrl = null)
+        public async Task<IActionResult> Login(string email, string password, bool rememberMe = false, string? returnUrl = null)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 ViewBag.Error = "Please enter email and password!";
+                ViewData["Error"] = "Please enter email and password!";
                 ViewBag.ReturnUrl = returnUrl;
                 return View();
             }
@@ -49,7 +50,9 @@ namespace SIMS_FPT.Controllers
             var user = _userRepo.Login(email, password);
             if (user == null)
             {
+                // Keep both ViewBag and ViewData in sync so tests and views can read the same error message
                 ViewBag.Error = "Invalid email or password!";
+                ViewData["Error"] = "Invalid email or password!";
                 ViewBag.ReturnUrl = returnUrl;
                 return View();
             }

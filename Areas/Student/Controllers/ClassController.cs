@@ -47,6 +47,9 @@ namespace SIMS_FPT.Areas.Student.Controllers
             // LOGIC SỬA ĐỔI: Không cần lookup Teacher/Subject nữa vì ClassModel đã có sẵn Name
             foreach (var c in allClasses)
             {
+                // Skip malformed records with missing ID
+                if (string.IsNullOrEmpty(c.ClassId)) continue;
+
                 model.Add(new ClassViewModel
                 {
                     Class = c,
@@ -120,7 +123,7 @@ namespace SIMS_FPT.Areas.Student.Controllers
 
     public class ClassViewModel
     {
-        public ClassModel Class { get; set; }
+        public ClassModel Class { get; set; } = new ClassModel();
         public bool IsJoined { get; set; }
     }
 }

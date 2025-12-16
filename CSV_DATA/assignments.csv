@@ -1,1 +1,2 @@
 AssignmentId,SubjectId,Title,Description,DueDate,MaxPoints,AllowedFileTypes,AreGradesPublished
+ASM-001,SJ01,"123","123456",2025-12-18,100,"*",True,TC01,SE07202

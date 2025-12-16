@@ -5,9 +5,9 @@ namespace SIMS_FPT.Models.ViewModels
 {
     public class StudentAssignmentViewModel
     {
-        public AssignmentModel Assignment { get; set; }
+        public AssignmentModel Assignment { get; set; } = new AssignmentModel();
         public SubmissionModel? Submission { get; set; }
-        public string ClassName { get; set; }
+        public string ClassName { get; set; } = string.Empty;
         public bool HasSubmission => Submission != null && !string.IsNullOrEmpty(Submission.FilePath);
         public bool HasGrade => Submission?.Grade != null;
         public string TeacherComments => Submission?.TeacherComments ?? string.Empty;

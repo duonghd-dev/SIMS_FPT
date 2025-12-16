@@ -47,7 +47,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         public IActionResult Add(SubjectModel model)
         {
             // Validate Subject ID format
-            if (!ValidationHelper.IsValidId(model.SubjectId))
+            if (string.IsNullOrWhiteSpace(model.SubjectId) || !ValidationHelper.IsValidId(model.SubjectId))
             {
                 ModelState.AddModelError("SubjectId", "Subject ID must be 3-20 alphanumeric characters!");
                 ViewBag.Departments = new SelectList(_deptRepo.GetAll(), "DepartmentId", "DepartmentName");
@@ -56,7 +56,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             }
 
             // Check for duplicate Subject ID
-            if (_repo.GetById(model.SubjectId) != null)
+            if (!string.IsNullOrWhiteSpace(model.SubjectId) && _repo.GetById(model.SubjectId) != null)
             {
                 ModelState.AddModelError("SubjectId", "Subject ID already exists in the system!");
                 ViewBag.Departments = new SelectList(_deptRepo.GetAll(), "DepartmentId", "DepartmentName");

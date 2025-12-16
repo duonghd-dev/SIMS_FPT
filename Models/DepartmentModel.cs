@@ -30,10 +30,10 @@ namespace SIMS_FPT.Models
     // ViewModel dùng cho trang Detail
     public class DepartmentDetailViewModel
     {
-        public DepartmentModel Department { get; set; }
-        public List<TeacherCSVModel> Teachers { get; set; }
+        public DepartmentModel Department { get; set; } = new DepartmentModel();
+        public List<TeacherCSVModel> Teachers { get; set; } = new List<TeacherCSVModel>();
 
         // --- BỔ SUNG THUỘC TÍNH NÀY ĐỂ SỬA LỖI ---
-        public List<SubjectModel> Subjects { get; set; }
+        public List<SubjectModel> Subjects { get; set; } = new List<SubjectModel>();
     }
 }

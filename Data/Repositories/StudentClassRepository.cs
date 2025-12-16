@@ -44,6 +44,7 @@ namespace SIMS_FPT.Data.Repositories
         private void WriteAll(List<StudentClassModel> list)
         {
             var dir = Path.GetDirectoryName(_filePath);
+            if (string.IsNullOrEmpty(dir)) dir = Directory.GetCurrentDirectory();
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
             using var writer = new StreamWriter(_filePath);

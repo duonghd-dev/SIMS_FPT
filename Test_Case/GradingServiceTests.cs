@@ -11,11 +11,11 @@ namespace SIMS_FPT.Tests
     [TestFixture]
     public class GradingServiceTests
     {
-        private Mock<IAssignmentRepository> _assignRepo;
-        private Mock<ISubmissionRepository> _subRepo;
-        private Mock<IStudentRepository> _studentRepo;
-        private Mock<IStudentClassRepository> _studentClassRepo;
-        private GradingService _service;
+        private Mock<IAssignmentRepository> _assignRepo = null!;
+        private Mock<ISubmissionRepository> _subRepo = null!;
+        private Mock<IStudentRepository> _studentRepo = null!;
+        private Mock<IStudentClassRepository> _studentClassRepo = null!;
+        private GradingService _service = null!;
 
         [SetUp]
         public void Setup()

@@ -11,14 +11,14 @@ namespace SIMS_FPT.Tests
     [TestFixture]
     public class ClassControllerTests
     {
-        private Mock<IClassRepository> _classRepo;
-        private Mock<ISubjectRepository> _subjectRepo;
-        private Mock<ITeacherRepository> _teacherRepo;
-        private Mock<IStudentRepository> _studentRepo;
-        private Mock<IStudentClassRepository> _studentClassRepo;
-        private Mock<IDepartmentRepository> _deptRepo;
-        private Mock<IClassSubjectRepository> _classSubjectRepo;
-        private ClassController _controller;
+        private Mock<IClassRepository> _classRepo = null!;
+        private Mock<ISubjectRepository> _subjectRepo = null!;
+        private Mock<ITeacherRepository> _teacherRepo = null!;
+        private Mock<IStudentRepository> _studentRepo = null!;
+        private Mock<IStudentClassRepository> _studentClassRepo = null!;
+        private Mock<IDepartmentRepository> _deptRepo = null!;
+        private Mock<IClassSubjectRepository> _classSubjectRepo = null!;
+        private ClassController _controller = null!;
 
         [SetUp]
         public void Setup()
@@ -58,7 +58,8 @@ namespace SIMS_FPT.Tests
             var result = _controller.AddStudentsToClass(classId, selectedStudents) as RedirectToActionResult;
 
             // Assert
-            Assert.That(result.ActionName, Is.EqualTo("ManageStudents"));
+            Assert.That(result!, Is.Not.Null);
+            Assert.That(result!.ActionName, Is.EqualTo("ManageStudents"));
 
             _studentClassRepo.Verify(r => r.Add(It.Is<StudentClassModel>(s => s.ClassId == classId && s.StudentId == "ST01")), Times.Once);
             _studentClassRepo.Verify(r => r.Add(It.Is<StudentClassModel>(s => s.ClassId == classId && s.StudentId == "ST02")), Times.Once);
