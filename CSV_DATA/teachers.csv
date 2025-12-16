@@ -1,14 +1,2 @@
 teacher_id,name,department_id,gender,date_of_birth,mobile,joining_date,qualification,experience,username,email,password,address,city,state,country,image
-TCH001,Nguyen Anh Duc,DEP001,Male,04/12/1980 00:00:00,0909123456,09/01/2010 00:00:00,PhD,12,ngduc,ngduc@fpt.edu.com,123456,12 Nguyen Trai,Hanoi,Hanoi,Vietnam,/assets/img/profiles/tch001.jpg
-TCH002,Tran Thi Hong,DEP006,Female,11/20/1985 00:00:00,0912334455,02/15/2012 00:00:00,MA,10,thhong,thhong@fpt.edu.com,123456,45 Le Loi,Da Nang,Da Nang,Vietnam,/assets/img/profiles/tch002.jpg
-TCH003,Le Van Minh,DEP002,Male,06/05/1978 00:00:00,0933445566,08/01/2009 00:00:00,PhD,15,lvm," lvm@fpt.edu.com",123456,78 Bach Dang,HCMC,HCMC,Vietnam,/assets/img/profiles/tch003.jpg
-TCH004,Pham Quang Huy,DEP004,Male,02/14/1982 00:00:00,0909988776,01/10/2011 00:00:00,MSc,11,pqh,pqh@fpt.edu.com,123456,32 Tran Hung Dao,Hue,Hue,Vietnam,/assets/img/profiles/tch004.jpg
-TCH005,Vu Thi Lan,DEP003,Female,09/30/1987 00:00:00,0977443322,03/22/2014 00:00:00,MA,8,vtlan,vtlan@fpt.edu.com,123456,66 Kim Ma,Hanoi,Hanoi,Vietnam,/assets/img/profiles/tch005.jpg
-TCH006,Hoang Minh Son,DEP010,Male,12/25/1983 00:00:00,0966778899,08/01/2019 00:00:00,PhD,6,hms,hms@fpt.edu.com,123456,9 Tran Phu,Da Nang,Da Nang,Vietnam,/assets/img/profiles/tch006.jpg
-TCH007,Nguyen Thu Ha,DEP006,Female,01/18/1990 00:00:00,0988122233,09/01/2016 00:00:00,MSc,7,nthha,nthha@fpt.edu.com,123456,124 Vo Van Tan,HCMC,HCMC,Vietnam,/assets/img/profiles/tch007.jpg
-TCH008,Dao Van Quang,DEP005,Male,07/11/1975 00:00:00,0912556677,05/20/2008 00:00:00,MSc,14,dvq,dvq@fpt.edu.com,123456,88 Le Duan,Ha Noi,Ha Noi,Vietnam,/assets/img/profiles/tch008.jpg
-TCH009,Tran Minh Chau,DEP007,Female,04/09/1988 00:00:00,0922333444,10/12/2015 00:00:00,MA,9,tmchau,tmchau@fpt.edu.com,123456,15 Phan Chu Trinh,Ha Noi,Ha Noi,Vietnam,/assets/img/profiles/tch009.jpg
-TCH010,Phan Duc Long,DEP008,Male,03/03/1981 00:00:00,0909223344,06/18/2011 00:00:00,MBA,12,pdl,pdl@fpt.edu.com,123456,50 Nguyen Hue,HCMC,HCMC,Vietnam,/assets/img/profiles/tch010.jpg
-TCH011,Long,DEP008,Male,12/07/2025 00:00:00,0862784721,12/31/2025 00:00:00,Best,dsad,,ntc915915@gmail.com,123456,100 Tien Son,Da nang,Da Nang,Việt Nam,/images/TCH011.png
-TCH012,Long,DEP007,Male,,0363977273,12/10/2025 00:00:00,Best,dsad,,liubu1412@gmail.com,,24 đường thuận lý,Đồng Hới,Da Nang,Việt Nam,/assets/img/profiles/avatar-02.jpg
-TC013,Duong,DEP002,Male,02/25/2003 00:00:00,0702374978,12/16/2025 00:00:00,Information Technolory,12,,duonghd48.dev@gmail.com,,Da Nang,Da Nang,Lien Chieu,Viet Nam,/images/75876a5c-da23-4cbc-9085-5ab6c4670472_BD00535_HDD.jpg
+TC013,Duong,DEP002,Male,02/25/2003 00:00:00,07023749788,12/16/2025 00:00:00,Information Technolory,12,,duonghd48.dev@gmail.com,TC013,Da Nang,Da Nang,Lien Chieu,Viet Nam,/images/75876a5c-da23-4cbc-9085-5ab6c4670472_BD00535_HDD.jpg

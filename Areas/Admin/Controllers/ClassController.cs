@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Helpers;
 using SIMS_FPT.Models;
 using SIMS_FPT.Models.ViewModels;
 using System.Linq;
@@ -13,142 +14,219 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         private readonly IClassRepository _classRepo;
         private readonly ISubjectRepository _subjectRepo;
         private readonly ITeacherRepository _teacherRepo;
-        // Mới thêm
+        private readonly IDepartmentRepository _deptRepo;
         private readonly IStudentRepository _studentRepo;
         private readonly IStudentClassRepository _studentClassRepo;
+        private readonly IClassSubjectRepository _classSubjectRepo;
 
         public ClassController(
             IClassRepository classRepo,
             ISubjectRepository subjectRepo,
             ITeacherRepository teacherRepo,
+            IDepartmentRepository deptRepo,
             IStudentRepository studentRepo,
-            IStudentClassRepository studentClassRepo)
+            IStudentClassRepository studentClassRepo,
+            IClassSubjectRepository classSubjectRepo)
         {
             _classRepo = classRepo;
             _subjectRepo = subjectRepo;
             _teacherRepo = teacherRepo;
+            _deptRepo = deptRepo;
             _studentRepo = studentRepo;
             _studentClassRepo = studentClassRepo;
+            _classSubjectRepo = classSubjectRepo;
         }
 
         // 1. Xem danh sách lớp
         public IActionResult List()
         {
-            // 1. Lấy tất cả dữ liệu
             var classes = _classRepo.GetAll();
+            var classSubjects = _classSubjectRepo.GetAll();
             var subjects = _subjectRepo.GetAll();
             var teachers = _teacherRepo.GetAll();
 
-            // 2. Kết hợp dữ liệu (Mapping) sử dụng LINQ
-            // Dùng Left Join để nếu ID không tồn tại thì không bị lỗi chết trang
-            var listViewModel = from c in classes
-                                join s in subjects on c.SubjectId equals s.SubjectId into subjectGroup
-                                from sub in subjectGroup.DefaultIfEmpty() // Nếu không tìm thấy môn, sub sẽ null
+            var viewModel = classes.Select(c => new ClassDetailViewModel
+            {
+                Class = c,
+                SubjectTeachers = (from cs in classSubjects
+                                   where cs.ClassId == c.ClassId
+                                   join s in subjects on cs.SubjectId equals s.SubjectId into subjectGroup
+                                   from sub in subjectGroup.DefaultIfEmpty()
+                                   join t in teachers on cs.TeacherId equals t.TeacherId into teacherGroup
+                                   from teach in teacherGroup.DefaultIfEmpty()
+                                   select new ClassSubjectViewModel
+                                   {
+                                       SubjectId = cs.SubjectId,
+                                       SubjectName = sub != null ? sub.SubjectName : $"Unknown ({cs.SubjectId})",
+                                       TeacherId = cs.TeacherId,
+                                       TeacherName = teach != null ? teach.Name : $"Unknown ({cs.TeacherId})"
+                                   }).ToList()
+            }).ToList();
 
-                                join t in teachers on c.TeacherName equals t.TeacherId into teacherGroup
-                                from teach in teacherGroup.DefaultIfEmpty() // Nếu không tìm thấy GV, teach sẽ null
-
-                                select new ClassModel
-                                {
-                                    ClassId = c.ClassId,
-                                    ClassName = c.ClassName,
-                                    Semester = c.Semester,
-                                    NumberOfStudents = c.NumberOfStudents,
-
-                                    // Nếu tìm thấy tên thì lấy, không thì báo lỗi hoặc hiện lại ID
-                                    SubjectName = sub != null ? sub.SubjectName : $"Unknown ({c.SubjectId})",
-                                    TeacherName = teach != null ? teach.Name : $"Unknown ({c.TeacherName})"
-                                };
-
-            // 3. Trả về danh sách ViewModel
-            return View(listViewModel.ToList());
+            return View(viewModel);
         }
 
         // 2. Tạo lớp mới (Giao diện)
         [HttpGet]
         public IActionResult Add()
         {
-            // Lấy danh sách Subject và Teacher để hiển thị Dropdown
-            // Value là ID, Text là Name (hoặc ID - Name cho dễ nhìn)
-            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName");
-
-            // Giả sử Teacher model có Id và FullName. Nếu TeacherRepository trả về Users, hãy dùng Users.
-            // Ở đây tôi dùng _teacherRepo.GetAll() trả về danh sách giáo viên.
-            // Cần đảm bảo TeacherModel/Users có trường Id và FullName tương ứng.
-            var teachers = _teacherRepo.GetAll().Select(t => new
-            {
-                Id = t.TeacherId,
-                Name = $"{t.TeacherId} - {t.Name}"
-            });
-            ViewBag.Teachers = new SelectList(teachers, "Id", "Name");
-
-            return View();
+            ViewBag.AllSubjects = _subjectRepo.GetAll();
+            LoadAllTeachersWithSubjects();
+            return View(new ClassDetailViewModel { Class = new ClassModel() });
         }
 
         // 2. Tạo lớp mới (Xử lý)
         [HttpPost]
-        public IActionResult Add(ClassModel model)
+        public IActionResult Add(ClassDetailViewModel viewModel, List<string> SubjectIds, List<string> TeacherIds)
         {
-            // Kiểm tra trùng ID lớp
+            var model = viewModel.Class;
+
+            // Validate Class ID format
+            if (!ValidationHelper.IsValidId(model.ClassId))
+            {
+                ModelState.AddModelError("ClassId", "Class ID must be 3-20 alphanumeric characters!");
+                ViewBag.AllSubjects = _subjectRepo.GetAll();
+                LoadAllTeachersWithSubjects();
+                return View(new ClassDetailViewModel { Class = model });
+            }
+
+            // Check for duplicate Class ID
             if (_classRepo.GetById(model.ClassId) != null)
             {
-                ModelState.AddModelError("ClassId", "Class ID already exists!");
-                // Load lại dropdown nếu lỗi
-                ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName");
-                var teachers = _teacherRepo.GetAll().Select(t => new { Id = t.TeacherId, Name = $"{t.TeacherId} - {t.Name}" });
-                ViewBag.Teachers = new SelectList(teachers, "Id", "Name");
-                return View(model);
+                ModelState.AddModelError("ClassId", "Class ID already exists in the system!");
+                ViewBag.AllSubjects = _subjectRepo.GetAll();
+                LoadAllTeachersWithSubjects();
+                return View(new ClassDetailViewModel { Class = model });
+            }
+
+            // Validate required fields
+            if (string.IsNullOrEmpty(model.ClassName))
+                ModelState.AddModelError("ClassName", "Class Name is required.");
+            if (string.IsNullOrEmpty(model.Semester))
+                ModelState.AddModelError("Semester", "Semester is required.");
+            if (model.NumberOfStudents <= 0)
+                ModelState.AddModelError("NumberOfStudents", "Number of students must be at least 1!");
+
+            // Validate at least one subject-teacher pair
+            if (SubjectIds == null || !SubjectIds.Any() || TeacherIds == null || !TeacherIds.Any())
+            {
+                ModelState.AddModelError("", "Please add at least one Subject-Teacher pair!");
+                ViewBag.AllSubjects = _subjectRepo.GetAll();
+                LoadAllTeachersWithSubjects();
+                return View(new ClassDetailViewModel { Class = model });
             }
 
             if (ModelState.IsValid)
             {
+                // 1. Tạo Class
                 _classRepo.Add(model);
+
+                // 2. Thêm các ClassSubject records
+                for (int i = 0; i < SubjectIds.Count && i < TeacherIds.Count; i++)
+                {
+                    var classSubject = new ClassSubjectModel
+                    {
+                        ClassId = model.ClassId,
+                        SubjectId = SubjectIds[i],
+                        TeacherId = TeacherIds[i]
+                    };
+                    _classSubjectRepo.Add(classSubject);
+                }
+
                 return RedirectToAction("List");
             }
 
-            // Load lại dropdown nếu model không hợp lệ
-            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName");
-            var teachersReload = _teacherRepo.GetAll().Select(t => new { Id = t.TeacherId, Name = $"{t.TeacherId} - {t.Name}" });
-            ViewBag.Teachers = new SelectList(teachersReload, "Id", "Name");
-
-            return View(model);
+            ViewBag.AllSubjects = _subjectRepo.GetAll();
+            LoadAllTeachersWithSubjects();
+            return View(new ClassDetailViewModel { Class = model });
         }
 
         // 3. Sửa lớp (Giao diện)
         [HttpGet]
         public IActionResult Edit(string id)
         {
-            var item = _classRepo.GetById(id);
-            if (item == null) return NotFound();
+            var classModel = _classRepo.GetById(id);
+            if (classModel == null) return NotFound();
 
-            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", item.SubjectId);
+            var classSubjects = _classSubjectRepo.GetByClassId(id);
+            var subjects = _subjectRepo.GetAll();
+            var teachers = _teacherRepo.GetAll();
 
-            var teachers = _teacherRepo.GetAll().Select(t => new { Id = t.TeacherId, Name = $"{t.TeacherId} - {t.Name}" });
-            ViewBag.Teachers = new SelectList(teachers, "Id", "Name", item.TeacherName);
+            var viewModel = new ClassDetailViewModel
+            {
+                Class = classModel,
+                SubjectTeachers = (from cs in classSubjects
+                                   join s in subjects on cs.SubjectId equals s.SubjectId into subjectGroup
+                                   from sub in subjectGroup.DefaultIfEmpty()
+                                   join t in teachers on cs.TeacherId equals t.TeacherId into teacherGroup
+                                   from teach in teacherGroup.DefaultIfEmpty()
+                                   select new ClassSubjectViewModel
+                                   {
+                                       SubjectId = cs.SubjectId,
+                                       SubjectName = sub != null ? sub.SubjectName : cs.SubjectId,
+                                       TeacherId = cs.TeacherId,
+                                       TeacherName = teach != null ? teach.Name : cs.TeacherId
+                                   }).ToList()
+            };
 
-            return View(item);
+            ViewBag.AllSubjects = _subjectRepo.GetAll();
+            LoadAllTeachersWithSubjects();
+            return View(viewModel);
         }
 
         // 3. Sửa lớp (Xử lý)
         [HttpPost]
-        public IActionResult Edit(ClassModel model)
+        public IActionResult Edit(ClassDetailViewModel viewModel, List<string> SubjectIds, List<string> TeacherIds)
         {
+            var model = viewModel.Class;
+
+            if (string.IsNullOrEmpty(model.ClassName))
+                ModelState.AddModelError("ClassName", "Class Name is required.");
+            if (string.IsNullOrEmpty(model.Semester))
+                ModelState.AddModelError("Semester", "Semester is required.");
+            if (model.NumberOfStudents <= 0)
+                ModelState.AddModelError("NumberOfStudents", "Number of students must be at least 1!");
+
+            if (SubjectIds == null || !SubjectIds.Any() || TeacherIds == null || !TeacherIds.Any())
+            {
+                ModelState.AddModelError("", "Please add at least one Subject-Teacher pair!");
+            }
+
             if (ModelState.IsValid)
             {
+                // 1. Update Class info
                 _classRepo.Update(model);
+
+                // 2. Delete old ClassSubject records
+                _classSubjectRepo.DeleteByClassId(model.ClassId!);
+
+                // 3. Add new ClassSubject records
+                for (int i = 0; i < SubjectIds.Count && i < TeacherIds.Count; i++)
+                {
+                    var classSubject = new ClassSubjectModel
+                    {
+                        ClassId = model.ClassId,
+                        SubjectId = SubjectIds[i],
+                        TeacherId = TeacherIds[i]
+                    };
+                    _classSubjectRepo.Add(classSubject);
+                }
+
                 return RedirectToAction("List");
             }
 
-            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", model.SubjectId);
-            var teachers = _teacherRepo.GetAll().Select(t => new { Id = t.TeacherId, Name = $"{t.TeacherId} - {t.Name}" });
-            ViewBag.Teachers = new SelectList(teachers, "Id", "Name", model.TeacherName);
-
-            return View(model);
+            var viewModel2 = new ClassDetailViewModel { Class = model };
+            ViewBag.AllSubjects = _subjectRepo.GetAll();
+            LoadAllTeachersWithSubjects();
+            return View(viewModel2);
         }
 
         // 4. Xóa lớp
         public IActionResult Delete(string id)
         {
+            // Xóa ClassSubject records trước
+            _classSubjectRepo.DeleteByClassId(id);
+            // Xóa Class
             _classRepo.Delete(id);
             return RedirectToAction("List");
         }
@@ -199,7 +277,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                     }
                 }
 
-                // Cập nhật lại sỉ số lớp (Optional)
+                // Cập nhật lại sỉ số lớp
                 UpdateClassCount(classId);
             }
 
@@ -210,9 +288,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         public IActionResult RemoveStudentFromClass(string classId, string studentId)
         {
             _studentClassRepo.Remove(classId, studentId);
-            // Cập nhật lại sỉ số lớp (Optional)
             UpdateClassCount(classId);
-
             return RedirectToAction("ManageStudents", new { id = classId });
         }
 
@@ -226,6 +302,27 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                 currentClass.NumberOfStudents = count;
                 _classRepo.Update(currentClass);
             }
+        }
+
+        private void LoadAllTeachersWithSubjects()
+        {
+            var allSubjects = _subjectRepo.GetAll();
+            var allTeachers = _teacherRepo.GetAll();
+
+            var teachersWithSubjects = allTeachers.Select(t => new
+            {
+                Id = t.TeacherId,
+                Name = $"{t.TeacherId} - {t.Name}",
+                SubjectIds = allSubjects
+                    .Where(s => !string.IsNullOrEmpty(s.TeacherIds) &&
+                                s.TeacherIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(id => id.Trim())
+                                .Contains(t.TeacherId))
+                    .Select(s => s.SubjectId)
+                    .ToList()
+            }).ToList();
+
+            ViewBag.AllTeachers = teachersWithSubjects;
         }
     }
 }

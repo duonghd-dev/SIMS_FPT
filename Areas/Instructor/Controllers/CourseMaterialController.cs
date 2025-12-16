@@ -20,16 +20,19 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         private readonly ICourseMaterialRepository _materialRepo;
         private readonly ISubjectRepository _subjectRepo;
         private readonly IClassRepository _classRepo;
+        private readonly IClassSubjectRepository _classSubjectRepo;
         private readonly IWebHostEnvironment _env;
 
         public CourseMaterialController(ICourseMaterialRepository materialRepo,
                                         ISubjectRepository subjectRepo,
                                         IClassRepository classRepo,
+                                        IClassSubjectRepository classSubjectRepo,
                                         IWebHostEnvironment env)
         {
             _materialRepo = materialRepo;
             _subjectRepo = subjectRepo;
             _classRepo = classRepo;
+            _classSubjectRepo = classSubjectRepo;
             _env = env;
         }
 
@@ -40,51 +43,59 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             {
                 var linkedId = User.FindFirst("LinkedId")?.Value;
                 if (!string.IsNullOrEmpty(linkedId)) return linkedId;
-                return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
+                return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name ?? "UNKNOWN";
             }
         }
 
-        // Helper to get subjects that this teacher is assigned to (via Classes)
+        // Helper to get subjects that this teacher is assigned to (via ClassSubject)
         private List<SubjectModel> GetAllowedSubjects()
         {
             var teacherId = CurrentTeacherId;
-            var teacherClasses = _classRepo.GetAll()
-                .Where(c => c.TeacherName == teacherId)
-                .ToList();
-
-            // Extract unique Subject IDs from those classes
-            var subjectIds = teacherClasses
-                .Select(c => c.SubjectName)
+            var teacherSubjectIds = _classSubjectRepo.GetAll()
+                .Where(cs => cs.TeacherId == teacherId)
+                .Select(cs => cs.SubjectId)
                 .Distinct()
                 .ToList();
 
-            // Return the full Subject objects
             var allSubjects = _subjectRepo.GetAll();
-            return allSubjects.Where(s => subjectIds.Contains(s.SubjectId)).ToList();
+            return allSubjects.Where(s => teacherSubjectIds.Contains(s.SubjectId)).ToList();
         }
 
         // [NEW] Helper to generate the "Class Name - Subject Name" dropdown list
         private List<SelectListItem> GetClassSelectionList()
         {
             var teacherId = CurrentTeacherId;
-            var teacherClasses = _classRepo.GetAll()
-                .Where(c => c.TeacherName == teacherId)
+            var teacherClassIds = _classSubjectRepo.GetAll()
+                .Where(cs => cs.TeacherId == teacherId)
+                .Select(cs => cs.ClassId)
+                .Distinct()
                 .ToList();
 
-            return teacherClasses.Select(c =>
-            {
-                // In ClassModel, SubjectName stores the Subject ID
-                var subject = _subjectRepo.GetById(c.SubjectName);
-                var subjectName = subject != null ? subject.SubjectName : c.SubjectName;
+            var teacherClasses = _classRepo.GetAll()
+                .Where(c => teacherClassIds.Contains(c.ClassId))
+                .ToList();
 
-                return new SelectListItem
+            var result = new List<SelectListItem>();
+
+            foreach (var c in teacherClasses)
+            {
+                // Get subjects taught in this class
+                var classSubjects = _classSubjectRepo.GetByClassId(c.ClassId!);
+                foreach (var cs in classSubjects)
                 {
-                    // The value submitted is the SubjectId
-                    Value = c.SubjectName,
-                    // The text shown is "Class - Subject"
-                    Text = $"{c.ClassName} - {subjectName}"
-                };
-            }).ToList();
+                    var subject = _subjectRepo.GetById(cs.SubjectId!);
+                    if (subject != null)
+                    {
+                        result.Add(new SelectListItem
+                        {
+                            Value = cs.SubjectId,
+                            Text = $"{c.ClassName ?? c.ClassId ?? "Unknown"} - {subject.SubjectName ?? subject.SubjectId ?? "Unknown"}"
+                        });
+                    }
+                }
+            }
+
+            return result;
         }
 
         public IActionResult Index()

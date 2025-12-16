@@ -51,16 +51,24 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Date of Birth</label><input asp-for="DateOfBirth"
                                             type="date" class="form-control"
-                                            value="@Model.DateOfBirth?.ToString("yyyy-MM-dd")"></div>
+                                            value='@Model.DateOfBirth?.ToString("yyyy-MM-dd")'>
+                                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                                    </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Mobile</label><input asp-for="Mobile"
-                                            class="form-control"></div>
+                                            class="form-control" pattern="[0-9]{10}" placeholder="1234567890"
+                                            maxlength="10">
+                                        <small class="form-text text-muted">Format: 10 digits (e.g., 0123456789)</small>
+                                        <span asp-validation-for="Mobile" class="text-danger small"></span>
+                                    </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Joining Date</label><input asp-for="JoiningDate"
                                             type="date" class="form-control"
-                                            value="@Model.JoiningDate?.ToString("yyyy-MM-dd")"></div>
+                                            value='@Model.JoiningDate?.ToString("yyyy-MM-dd")'>
+                                        <span asp-validation-for="JoiningDate" class="text-danger small"></span>
+                                    </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Qualification</label><input asp-for="Qualification"
@@ -88,11 +96,19 @@
 
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group"><label>Email ID</label><input asp-for="Email" type="email"
-                                            class="form-control"></div>
+                                            class="form-control" placeholder="example@gmail.com" required>
+                                        <small class="form-text text-muted">Format: example@gmail.com</small>
+                                        <span asp-validation-for="Email" class="text-danger small"></span>
+                                    </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
-                                    <div class="form-group"><label>Password</label><input asp-for="Password"
-                                            type="password" value="@Model.Password" class="form-control"></div>
+                                    <div class="form-group"><label>Password (Optional)</label><input asp-for="Password"
+                                            type="password" class="form-control"
+                                            placeholder="Leave blank to use Teacher ID">
+                                        <small class="form-text text-muted">If not provided, Teacher ID will be used as
+                                            password</small>
+                                        <span asp-validation-for="Password" class="text-danger small"></span>
+                                    </div>
                                 </div>
 
                                 <div class="col-12">

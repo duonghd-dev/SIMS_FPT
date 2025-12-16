@@ -41,13 +41,8 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 var classInfo = _classRepo.GetById(enrollment.ClassId);
                 if (classInfo != null)
                 {
-                    // Correctly get the subject name for display purposes
-                    var subject = _subjectRepo.GetAll().FirstOrDefault(s => s.SubjectId == classInfo.SubjectId);
-                    // classInfo.SubjectName = subject?.SubjectName ?? "Unknown"; // Assuming you add this property to ClassModel for display
-
-                    // Directly use the SubjectId from the class info to get materials
+                    // Get materials for all subjects in this class (since a class can have multiple subjects now)
                     var materials = _materialRepo.GetAll()
-                                    .Where(m => m.SubjectId == classInfo.SubjectId)
                                     .OrderByDescending(m => m.UploadDate)
                                     .ToList();
 

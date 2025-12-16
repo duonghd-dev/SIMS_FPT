@@ -23,6 +23,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         private readonly IStudentRepository _studentRepo;
         private readonly IClassRepository _classRepo;
         private readonly IStudentClassRepository _studentClassRepo;
+        private readonly IClassSubjectRepository _classSubjectRepo;
 
         // [NEW] Repositories for Profile
         private readonly ITeacherRepository _teacherRepo;
@@ -35,6 +36,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                               IStudentRepository studentRepo,
                               IClassRepository classRepo,
                               IStudentClassRepository studentClassRepo,
+                              IClassSubjectRepository classSubjectRepo,
                               ITeacherRepository teacherRepo, // Inject
                               IUserRepository userRepo,       // Inject
                               IWebHostEnvironment env)
@@ -45,6 +47,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             _studentRepo = studentRepo;
             _classRepo = classRepo;
             _studentClassRepo = studentClassRepo;
+            _classSubjectRepo = classSubjectRepo;
             _teacherRepo = teacherRepo;
             _userRepo = userRepo;
             _env = env;
@@ -56,7 +59,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             {
                 var linkedId = User.FindFirst("LinkedId")?.Value;
                 if (!string.IsNullOrEmpty(linkedId)) return linkedId;
-                return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
+                return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name ?? "UNKNOWN";
             }
         }
 
@@ -80,26 +83,35 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             // 2. Build student list based on classes taught by this instructor
             var students = new List<Models.StudentCSVModel>();
 
-            // Get all classes where the teacher_id matches the current instructor
+            // Get all classes where the teacher teaches via ClassSubject
+            var teacherClassIds = _classSubjectRepo.GetAll()
+                .Where(cs => cs.TeacherId == teacherId)
+                .Select(cs => cs.ClassId)
+                .Distinct()
+                .ToList();
+
             var teacherClasses = _classRepo.GetAll()
-                .Where(c => c.TeacherName == teacherId)
+                .Where(c => teacherClassIds.Contains(c.ClassId))
                 .ToList();
 
             // --- NEW CODE: Populate Teaching Classes List ---
             var myTeachingClasses = new List<TeachingClassInfo>();
             foreach (var cls in teacherClasses)
             {
-                // Assuming cls.SubjectName holds the Subject ID (e.g., SUB001)
-                var subject = _subjectRepo.GetById(cls.SubjectName);
+                // Get subjects for this class from ClassSubject
+                var classSubjects = _classSubjectRepo.GetByClassId(cls.ClassId!);
+                var subjectNames = classSubjects
+                    .Select(cs => _subjectRepo.GetById(cs.SubjectId!)?.SubjectName ?? cs.SubjectId)
+                    .ToList();
 
                 myTeachingClasses.Add(new TeachingClassInfo
                 {
-                    ClassId = cls.ClassId,
-                    ClassName = cls.ClassName,
-                    SubjectCode = subject?.SubjectId ?? cls.SubjectName,
-                    SubjectName = subject?.SubjectName ?? "Unknown Subject",
+                    ClassId = cls.ClassId ?? "N/A",
+                    ClassName = cls.ClassName ?? "Unknown",
+                    SubjectCode = classSubjects.FirstOrDefault()?.SubjectId ?? "N/A",
+                    SubjectName = string.Join(", ", subjectNames),
                     StudentCount = cls.NumberOfStudents,
-                    Semester = cls.Semester
+                    Semester = cls.Semester ?? "N/A"
                 });
             }
             // ------------------------------------------------
@@ -109,7 +121,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             foreach (var cls in teacherClasses)
             {
-                var enrollments = _studentClassRepo.GetByClassId(cls.ClassId);
+                var enrollments = cls.ClassId != null ? _studentClassRepo.GetByClassId(cls.ClassId) : new List<StudentClassModel>();
                 foreach (var enr in enrollments)
                 {
                     if (!enrolledIds.Contains(enr.StudentId))
@@ -140,8 +152,8 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 TeachingClasses = myTeachingClasses, // <--- Assign the list here
                 LeaveDaysRemaining = 12,
                 LastSalaryMonth = "November 2025",
-                StudentOptions = students.Select(s => new StudentOption { StudentId = s.StudentId, StudentName = s.FullName }).ToList(),
-                SelectedStudentId = selectedStudent?.StudentId,
+                StudentOptions = students.Select(s => new StudentOption { StudentId = s.StudentId ?? "", StudentName = s.FullName ?? "Unknown" }).ToList(),
+                SelectedStudentId = selectedStudent?.StudentId ?? "",
                 SelectedStudentName = selectedStudent?.FullName ?? "No students"
             };
             var allActivities = new List<RecentActivityItem>();
@@ -259,7 +271,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 foreach (var assn in teacherAssignments)
                 {
                     totalMax += assn.MaxPoints;
-                    var sub = _submissionRepo.GetByStudentAndAssignment(s.StudentId, assn.AssignmentId);
+                    var sub = _submissionRepo.GetByStudentAndAssignment(s.StudentId ?? "", assn.AssignmentId ?? "");
                     if (sub?.Grade != null) totalScore += sub.Grade.Value;
                     else missingCount++;
                 }
@@ -267,12 +279,12 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 var atRisk = percent < 50 || missingCount > Math.Max(1, teacherAssignments.Count / 2);
                 return new AtRiskStudent
                 {
-                    StudentId = s.StudentId,
-                    StudentName = s.FullName,
+                    StudentId = s.StudentId ?? "",
+                    StudentName = s.FullName ?? "Unknown",
                     RiskLevel = percent < 35 ? "High" : "Medium",
-                    Reason = atRisk ? $"Avg {(int)percent}% | Missing {missingCount}" : null
+                    Reason = atRisk ? $"Avg {(int)percent}% | Missing {missingCount}" : ""
                 };
-            }).Where(x => x.Reason != null).OrderByDescending(x => x.RiskLevel).ToList();
+            }).Where(x => !string.IsNullOrEmpty(x.Reason)).OrderByDescending(x => x.RiskLevel).ToList();
 
             return View(model);
         }
@@ -327,12 +339,12 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             if (teacher == null) return NotFound();
 
             // 1. Update Teacher Info
-            teacher.Name = model.FullName;
-            teacher.Email = model.Email;
-            teacher.Mobile = model.Mobile;
-            teacher.Address = model.Address;
-            teacher.City = model.City;
-            teacher.Country = model.Country;
+            teacher.Name = model.FullName ?? "";
+            teacher.Email = model.Email ?? "";
+            teacher.Mobile = model.Mobile ?? "";
+            teacher.Address = model.Address ?? "";
+            teacher.City = model.City ?? "";
+            teacher.Country = model.Country ?? "";
 
             // 2. Handle Image Upload
             if (model.ProfileImage != null)
@@ -364,10 +376,10 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             // 4. Sync to Users.csv
             if (user != null)
             {
-                user.FullName = teacher.Name;
-                user.Email = teacher.Email;
+                user.FullName = teacher.Name ?? "";
+                user.Email = teacher.Email ?? "";
 
-                if (passwordChanged)
+                if (passwordChanged && !string.IsNullOrEmpty(model.NewPassword))
                 {
                     user.Password = PasswordHasherHelper.Hash(model.NewPassword);
                     user.HashAlgorithm = "PBKDF2";
@@ -401,10 +413,10 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             return subjects.Select((s, index) => new ClassScheduleItem
             {
-                SubjectName = s.SubjectName,
+                SubjectName = s.SubjectName ?? "Unknown",
                 Time = $"{8 + (index * 2)}:00 AM - {10 + (index * 2)}:00 AM",
                 Room = $"Room A-{101 + index}",
-                ClassName = s.SubjectId
+                ClassName = s.SubjectId ?? "N/A"
             }).ToList();
         }
     }

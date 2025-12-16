@@ -11,7 +11,7 @@
     <!-- Default ASP.NET -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SIMS_FPT.styles.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/SIMS_FPT.styles.css" asp-append-version="true" /> *@
 
     <!-- Template Assets -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
@@ -80,7 +80,7 @@
                                             <div class="media">
                                                 <span class="avatar avatar-sm">
                                                     <img class="avatar-img rounded-circle"
-                                                        src="~/assets/img/profiles/avatar-02.jpg" alt="User">
+                                                        src="~/assets/img/default-avatar-1-32.svg" alt="User">
                                                 </span>
 
                                                 <div class="media-body">
@@ -217,12 +217,6 @@
                             <li class="@(currentAction == "Add" ? "active" : "")">
                                 <a asp-area="Admin" asp-controller="Student" asp-action="Add">
                                     Student Add
-                                </a>
-                            </li>
-                            <!-- Student Enrollment -->
-                            <li class="@(currentController == "Class" && currentAction == "List" ? "active" : "")">
-                                <a asp-area="Admin" asp-controller="Class" asp-action="List">
-                                    <span>Student Enrollment</span>
                                 </a>
                             </li>
                         </ul>

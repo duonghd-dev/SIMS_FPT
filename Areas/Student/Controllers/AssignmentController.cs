@@ -61,7 +61,8 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 .Where(c => enrolledClassIds.Contains(c.ClassId))
                 .ToList();
 
-            return studentClasses.Any(c => c.SubjectName == assignment.SubjectId && c.TeacherName == assignment.TeacherId);
+            // Since class structure changed, just check if student is in the class
+            return enrolledClassIds.Contains(assignment.ClassId);
         }
 
         public IActionResult Index()
@@ -78,7 +79,8 @@ namespace SIMS_FPT.Areas.Student.Controllers
 
             // 3. ViewModel
             var viewModel = visibleAssignments
-                .Select(a => {
+                .Select(a =>
+                {
                     // Corrected Logic: Use a code block to get ClassName before creating the ViewModel
                     var classInfo = _classRepo.GetById(a.ClassId);
                     var submission = _submissionRepo.GetByStudentAndAssignment(studentId, a.AssignmentId);

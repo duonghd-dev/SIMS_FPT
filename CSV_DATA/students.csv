@@ -1,5 +1,4 @@
 student_id,email,first_name,last_name,gender,date_of_birth,image_path
-BD008,bnm915915@gmail.com,Phu,TuongLong,Male,12/17/2025 00:00:00,/assets/img/profiles/avatar-01.jpg
-BD009,nguyenvietphuc@gmail.com,Phuc,Viet,Male,12/07/2025 00:00:00,/assets/img/profiles/avatar-01.jpg
-BD007,httduong@gmail.com,Do,Duong,Male,12/03/2025 00:00:00,/assets/img/profiles/avatar-01.jpg
-ST01,st01@gmail.com,Duc,Duong,Male,12/02/2000 00:00:00,/images/3a3e5b75-a0db-494d-ae74-6387b3512a34_293019880_1765101050496669_4445945294180322917_n - Copy.jpg
+ST01,st01@gmail.com,Duc,Duong,Male,05/25/2003 00:00:00,/images/cd040b10-d64c-418f-a675-90febaecd946_BD00535_HDD.jpg
+ST02,st02@gmail.com,Phuc,Viet,Male,12/12/2004 00:00:00,/images/2dcbd8b0-98d5-4127-a432-3464228e4e70_Chữ ký.png
+ST03,st03@gmail.com,Long,Huynh,Male,02/21/2005 00:00:00,/images/8d3dfb03-b1d0-48f0-bb97-3dc10865d6c7_LogoFPT.png

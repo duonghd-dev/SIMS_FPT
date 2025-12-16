@@ -56,7 +56,7 @@
                                     alt="Profile Image">
                             </div>
                             <div class="user-text">
-                                <h6>@User.Identity.Name</h6>
+                                <h6>@(User.Identity?.Name ?? "Instructor")</h6>
                                 <p class="text-muted mb-0">Instructor</p>
                             </div>
                         </div>

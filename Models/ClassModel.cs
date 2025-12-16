@@ -1,30 +1,25 @@
 // File: SIMS_FPT/Models/ClassModel.cs
 using CsvHelper.Configuration.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace SIMS_FPT.Models
 {
     public class ClassModel
     {
         [Name("class_id")]
-        public string ClassId { get; set; }
+        [Required(ErrorMessage = "Class ID is required.")]
+        public string? ClassId { get; set; }
 
         [Name("class_name")]
-        public string ClassName { get; set; }
+        [Required(ErrorMessage = "Class Name is required.")]
+        public string? ClassName { get; set; }
 
-        [Name("subject_id")] // Liên kết với SubjectModel
-        public string SubjectId { get; set; }
+        [Name("semester")]
+        [Required(ErrorMessage = "Semester is required.")]
+        public string? Semester { get; set; } // Ví dụ: Spring2025
 
-        [Name("teacher_id")] // Liên kết với Teacher (User có Role Teacher)
-        public string TeacherName { get; set; }
-
-        [Name("semeter")]
-        public string Semester { get; set; } // Ví dụ: Spring2025
-
-        // Mới thêm: Số lượng sinh viên (Sĩ số)
         [Name("number_of_students")]
+        [Range(1, int.MaxValue, ErrorMessage = "Number of students must be greater than 0.")]
         public int NumberOfStudents { get; set; }
-
-        [Ignore]
-        public string? SubjectName { get; set; }
     }
 }

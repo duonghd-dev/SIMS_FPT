@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Helpers;
 using SIMS_FPT.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,11 +41,24 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Add(DepartmentModel model)
         {
-            // Check trùng ID
+            // Validate Department ID format
+            if (!ValidationHelper.IsValidId(model.DepartmentId))
+            {
+                ModelState.AddModelError("DepartmentId", "Department ID must be 3-20 alphanumeric characters!");
+                return View(model);
+            }
+
+            // Check for duplicate ID
             if (_deptRepo.GetById(model.DepartmentId) != null)
             {
-                ModelState.AddModelError("DepartmentId", "Department ID already exists!");
+                ModelState.AddModelError("DepartmentId", "Department ID already exists in the system!");
                 return View(model);
+            }
+
+            // Validate number of students
+            if (!ValidationHelper.IsValidPositiveNumber(model.NoOfStudents))
+            {
+                ModelState.AddModelError("NoOfStudents", "Number of students must be 0 or greater!");
             }
 
             if (ModelState.IsValid)

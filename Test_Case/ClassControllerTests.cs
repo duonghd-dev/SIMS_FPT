@@ -16,6 +16,8 @@ namespace SIMS_FPT.Tests
         private Mock<ITeacherRepository> _teacherRepo;
         private Mock<IStudentRepository> _studentRepo;
         private Mock<IStudentClassRepository> _studentClassRepo;
+        private Mock<IDepartmentRepository> _deptRepo;
+        private Mock<IClassSubjectRepository> _classSubjectRepo;
         private ClassController _controller;
 
         [SetUp]
@@ -26,10 +28,17 @@ namespace SIMS_FPT.Tests
             _teacherRepo = new Mock<ITeacherRepository>();
             _studentRepo = new Mock<IStudentRepository>();
             _studentClassRepo = new Mock<IStudentClassRepository>();
+            _deptRepo = new Mock<IDepartmentRepository>();
+            _classSubjectRepo = new Mock<IClassSubjectRepository>();
 
             _controller = new ClassController(
-                _classRepo.Object, _subjectRepo.Object, _teacherRepo.Object,
-                _studentRepo.Object, _studentClassRepo.Object);
+                _classRepo.Object,
+                _subjectRepo.Object,
+                _teacherRepo.Object,
+                _deptRepo.Object,
+                _studentRepo.Object,
+                _studentClassRepo.Object,
+                _classSubjectRepo.Object);
         }
 
         // TC04: Course Enrollment Verification

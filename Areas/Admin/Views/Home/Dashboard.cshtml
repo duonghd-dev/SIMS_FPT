@@ -83,10 +83,10 @@
             <div class="col-md-12 col-lg-6">
                 <div class="card card-chart">
                     <div class="card-header">
-                        <h5 class="card-title">Revenue (By Year)</h5>
+                        <h5 class="card-title">Students by Department</h5>
                     </div>
                     <div class="card-body">
-                        <div id="revenue-chart"></div>
+                        <div id="department-chart"></div>
                     </div>
                 </div>
             </div>
@@ -130,9 +130,9 @@
                                                 <h2 class="table-avatar">
                                                     <a href="#" class="avatar avatar-sm mr-2">
                                                         <img class="avatar-img rounded-circle"
-                                                            src="@(string.IsNullOrEmpty(student.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : student.ImagePath)"
+                                                            src="@(string.IsNullOrEmpty(student.ImagePath) ? "/assets/img/default-avatar-1-32.svg" : student.ImagePath)"
                                                             alt="Avatar"
-                                                            onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
+                                                            onerror="this.src='/assets/img/default-avatar-1-32.svg'">
                                                     </a>
                                                     <a asp-controller="Student" asp-action="Detail"
                                                         asp-route-id="@student.StudentId">
@@ -160,13 +160,16 @@
 
     <script>
         $(function () {
-            var revenueLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.RevenueLabels));
-            var revenueData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.RevenueData));
+            var departmentLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.DepartmentChartLabels));
+            var departmentData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.DepartmentChartData));
 
-            if ($("#revenue-chart").length) {
-                new ApexCharts(document.querySelector("#revenue-chart"), {
-                    series: [{ name: "Revenue", data: revenueData }],
-                    chart: { type: "area", height: 350 }
+            if ($("#department-chart").length) {
+                new ApexCharts(document.querySelector("#department-chart"), {
+                    series: [{ name: "Students", data: departmentData }],
+                    chart: { type: "bar", height: 350 },
+                    plotOptions: { bar: { horizontal: true, borderRadius: 6 } },
+                    xaxis: { categories: departmentLabels },
+                    noData: { text: "No department data" }
                 }).render();
             }
 

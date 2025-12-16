@@ -40,6 +40,19 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             model.RevenueLabels = new List<string> { "2022", "2023", "2024" };
             model.RevenueData = new List<decimal> { 0, 0, 0 };
 
+            // Students per department (dynamic chart)
+            var departmentStats = departments
+                .Select(d => new
+                {
+                    Label = string.IsNullOrWhiteSpace(d.DepartmentName) ? "Unknown" : d.DepartmentName,
+                    Count = d.NoOfStudents
+                })
+                .OrderByDescending(d => d.Count)
+                .ToList();
+
+            model.DepartmentChartLabels = departmentStats.Select(d => d.Label).ToList();
+            model.DepartmentChartData = departmentStats.Select(d => d.Count).ToList();
+
             // Student Gender Chart
             var genderStat = students
                 .GroupBy(s => s.Gender ?? "Unknown")

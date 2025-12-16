@@ -11,6 +11,7 @@ namespace SIMS_FPT.Tests
     {
         private Mock<ISubjectRepository> _mockRepo;
         private Mock<IDepartmentRepository> _mockDeptRepo;
+        private Mock<ITeacherRepository> _mockTeacherRepo;
         private SubjectController _controller;
 
         [SetUp]
@@ -18,7 +19,8 @@ namespace SIMS_FPT.Tests
         {
             _mockRepo = new Mock<ISubjectRepository>();
             _mockDeptRepo = new Mock<IDepartmentRepository>();
-            _controller = new SubjectController(_mockRepo.Object, _mockDeptRepo.Object);
+            _mockTeacherRepo = new Mock<ITeacherRepository>();
+            _controller = new SubjectController(_mockRepo.Object, _mockDeptRepo.Object, _mockTeacherRepo.Object);
         }
 
         // TC03: Delete Course by ID

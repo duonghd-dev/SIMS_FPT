@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering; // Cần thêm cái này cho SelectList
 using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Helpers;
 using SIMS_FPT.Models;
 using SIMS_FPT.Services;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -45,25 +47,92 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(TeacherCSVModel model)
         {
-            // Kiểm tra trùng ID
+            var departments = _deptRepo.GetAll();
+            ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName");
+
+            // Validate Teacher ID format
+            if (!ValidationHelper.IsValidId(model.TeacherId))
+            {
+                ModelState.AddModelError("TeacherId", "Teacher ID must be 3-20 alphanumeric characters!");
+                return View(model);
+            }
+
+            // Check for duplicate Teacher ID
             if (_repo.GetById(model.TeacherId) != null)
             {
-                ModelState.AddModelError("TeacherId", "Teacher ID already exists!");
-
-                // Load lại dropdown nếu lỗi
-                var departments = _deptRepo.GetAll();
-                ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName");
+                ModelState.AddModelError("TeacherId", "Teacher ID already exists in the system!");
                 return View(model);
+            }
+
+            // Validate Email format
+            if (!ValidationHelper.IsValidEmail(model.Email))
+            {
+                ModelState.AddModelError("Email", "Please enter a valid email address (e.g., example@gmail.com)!");
+                return View(model);
+            }
+
+            // Check for duplicate Email
+            var existingEmail = _repo.GetAll()
+                .FirstOrDefault(t => t.Email?.ToLower() == model.Email?.ToLower());
+            if (existingEmail != null)
+            {
+                ModelState.AddModelError("Email", "This email address is already registered in the system!");
+                return View(model);
+            }
+
+            // Validate Mobile format (if provided)
+            if (!string.IsNullOrWhiteSpace(model.Mobile) && !ValidationHelper.IsValidPhoneNumber(model.Mobile))
+            {
+                ModelState.AddModelError("Mobile", "Mobile number must be 10-11 digits (e.g., 0123456789)!");
+                return View(model);
+            }
+
+            // Validate Date of Birth
+            if (model.DateOfBirth.HasValue && !ValidationHelper.IsValidDateOfBirth(model.DateOfBirth))
+            {
+                var today = DateTime.Now;
+                if (model.DateOfBirth > today)
+                {
+                    ModelState.AddModelError("DateOfBirth", "Date of birth cannot be in the future!");
+                }
+                else
+                {
+                    ModelState.AddModelError("DateOfBirth", "Teacher must be at least 5 years old!");
+                }
+                return View(model);
+            }
+
+            // Validate Joining Date relative to Date of Birth (must be >= DOB and age >= 21 at join)
+            if (model.JoiningDate.HasValue && model.DateOfBirth.HasValue)
+            {
+                var dob = model.DateOfBirth.Value.Date;
+                var join = model.JoiningDate.Value.Date;
+                if (join < dob)
+                {
+                    ModelState.AddModelError("JoiningDate", "Joining Date cannot be earlier than Date of Birth!");
+                    return View(model);
+                }
+
+                var minJoinDate = dob.AddYears(21);
+                if (join < minJoinDate)
+                {
+                    ModelState.AddModelError("JoiningDate", "Teacher must be at least 21 years old at joining!");
+                    return View(model);
+                }
             }
 
             if (ModelState.IsValid)
             {
+                // If password is not provided, use Teacher ID as default password
+                if (string.IsNullOrWhiteSpace(model.Password))
+                {
+                    model.Password = model.TeacherId;
+                }
+
                 await _service.Add(model);
                 return RedirectToAction("List");
             }
 
-            // Load lại dropdown nếu model invalid
-            ViewBag.Departments = new SelectList(_deptRepo.GetAll(), "DepartmentId", "DepartmentName");
             return View(model);
         }
 
@@ -83,13 +152,78 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(TeacherCSVModel model)
         {
+            var departments = _deptRepo.GetAll();
+            ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", model.DepartmentId);
+
+            // Validate Email format
+            if (!ValidationHelper.IsValidEmail(model.Email))
+            {
+                ModelState.AddModelError("Email", "Please enter a valid email address (e.g., example@gmail.com)!");
+                return View(model);
+            }
+
+            // Check for duplicate Email (excluding current teacher)
+            var existingEmail = _repo.GetAll()
+                .FirstOrDefault(t => t.Email?.ToLower() == model.Email?.ToLower() && t.TeacherId != model.TeacherId);
+            if (existingEmail != null)
+            {
+                ModelState.AddModelError("Email", "This email address is already registered in the system!");
+                return View(model);
+            }
+
+            // Validate Mobile format (if provided)
+            if (!string.IsNullOrWhiteSpace(model.Mobile) && !ValidationHelper.IsValidPhoneNumber(model.Mobile))
+            {
+                ModelState.AddModelError("Mobile", "Mobile number must be 10-11 digits (e.g., 0123456789)!");
+                return View(model);
+            }
+
+            // Validate Date of Birth
+            if (model.DateOfBirth.HasValue && !ValidationHelper.IsValidDateOfBirth(model.DateOfBirth))
+            {
+                var today = DateTime.Now;
+                if (model.DateOfBirth > today)
+                {
+                    ModelState.AddModelError("DateOfBirth", "Date of birth cannot be in the future!");
+                }
+                else
+                {
+                    ModelState.AddModelError("DateOfBirth", "Teacher must be at least 5 years old!");
+                }
+                return View(model);
+            }
+
+            // Validate Joining Date relative to Date of Birth (must be >= DOB and age >= 21 at join)
+            if (model.JoiningDate.HasValue && model.DateOfBirth.HasValue)
+            {
+                var dob = model.DateOfBirth.Value.Date;
+                var join = model.JoiningDate.Value.Date;
+                if (join < dob)
+                {
+                    ModelState.AddModelError("JoiningDate", "Joining Date cannot be earlier than Date of Birth!");
+                    return View(model);
+                }
+
+                var minJoinDate = dob.AddYears(21);
+                if (join < minJoinDate)
+                {
+                    ModelState.AddModelError("JoiningDate", "Teacher must be at least 21 years old at joining!");
+                    return View(model);
+                }
+            }
+
             if (ModelState.IsValid)
             {
+                // If password is not provided, use Teacher ID as default password
+                if (string.IsNullOrWhiteSpace(model.Password))
+                {
+                    model.Password = model.TeacherId;
+                }
+
                 await _service.Update(model);
                 return RedirectToAction("List");
             }
 
-            ViewBag.Departments = new SelectList(_deptRepo.GetAll(), "DepartmentId", "DepartmentName", model.DepartmentId);
             return View(model);
         }
 

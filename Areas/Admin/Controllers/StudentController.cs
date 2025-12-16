@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Helpers;
 using SIMS_FPT.Models;
 using SIMS_FPT.Services;
 using System;
@@ -22,7 +23,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             _service = service;
         }
 
-        public IActionResult List(string className) 
+        public IActionResult List(string className)
         {
             var data = _repo.GetAll();
 
@@ -50,11 +51,48 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(StudentCSVModel model)
         {
-            // Kiểm tra trùng ID
-            var existing = _repo.GetById(model.StudentId);
-            if (existing != null)
+            // Validate Student ID format
+            if (!ValidationHelper.IsValidId(model.StudentId))
             {
-                ModelState.AddModelError("StudentId", "Student ID already exists!");
+                ModelState.AddModelError("StudentId", "Student ID must be 3-20 alphanumeric characters!");
+                return View(model);
+            }
+
+            // Check for duplicate Student ID
+            var existingStudent = _repo.GetById(model.StudentId);
+            if (existingStudent != null)
+            {
+                ModelState.AddModelError("StudentId", "Student ID already exists in the system!");
+                return View(model);
+            }
+
+            // Validate Email format
+            if (!ValidationHelper.IsValidEmail(model.Email))
+            {
+                ModelState.AddModelError("Email", "Please enter a valid email address (e.g., example@gmail.com)!");
+                return View(model);
+            }
+
+            // Check for duplicate Email
+            var existingEmail = _repo.GetAll().FirstOrDefault(s => s.Email?.ToLower() == model.Email?.ToLower());
+            if (existingEmail != null)
+            {
+                ModelState.AddModelError("Email", "This email address is already registered in the system!");
+                return View(model);
+            }
+
+            // Validate Date of Birth
+            if (!ValidationHelper.IsValidDateOfBirth(model.DateOfBirth))
+            {
+                var today = DateTime.Now;
+                if (model.DateOfBirth > today)
+                {
+                    ModelState.AddModelError("DateOfBirth", "Date of birth cannot be in the future!");
+                }
+                else
+                {
+                    ModelState.AddModelError("DateOfBirth", "Student must be at least 5 years old!");
+                }
                 return View(model);
             }
 
@@ -77,6 +115,37 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(StudentCSVModel model)
         {
+            // Validate Email format
+            if (!ValidationHelper.IsValidEmail(model.Email))
+            {
+                ModelState.AddModelError("Email", "Please enter a valid email address (e.g., example@gmail.com)!");
+                return View(model);
+            }
+
+            // Check for duplicate Email (excluding current student)
+            var existingEmail = _repo.GetAll()
+                .FirstOrDefault(s => s.Email?.ToLower() == model.Email?.ToLower() && s.StudentId != model.StudentId);
+            if (existingEmail != null)
+            {
+                ModelState.AddModelError("Email", "This email address is already registered in the system!");
+                return View(model);
+            }
+
+            // Validate Date of Birth
+            if (!ValidationHelper.IsValidDateOfBirth(model.DateOfBirth))
+            {
+                var today = DateTime.Now;
+                if (model.DateOfBirth > today)
+                {
+                    ModelState.AddModelError("DateOfBirth", "Date of birth cannot be in the future!");
+                }
+                else
+                {
+                    ModelState.AddModelError("DateOfBirth", "Student must be at least 5 years old!");
+                }
+                return View(model);
+            }
+
             if (ModelState.IsValid)
             {
                 await _service.Update(model);

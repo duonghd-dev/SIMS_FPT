@@ -30,7 +30,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             {
                 var linkedId = User.FindFirst("LinkedId")?.Value;
                 if (!string.IsNullOrEmpty(linkedId)) return linkedId;
-                return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
+                return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name ?? "UNKNOWN";
             }
         }
 
@@ -48,19 +48,19 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             var history = teacherAssignments.Select(a =>
             {
-                var sub = _submissionRepo.GetByStudentAndAssignment(student.StudentId, a.AssignmentId);
+                var sub = _submissionRepo.GetByStudentAndAssignment(student.StudentId ?? "", a.AssignmentId ?? "");
                 return new AssignmentHistoryItem
                 {
-                    AssignmentId = a.AssignmentId,
-                    AssignmentTitle = a.Title,
-                    SubjectId = a.SubjectId,
-                    Grade = sub?.Grade,
+                    AssignmentId = a.AssignmentId ?? "",
+                    AssignmentTitle = a.Title ?? "Untitled",
+                    SubjectId = a.SubjectId ?? "",
+                    Grade = sub?.Grade ?? null,
                     MaxPoints = a.MaxPoints,
-                    TeacherComments = sub?.TeacherComments
+                    TeacherComments = sub?.TeacherComments ?? ""
                 };
             }).ToList();
 
-            double totalScore = history.Where(h => h.Grade.HasValue).Sum(h => h.Grade.Value);
+            double totalScore = history.Where(h => h.Grade.HasValue).Sum(h => h.Grade!.Value);
             double totalMax = history.Sum(h => h.MaxPoints);
             double avgPercent = totalMax > 0 ? (totalScore / totalMax) * 100 : 0;
 

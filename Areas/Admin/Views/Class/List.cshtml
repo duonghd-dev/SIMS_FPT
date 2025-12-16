@@ -1,5 +1,6 @@
 @using SIMS_FPT.Models
-@model IEnumerable<ClassModel>
+@using SIMS_FPT.Models.ViewModels
+@model IEnumerable<ClassDetailViewModel>
 
 @{
     ViewData["Title"] = "Class List";
@@ -22,68 +23,97 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card card-table">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-center mb-0 datatable">
-                                <thead>
+        @section Scripts {
+            <script>
+                $(document).ready(function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+            </script>
+        }
+        <div class="card card-table">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Class Name</th>
+                                <th>Subject</th>
+                                <th>Teacher</th>
+                                <th>Semester</th>
+                                <th>Students</th>
+                                <th class="text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Class Name</th>
-                                        <th>Subject</th>
-                                        <th>Teacher</th>
-                                        <th>Semester</th>
-                                        <th>Students</th>
-                                        <th class="text-right">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model != null && Model.Any())
-                                    {
-                                        foreach (var item in Model)
-                                        {
-                                            <tr>
-                                                <td>@item.ClassId</td>
-                                                <td>
-                                                    <h2><a>@item.ClassName</a></h2>
-                                                </td>
-                                                <td>@item.SubjectName</td>
-                                                <td>@item.TeacherName</td>
-                                                <td>@item.Semester</td>
-                                                <td>@item.NumberOfStudents</td>
-                                                <td class="text-right">
-                                                    <div class="actions">
-                                                        <a asp-action="ManageStudents" asp-route-id="@item.ClassId"
-                                                            class="btn btn-sm bg-primary-light mr-2" title="Manage Students">
-                                                            <i class="fas fa-users"></i>
-                                                        </a>
+                                        <td>@item.Class.ClassId</td>
+                                        <td>
+                                            <h2><a>@item.Class.ClassName</a></h2>
+                                        </td>
+                                        <td>
+                                            @if (item.SubjectTeachers != null && item.SubjectTeachers.Any())
+                                            {
+                                                <span class="badge badge-info" data-toggle="tooltip"
+                                                    title="@string.Join(", ", item.SubjectTeachers.Select(st => st.SubjectName))">
+                                                    @item.SubjectTeachers.Count subject(s)
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No subjects</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.SubjectTeachers != null && item.SubjectTeachers.Any())
+                                            {
+                                                <span class="badge badge-success" data-toggle="tooltip"
+                                                    title="@string.Join(", ", item.SubjectTeachers.Select(st => $"{st.SubjectName}: {st.TeacherName}"))">
+                                                    @item.SubjectTeachers.Count teacher(s)
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No teachers</span>
+                                            }
+                                        </td>
+                                        <td>@item.Class.Semester</td>
+                                        <td>@item.Class.NumberOfStudents</td>
+                                        <td class="text-right">
+                                            <div class="actions">
+                                                <a asp-action="ManageStudents" asp-route-id="@item.Class.ClassId"
+                                                    class="btn btn-sm bg-primary-light mr-2" title="Manage Students">
+                                                    <i class="fas fa-users"></i>
+                                                </a>
 
-                                                        <a asp-action="Edit" asp-route-id="@item.ClassId"
-                                                            class="btn btn-sm bg-success-light mr-2">
-                                                            <i class="fas fa-pen"></i>
-                                                        </a>
-                                                        <a asp-action="Delete" asp-route-id="@item.ClassId"
-                                                            class="btn btn-sm bg-danger-light" onclick="...">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr>
-                                            <td colspan="7" class="text-center">No classes found</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                                <a asp-action="Edit" asp-route-id="@item.Class.ClassId"
+                                                    class="btn btn-sm bg-success-light mr-2">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.Class.ClassId"
+                                                    class="btn btn-sm bg-danger-light" onclick="...">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center">No classes found</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
+</div>
