@@ -137,6 +137,43 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 SelectedStudentId = selectedStudent?.StudentId,
                 SelectedStudentName = selectedStudent?.FullName ?? "No students"
             };
+            var allActivities = new List<RecentActivityItem>();
+
+            if (teacherAssignments.Any())
+            {
+                foreach (var assn in teacherAssignments)
+                {
+                    // ... (Existing Chart Logic: PerformanceLabels, Counts, etc.) ...
+
+                    // Fetch submissions for this assignment
+                    var submissions = _submissionRepo.GetByAssignmentId(assn.AssignmentId);
+
+                    // ... (Existing Total counts logic) ...
+
+                    // [NEW] Collect submissions for the feed
+                    foreach (var sub in submissions)
+                    {
+                        var student = _studentRepo.GetById(sub.StudentId);
+                        if (student != null)
+                        {
+                            allActivities.Add(new RecentActivityItem
+                            {
+                                StudentName = student.FullName,
+                                StudentId = sub.StudentId,
+                                AssignmentTitle = assn.Title,
+                                SubmissionDate = sub.SubmissionDate,
+                                TimeAgo = CalculateTimeAgo(sub.SubmissionDate)
+                            });
+                        }
+                    }
+                }
+            }
+         model.RecentActivities = allActivities
+        .OrderByDescending(x => x.SubmissionDate)
+        .Take(5)
+        .ToList();
+            int totalSubmissions = 0;
+            int totalGraded = 0;
 
             // ... (Rest of the existing logic for Charts, Activity, AtRisk remains the same) ...
 

@@ -27,6 +27,7 @@ namespace SIMS_FPT.Models.ViewModels
 
         public int LeaveDaysRemaining { get; set; }
         public string LastSalaryMonth { get; set; }
+
     }
 
     public class TeachingClassInfo

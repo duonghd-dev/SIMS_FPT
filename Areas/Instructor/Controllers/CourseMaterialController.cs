@@ -52,11 +52,13 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 .Where(c => c.TeacherName == teacherId)
                 .ToList();
 
+            // Extract unique Subject IDs from those classes
             var subjectIds = teacherClasses
                 .Select(c => c.SubjectName)
                 .Distinct()
                 .ToList();
 
+            // Return the full Subject objects
             var allSubjects = _subjectRepo.GetAll();
             return allSubjects.Where(s => subjectIds.Contains(s.SubjectId)).ToList();
         }
