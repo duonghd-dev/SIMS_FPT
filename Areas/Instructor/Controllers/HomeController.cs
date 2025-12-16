@@ -177,7 +177,6 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             // ... (Rest of the existing logic for Charts, Activity, AtRisk remains the same) ...
 
-            var allActivities = new List<RecentActivityItem>();
             if (teacherAssignments.Any())
             {
                 foreach (var assn in teacherAssignments)
@@ -202,9 +201,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
             model.RecentActivities = allActivities.OrderByDescending(x => x.SubmissionDate).Take(5).ToList();
 
-            // Calculate Charts
-            int totalSubmissions = 0;
-            int totalGraded = 0;
+       
 
             if (teacherAssignments.Any())
             {
