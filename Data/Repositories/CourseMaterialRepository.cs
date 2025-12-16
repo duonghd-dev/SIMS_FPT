@@ -36,7 +36,7 @@ namespace SIMS_FPT.Data.Repositories
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
                 // Writing the headers you mentioned
-                File.WriteAllText(_filePath, "MaterialId,SubjectId,Title,FilePath,VideoUrl,Category,UploadDate" + Environment.NewLine);
+                File.WriteAllText(_filePath, "MaterialId,SubjectId,Title,FilePath,VideoUrl,Category,UploadDate,TeacherId" + Environment.NewLine);
             }
         }
 

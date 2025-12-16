@@ -1,11 +1,12 @@
 department_id,department_name,head_of_department,start_date,no_of_students
-DEP001,Computer Science,Dr. Nguyen Anh Tu,2010-09-01,320
-DEP002,Information Technology,Dr. Le Minh Khoa,2012-01-15,250
-DEP003,Business Administration,Ms. Tran Thi Lan,2014-03-20,180
-DEP004,Electrical Engineering,Dr. Pham Quang Huy,2011-07-10,210
-DEP005,Mechanical Engineering,Dr. Dang Van Minh,2013-05-12,195
-DEP006,English Language,Ms. Nguyen Thu Ha,2015-09-01,140
-DEP007,Marketing,Ms. Le Thi Hoa,2016-02-14,160
-DEP008,Finance,Mr. Pham Duc Long,2012-11-23,220
-DEP009,Design,Ms. Vu Thi My,2017-04-18,130
-DEP010,Artificial Intelligence,Dr. Hoang Minh Son,2019-08-01,300
+DEP001,Computer Science,Dr. Nguyen Anh Tu,09/01/2010 00:00:00,320
+DEP002,Information Technology,Dr. Le Minh Khoa,01/15/2012 00:00:00,250
+DEP003,Business Administration,Ms. Tran Thi Lan,03/20/2014 00:00:00,180
+DEP004,Electrical Engineering,Dr. Pham Quang Huy,07/10/2011 00:00:00,210
+DEP005,Mechanical Engineering,Dr. Dang Van Minh,05/12/2013 00:00:00,195
+DEP006,English Language,Ms. Nguyen Thu Ha,09/01/2015 00:00:00,140
+DEP007,Marketing,Ms. Le Thi Hoa,02/14/2016 00:00:00,160
+DEP008,Finance,Mr. Pham Duc Long,11/23/2012 00:00:00,220
+DEP009,Design,Ms. Vu Thi My,04/18/2017 00:00:00,130
+DEP010,Artificial Intelligence,Dr. Hoang Minh Son,08/01/2019 00:00:00,300
+02000202,CNTT,"MR NGUYEN THI SU ",12/16/2025 00:00:00,100

@@ -47,9 +47,9 @@ namespace SIMS_FPT.Areas.Student.Controllers
 
                     // Directly use the SubjectId from the class info to get materials
                     var materials = _materialRepo.GetAll()
-                                    .Where(m => m.SubjectId == classInfo.SubjectId)
-                                    .OrderByDescending(m => m.UploadDate)
-                                    .ToList();
+                     .Where(m => m.SubjectId == classInfo.SubjectId && m.TeacherId == classInfo.TeacherName)
+                     .OrderByDescending(m => m.UploadDate)
+                     .ToList();
 
                     myCourses.Add(new MyCourseViewModel
                     {

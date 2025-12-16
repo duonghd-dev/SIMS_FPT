@@ -51,9 +51,19 @@ namespace SIMS_FPT.Data.Repositories
             var dir = Path.GetDirectoryName(_filePath);
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
-            using var writer = new StreamWriter(_filePath);
-            using var csv = new CsvWriter(writer, _config);
-            csv.WriteRecords(list);
+            try
+            {
+                using var writer = new StreamWriter(_filePath, false);
+                using var csv = new CsvWriter(writer, _config);
+                csv.WriteHeader<ClassModel>();
+                csv.NextRecord();
+                csv.WriteRecords(list);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error writing CSV: {ex.Message}");
+                throw;
+            }
         }
 
         // Chức năng: Xem danh sách

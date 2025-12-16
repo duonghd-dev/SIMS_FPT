@@ -54,7 +54,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             // Extract unique Subject IDs from those classes
             var subjectIds = teacherClasses
-                .Select(c => c.SubjectName)
+                .Select(c => c.SubjectId)
                 .Distinct()
                 .ToList();
 
@@ -64,6 +64,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
         }
 
         // [NEW] Helper to generate the "Class Name - Subject Name" dropdown list
+        // SAU KHI SỬA
         private List<SelectListItem> GetClassSelectionList()
         {
             var teacherId = CurrentTeacherId;
@@ -73,15 +74,14 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             return teacherClasses.Select(c =>
             {
-                // In ClassModel, SubjectName stores the Subject ID
-                var subject = _subjectRepo.GetById(c.SubjectName);
-                var subjectName = subject != null ? subject.SubjectName : c.SubjectName;
+                // Sửa SubjectName thành SubjectId
+                var subject = _subjectRepo.GetById(c.SubjectId);
+                var subjectName = subject != null ? subject.SubjectName : c.SubjectId;
 
                 return new SelectListItem
                 {
-                    // The value submitted is the SubjectId
-                    Value = c.SubjectName,
-                    // The text shown is "Class - Subject"
+                    // Quan trọng: Value phải là SubjectId
+                    Value = c.SubjectId,
                     Text = $"{c.ClassName} - {subjectName}"
                 };
             }).ToList();
@@ -160,6 +160,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
                 model.FilePath = Path.Combine("materials", model.SubjectId ?? "general", fileName).Replace("\\", "/");
             }
+            model.TeacherId = CurrentTeacherId;
 
             model.UploadDate = DateTime.Now;
             if (string.IsNullOrEmpty(model.MaterialId)) model.MaterialId = Guid.NewGuid().ToString();

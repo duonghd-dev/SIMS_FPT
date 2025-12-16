@@ -12,10 +12,14 @@ namespace SIMS_FPT.Controllers
     public class LoginController : Controller
     {
         private readonly IUserRepository _userRepo;
+        private readonly IStudentRepository _studentRepo;
+        private readonly ITeacherRepository _teacherRepo;
 
-        public LoginController(IUserRepository userRepo)
+        public LoginController(IUserRepository userRepo, IStudentRepository studentRepo, ITeacherRepository teacherRepo)
         {
             _userRepo = userRepo;
+            _studentRepo = studentRepo;
+            _teacherRepo = teacherRepo;
         }
 
         [HttpGet]
@@ -50,13 +54,36 @@ namespace SIMS_FPT.Controllers
                 return View();
             }
 
+            // Get user's image path based on role
+            string imagePath = "/assets/img/default-avatar-1-32.svg";
+            if (!string.IsNullOrEmpty(user.LinkedId))
+            {
+                if (user.Role == "Student")
+                {
+                    var student = _studentRepo.GetById(user.LinkedId);
+                    if (student != null && !string.IsNullOrEmpty(student.ImagePath))
+                    {
+                        imagePath = student.ImagePath;
+                    }
+                }
+                else if (user.Role == "Instructor")
+                {
+                    var teacher = _teacherRepo.GetById(user.LinkedId);
+                    if (teacher != null && !string.IsNullOrEmpty(teacher.ImagePath))
+                    {
+                        imagePath = teacher.ImagePath;
+                    }
+                }
+            }
+
             // 2. Create Claims (UserInfo)
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.FullName),
                 new Claim(ClaimTypes.Role, user.Role),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim("LinkedId", user.LinkedId ?? "")
+                new Claim("LinkedId", user.LinkedId ?? ""),
+                new Claim("ImagePath", imagePath)
             };
 
             var identity = new ClaimsIdentity(claims, "CookieAuth");

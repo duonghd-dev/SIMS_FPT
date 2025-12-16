@@ -121,7 +121,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             var item = _classRepo.GetById(id);
             if (item == null) return NotFound();
 
-            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", item.SubjectName);
+            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", item.SubjectId);
 
             var teachers = _teacherRepo.GetAll().Select(t => new { Id = t.TeacherId, Name = $"{t.TeacherId} - {t.Name}" });
             ViewBag.Teachers = new SelectList(teachers, "Id", "Name", item.TeacherName);
@@ -139,7 +139,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", model.SubjectName);
+            ViewBag.Subjects = new SelectList(_subjectRepo.GetAll(), "SubjectId", "SubjectName", model.SubjectId);
             var teachers = _teacherRepo.GetAll().Select(t => new { Id = t.TeacherId, Name = $"{t.TeacherId} - {t.Name}" });
             ViewBag.Teachers = new SelectList(teachers, "Id", "Name", model.TeacherName);
 

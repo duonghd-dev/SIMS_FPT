@@ -16,13 +16,17 @@ namespace SIMS_FPT.Tests
     public class LoginControllerTests
     {
         private Mock<IUserRepository> _mockUserRepo;
+        private Mock<IStudentRepository> _mockStudentRepo;
+        private Mock<ITeacherRepository> _mockTeacherRepo;
         private LoginController _controller;
         [SetUp]
         public void Setup()
         {
             // 1. Mock Repository
             _mockUserRepo = new Mock<IUserRepository>();
-            _controller = new LoginController(_mockUserRepo.Object);
+            _mockStudentRepo = new Mock<IStudentRepository>();
+            _mockTeacherRepo = new Mock<ITeacherRepository>();
+            _controller = new LoginController(_mockUserRepo.Object, _mockStudentRepo.Object, _mockTeacherRepo.Object);
 
             // 2. Mock HttpContext and ServiceProvider
             var mockHttpContext = new Mock<HttpContext>();

@@ -25,6 +25,6 @@ namespace SIMS_FPT.Models
         public int NumberOfStudents { get; set; }
 
         [Ignore]
-        public string SubjectName { get; set; }
+        public string? SubjectName { get; set; }
     }
 }

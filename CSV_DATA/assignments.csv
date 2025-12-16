@@ -1,3 +1,8 @@
 AssignmentId,SubjectId,Title,Description,DueDate,MaxPoints,AllowedFileTypes,AreGradesPublished
 ASM-001,SUB007,"ASM_1","Tesada",2025-12-19,100,".pdf, .docx, .doc, .txt",True,TCH011,SE0111
 ASM-002,SUB007,"ASM_2","no",2025-12-12,100,".pdf",True,TCH011,SE0111
+
+ASM-003,,"ASMTRUNGANH","XONG TAT CA NGAY 17",2025-12-17,100,"*",True,TC013,3113
+
+ASM-004,,"DFTSDFSD","FDSFDSF",2025-12-15,100,"*",False,TC013,3113
+ASM-005,,"hihihi","3rwer",2025-12-17,100,"*",False,TC013,3113

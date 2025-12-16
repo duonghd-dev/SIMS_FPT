@@ -130,9 +130,9 @@
                                                 <h2 class="table-avatar">
                                                     <a href="#" class="avatar avatar-sm mr-2">
                                                         <img class="avatar-img rounded-circle"
-                                                            src="@(string.IsNullOrEmpty(student.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : student.ImagePath)"
+                                                            src="@(string.IsNullOrEmpty(student.ImagePath) ? "/assets/img/profile/userEmpty.jpg" : student.ImagePath)"
                                                             alt="Avatar"
-                                                            onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
+                                                            onerror="this.src='/assets/img/default-avatar-1-32.svg'">
                                                     </a>
                                                     <a asp-controller="Student" asp-action="Detail"
                                                         asp-route-id="@student.StudentId">

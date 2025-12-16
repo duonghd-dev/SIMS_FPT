@@ -20,7 +20,8 @@ namespace SIMS_FPT.Models
         public string? VideoUrl { get; set; } // YouTube link
 
         public string? Category { get; set; } // "Week 1", "Week 2"
-
+                                              // THÊM DÒNG NÀY
+        public string? TeacherId { get; set; }
         public DateTime UploadDate { get; set; } = DateTime.Now;
     }
 }
