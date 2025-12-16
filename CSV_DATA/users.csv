@@ -12,3 +12,4 @@ Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
 30,nguyenvietphuc@gmail.com,AQAAAAIAAYagAAAAEMkFHZIIEHhHFU0eUIN8caANmKXnMlVdNcxcJynaOOLSca6EEGZFKUYvcqoGzEadFQ==,Student,BD009,Phuc Viet,PBKDF2
 31,httduong@gmail.com,AQAAAAIAAYagAAAAEJu7RX8caC1xCUs8G9gBahWZGGDXt9zz2d4aezCV8DODacJ3bKb7ajOrUlFVFH30jw==,Student,BD007,Do Duong,PBKDF2
 32,duonghd48.dev@gmail.com,AQAAAAIAAYagAAAAEHOUc4YuO78PYSkruYnC9bJIBGwJ4fTpFeAbbdt0pMpBfQGzWswntMvkXm2Z/MR+Eg==,Instructor,TC013,Duong,PBKDF2
+33,st01@gmail.com,AQAAAAIAAYagAAAAEDyUhzKwR52vx5349mYsGLCSUIvSeuP8SXP/9FqGAAeSbJSBmJUaQoEbOkA1Boopvg==,Student,ST01,Duc Duong,PBKDF2
