@@ -9,10 +9,14 @@ namespace SIMS_FPT.Services
     public class AdminDepartmentService : IAdminDepartmentService
     {
         private readonly IDepartmentRepository _deptRepo;
+        private readonly ITeacherRepository _teacherRepo;
+        private readonly ISubjectRepository _subjectRepo;
 
-        public AdminDepartmentService(IDepartmentRepository deptRepo)
+        public AdminDepartmentService(IDepartmentRepository deptRepo, ITeacherRepository teacherRepo, ISubjectRepository subjectRepo)
         {
             _deptRepo = deptRepo;
+            _teacherRepo = teacherRepo;
+            _subjectRepo = subjectRepo;
         }
 
         public List<DepartmentModel> GetAllDepartments() => _deptRepo.GetAll();
@@ -32,7 +36,7 @@ namespace SIMS_FPT.Services
                 if (string.IsNullOrWhiteSpace(model.DepartmentName))
                     return (false, "Department Name is required");
 
-                if (model.NoOfStudents < 0)
+                if (model.NumberOfStudents < 0)
                     return (false, "Number of students cannot be negative");
 
                 // Check duplicate
@@ -58,7 +62,7 @@ namespace SIMS_FPT.Services
                 if (string.IsNullOrWhiteSpace(model.DepartmentId))
                     return (false, "Department ID is required");
 
-                if (model.NoOfStudents < 0)
+                if (model.NumberOfStudents < 0)
                     return (false, "Number of students cannot be negative");
 
                 _deptRepo.Update(model);
@@ -76,6 +80,15 @@ namespace SIMS_FPT.Services
             {
                 if (string.IsNullOrEmpty(id))
                     return (false, "Department ID cannot be empty");
+
+                // Block deletion if references exist
+                var hasTeachers = _teacherRepo.GetAll()
+                    .Any(t => string.Equals(t.DepartmentId ?? string.Empty, id, StringComparison.OrdinalIgnoreCase));
+                var hasSubjects = _subjectRepo.GetAll()
+                    .Any(s => string.Equals(s.DepartmentId ?? string.Empty, id, StringComparison.OrdinalIgnoreCase));
+
+                if (hasTeachers || hasSubjects)
+                    return (false, "Cannot delete department: teachers or subjects still reference it");
 
                 _deptRepo.Delete(id);
                 return (true, "Department deleted successfully");

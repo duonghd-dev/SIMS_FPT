@@ -8,8 +8,8 @@ using System.Linq;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
-    // [Authorize(Roles = "Admin")]
     public class SubjectController : Controller
     {
         private readonly IAdminSubjectService _subjectService;
@@ -28,6 +28,11 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             var subjects = _subjectService.GetAllSubjects();
             var allTeachers = _subjectService.GetTeacherNamesByIds();
             ViewBag.TeacherNames = allTeachers;
+            // Map DepartmentId -> DepartmentName for display
+            var deptNames = _deptRepo.GetAll()
+                .Where(d => !string.IsNullOrWhiteSpace(d.DepartmentId))
+                .ToDictionary(d => d.DepartmentId!, d => d.DepartmentName ?? d.DepartmentId);
+            ViewBag.DepartmentNames = deptNames;
             return View(subjects);
         }
 

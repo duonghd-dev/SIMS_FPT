@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
-    // [Authorize(Roles = "Admin")]
     public class StudentController : Controller
     {
         private readonly IAdminStudentService _studentService;

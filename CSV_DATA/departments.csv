@@ -1,3 +1,12 @@
-department_id,department_name,head_of_department,start_date,no_of_students
-DEP01,Information Technology,Duc DUONG,11/23/2012 00:00:00,30
-DEP02,Design,Du,11/23/2012 00:00:00,30
+department_id,department_name,head_of_department,start_date,number_of_students
+DEP01,Information Technology,TC01,11/23/2012 00:00:00,30
+DEP11,Digital Marketing,Trang NGUYEN,04/15/2015 00:00:00,42
+DEP12,E-Commerce Technology,Huy TRAN,09/20/2016 00:00:00,37
+DEP13,Marketing Technology (MarTech),Phuc LE,01/10/2017 00:00:00,45
+DEP14,Data Analytics for Marketing,Thao PHAM,06/05/2018 00:00:00,34
+DEP15,Social Media Technology,Linh VO,11/12/2018 00:00:00,29
+DEP16,Digital Advertising Systems,Quang DO,03/25/2019 00:00:00,31
+DEP17,Customer Relationship Management (CRM),Mai BUI,08/19/2020 00:00:00,27
+DEP18,Marketing Automation,Hoa NGUYEN,02/14/2021 00:00:00,24
+DEP19,Content & SEO Technology,Dat TRAN,07/09/2022 00:00:00,36
+DEP20,AI in Marketing,TC033,10/03/2023 00:00:00,22

@@ -42,12 +42,48 @@ namespace SIMS_FPT.Services
                 if (string.IsNullOrWhiteSpace(model.SubjectName))
                     return (false, "Subject Name is required");
 
+                if (string.IsNullOrWhiteSpace(model.DepartmentId))
+                    return (false, "Department is required");
+
+                // Validate department exists
+                var dept = _deptRepo.GetById(model.DepartmentId);
+                if (dept == null)
+                    return (false, "Department does not exist");
+
                 if (model.Credits < 1 || model.Credits > 10)
                     return (false, "Credits must be between 1 and 10");
 
                 // Check duplicate
                 if (_subjectRepo.GetById(model.SubjectId) != null)
                     return (false, "Subject ID already exists");
+
+                // Normalize and validate teacher IDs
+                var teacherIds = (model.TeacherIds ?? string.Empty)
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .ToList();
+
+                if (teacherIds.Any())
+                {
+                    var allTeachers = _teacherRepo.GetAll();
+                    var teacherMap = allTeachers.ToDictionary(t => t.TeacherId, t => t);
+
+                    // Ensure all teacher IDs exist and belong to the same department
+                    foreach (var tid in teacherIds)
+                    {
+                        if (!teacherMap.TryGetValue(tid, out var teacher))
+                            return (false, $"Teacher ID '{tid}' not found");
+
+                        var tDept = teacher.DepartmentId ?? string.Empty;
+                        if (!string.Equals(tDept, model.DepartmentId, StringComparison.OrdinalIgnoreCase))
+                            return (false, $"Teacher '{tid}' does not belong to Department '{model.DepartmentId}'");
+                    }
+                }
+
+                // Persist normalized list
+                model.TeacherIds = string.Join(",", teacherIds);
 
                 _subjectRepo.Add(model);
                 return (true, "Subject added successfully");
@@ -68,8 +104,46 @@ namespace SIMS_FPT.Services
                 if (string.IsNullOrWhiteSpace(model.SubjectId))
                     return (false, "Subject ID is required");
 
+                // Ensure subject exists
+                if (_subjectRepo.GetById(model.SubjectId) == null)
+                    return (false, "Subject not found");
+
+                if (string.IsNullOrWhiteSpace(model.DepartmentId))
+                    return (false, "Department is required");
+
+                // Validate department exists
+                var dept = _deptRepo.GetById(model.DepartmentId);
+                if (dept == null)
+                    return (false, "Department does not exist");
+
                 if (model.Credits < 1 || model.Credits > 10)
                     return (false, "Credits must be between 1 and 10");
+
+                // Normalize and validate teacher IDs
+                var teacherIds = (model.TeacherIds ?? string.Empty)
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .ToList();
+
+                if (teacherIds.Any())
+                {
+                    var allTeachers = _teacherRepo.GetAll();
+                    var teacherMap = allTeachers.ToDictionary(t => t.TeacherId, t => t);
+
+                    foreach (var tid in teacherIds)
+                    {
+                        if (!teacherMap.TryGetValue(tid, out var teacher))
+                            return (false, $"Teacher ID '{tid}' not found");
+
+                        var tDept = teacher.DepartmentId ?? string.Empty;
+                        if (!string.Equals(tDept, model.DepartmentId, StringComparison.OrdinalIgnoreCase))
+                            return (false, $"Teacher '{tid}' does not belong to Department '{model.DepartmentId}'");
+                    }
+                }
+
+                model.TeacherIds = string.Join(",", teacherIds);
 
                 _subjectRepo.Update(model);
                 return (true, "Subject updated successfully");

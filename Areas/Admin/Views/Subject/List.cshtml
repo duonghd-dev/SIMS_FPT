@@ -39,7 +39,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Department ID</th>
+                                        <th>Department</th>
                                         <th>Credits</th>
                                         <th>Teachers</th>
                                         <th class="text-right">Action</th>
@@ -55,7 +55,15 @@
                                                 <td>
                                                     <h2><a>@item.SubjectName</a></h2>
                                                 </td>
-                                                <td>@item.DepartmentId</td>
+                                                <td>
+                                                    @{
+                                                        var deptNames = ViewBag.DepartmentNames as Dictionary<string, string>;
+                                                    }
+                                                    @(deptNames != null && !string.IsNullOrEmpty(item.DepartmentId) &&
+                                                                                                deptNames.ContainsKey(item.DepartmentId)
+                                                                                                ? deptNames[item.DepartmentId]
+                                                                                                : item.DepartmentId)
+                                                </td>
                                                 <td>@item.Credits</td>
                                                 <td>
                                                     @if (!string.IsNullOrEmpty(item.TeacherIds))
