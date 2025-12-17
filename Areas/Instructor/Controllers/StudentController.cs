@@ -26,6 +26,12 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
         }
 
+        public IActionResult Index(string? classId, string? search)
+        {
+            var vm = _studentService.GetManagedStudents(CurrentTeacherId, classId, search);
+            return View(vm);
+        }
+
         public IActionResult Profile(string id)
         {
             var vm = _studentService.GetStudentProfile(id, CurrentTeacherId);
@@ -34,7 +40,29 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             return View(vm);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Remove(string classId, string studentId)
+        {
+            if (string.IsNullOrEmpty(classId) || string.IsNullOrEmpty(studentId))
+            {
+                TempData["Error"] = "Invalid data.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var success = _studentService.RemoveStudentFromClass(CurrentTeacherId, classId, studentId);
+            if (success)
+            {
+                TempData["Success"] = "Student removed from class successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "Failed to remove student. You may not have permission or the student was not found.";
+            }
+
+            // Redirect back to Index, preserving the current filter
+            return RedirectToAction(nameof(Index), new { classId });
+        }
     }
 }
-
-

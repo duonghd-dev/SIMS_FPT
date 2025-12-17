@@ -102,6 +102,13 @@
                         <span>Academic</span>
                     </li>
 
+                    @* [NEW] Students Link *@
+                    <li class="@(currentController == "Student" && currentAction == "Index" ? "active" : "")">
+                        <a asp-area="Instructor" asp-controller="Student" asp-action="Index">
+                            <i class="fas fa-user-graduate"></i> <span>My Students</span>
+                        </a>
+                    </li>
+
                     @* Assignment Links *@
                     <li class="submenu @(currentController == "Assignment" ? "active" : "")">
                         <a href="#"><i class="fas fa-clipboard-list"></i> <span>Assignments</span> <span

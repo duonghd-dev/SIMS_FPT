@@ -5,11 +5,11 @@
     Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
 }
 
-<div class="page-header">
+<div class="page-header mb-4">
     <div class="row align-items-center">
         <div class="col">
             <h3 class="page-title">Edit Course Material</h3>
-            <ul class="breadcrumb">
+            <ul class="breadcrumb bg-transparent p-0">
                 <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-action="Index">Materials</a></li>
                 <li class="breadcrumb-item active">Edit</li>
@@ -18,87 +18,121 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
-            <input type="hidden" asp-for="MaterialId" />
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger">@TempData["Error"]</div>
-            }
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="Title" class="form-label">Title</label>
-                        <input asp-for="Title" class="form-control" />
-                        <span asp-validation-for="Title" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="SubjectId" class="form-label">Subject</label>
-                        <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.Subjects" id="SubjectId">
-                            <option value="">-- Select Subject --</option>
-                        </select>
-                        <span asp-validation-for="SubjectId" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="ClassId" class="form-label">Class</label>
-                        <select asp-for="ClassId" class="form-control" asp-items="ViewBag.Classes" id="ClassId">
-                            <option value="">-- Select Subject First --</option>
-                        </select>
-                        <span asp-validation-for="ClassId" class="text-danger"></span>
-                    </div>
-                </div>
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h5 class="card-title text-primary">Material Details</h5>
             </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="MaterialId" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="Category" class="form-label">Category</label>
-                        <input asp-for="Category" class="form-control" />
-                        <span asp-validation-for="Category" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="form-label">Current File</label>
-                        @if (!string.IsNullOrEmpty(Model.FilePath))
-                        {
-                            <div class="mb-2">
-                                <a href="~/@Model.FilePath" target="_blank" class="text-info"><i class="fas fa-file"></i> View Current File</a>
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i> @TempData["Error"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="SubjectId" class="form-label font-weight-bold">Subject <span class="text-danger">*</span></label>
+                                <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.Subjects" id="SubjectId">
+                                    <option value="">-- Select Subject --</option>
+                                </select>
+                                <span asp-validation-for="SubjectId" class="text-danger"></span>
                             </div>
-                        }
-                        else
-                        {
-                            <div class="text-muted mb-2">No file uploaded.</div>
-                        }
-
-                        <label class="form-label">Replace File (Optional)</label>
-                        <input type="file" name="uploadFile" class="form-control" />
-                        <small class="text-muted d-block">Upload new file to replace the existing one.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="ClassId" class="form-label font-weight-bold">Class <span class="text-danger">*</span></label>
+                                <select asp-for="ClassId" class="form-control" asp-items="ViewBag.Classes" id="ClassId">
+                                    <option value="">-- Select Subject First --</option>
+                                </select>
+                                <span asp-validation-for="ClassId" class="text-danger"></span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="form-group">
-                <label asp-for="VideoUrl" class="form-label">Video Link (YouTube)</label>
-                <input asp-for="VideoUrl" class="form-control" />
-                <span asp-validation-for="VideoUrl" class="text-danger"></span>
-            </div>
+                    <hr class="my-4" />
 
-            <div class="mt-3">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label asp-for="Title" class="form-label font-weight-bold">Title</label>
+                                <input asp-for="Title" class="form-control" placeholder="Enter material title..." />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Category" class="form-label font-weight-bold">Category</label>
+                                <input asp-for="Category" class="form-control" placeholder="e.g. Lecture, Lab, Assignment" />
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <h6 class="text-muted text-uppercase mb-3 small font-weight-bold"><i class="fas fa-paperclip mr-2"></i> File Attachment</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Current File:</label>
+                                    @if (!string.IsNullOrEmpty(Model.FilePath))
+                                    {
+                                        <div class="p-2 bg-white border rounded d-flex align-items-center">
+                                            <i class="fas fa-file-alt text-primary mr-3 ml-2" style="font-size: 1.5rem;"></i>
+                                            <div class="overflow-hidden">
+                                                <a href="~/@Model.FilePath" target="_blank" class="text-dark font-weight-bold text-decoration-none">View Current Document</a>
+                                                <small class="d-block text-muted">Click to open in new tab</small>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-warning mb-0 p-2">
+                                            <small><i class="fas fa-exclamation-triangle"></i> No file currently uploaded.</small>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6 mt-3 mt-md-0">
+                                    <label class="form-label">Replace File (Optional):</label>
+                                    <div class="custom-file">
+                                        <input type="file" name="uploadFile" class="form-control p-1" style="height:auto;" />
+                                        <small class="text-muted mt-1 d-block">
+                                            <i class="fas fa-info-circle"></i> Uploading a new file will overwrite the existing one.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="VideoUrl" class="form-label font-weight-bold"><i class="fab fa-youtube text-danger mr-1"></i> Video Link (YouTube)</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white"><i class="fas fa-link"></i></span>
+                            </div>
+                            <input asp-for="VideoUrl" class="form-control" placeholder="https://youtube.com/..." />
+                        </div>
+                        <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-light mr-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save mr-1"></i> Save Changes</button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 

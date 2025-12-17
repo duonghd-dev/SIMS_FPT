@@ -19,6 +19,9 @@ namespace SIMS_FPT.Services.Interfaces
     public interface IInstructorStudentService
     {
         StudentProfileViewModel? GetStudentProfile(string studentId, string teacherId);
+        // Added methods for Student Management
+        InstructorStudentListViewModel GetManagedStudents(string teacherId, string? classId, string? searchTerm);
+        bool RemoveStudentFromClass(string teacherId, string classId, string studentId);
     }
 
     public interface IStudentAssignmentService
