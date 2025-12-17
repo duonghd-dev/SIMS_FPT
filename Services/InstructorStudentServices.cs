@@ -50,6 +50,60 @@ namespace SIMS_FPT.Services
                 .OrderByDescending(m => m.UploadDate)
                 .ToList();
         }
+        public CourseMaterialModel GetMaterialById(string id)
+        {
+            // Fix: Use _materialRepo instead of _repo
+            return _materialRepo.GetById(id);
+        }
+
+        public (bool success, string message) UpdateMaterial(CourseMaterialModel model, IFormFile? newFile, string teacherId)
+        {
+            // Fix: Use _materialRepo instead of _repo
+            var existing = _materialRepo.GetById(model.MaterialId);
+            if (existing == null) return (false, "Material not found.");
+
+            // Update allowed fields
+            existing.Title = model.Title;
+            existing.SubjectId = model.SubjectId;
+            existing.ClassId = model.ClassId;
+            existing.Category = model.Category;
+            existing.VideoUrl = model.VideoUrl;
+            // Note: We generally don't update UploadDate to preserve history, or update it if required.
+
+            // Handle File Replacement
+            if (newFile != null && newFile.Length > 0)
+            {
+                // 1. Delete old file if it exists
+                if (!string.IsNullOrEmpty(existing.FilePath))
+                {
+                    // Fix: Use _env instead of just 'env' or undefined var
+                    var oldPath = Path.Combine(_env.WebRootPath, existing.FilePath.TrimStart('/'));
+                    if (File.Exists(oldPath))
+                    {
+                        File.Delete(oldPath);
+                    }
+                }
+
+                // 2. Save new file
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "materials", model.SubjectId);
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + newFile.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    newFile.CopyTo(fileStream);
+                }
+
+                // Update path in model
+                existing.FilePath = "uploads/materials/" + model.SubjectId + "/" + uniqueFileName;
+            }
+
+            // Fix: Use _materialRepo
+            _materialRepo.Update(existing);
+            return (true, "Material updated successfully.");
+        }
 
         public List<(string SubjectId, string DisplayText)> GetTeacherClassSubjectList(string teacherId)
         {
@@ -156,20 +210,30 @@ namespace SIMS_FPT.Services
         }
     }
 
+
     public class InstructorStudentService : IInstructorStudentService
     {
         private readonly IStudentRepository _studentRepo;
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly ISubmissionRepository _submissionRepo;
+        private readonly IClassRepository _classRepo;
+        private readonly IClassSubjectRepository _classSubjectRepo;
+        private readonly IStudentClassRepository _studentClassRepo;
 
         public InstructorStudentService(
             IStudentRepository studentRepo,
             IAssignmentRepository assignmentRepo,
-            ISubmissionRepository submissionRepo)
+            ISubmissionRepository submissionRepo,
+            IClassRepository classRepo,
+            IClassSubjectRepository classSubjectRepo,
+            IStudentClassRepository studentClassRepo)
         {
             _studentRepo = studentRepo;
             _assignmentRepo = assignmentRepo;
             _submissionRepo = submissionRepo;
+            _classRepo = classRepo;
+            _classSubjectRepo = classSubjectRepo;
+            _studentClassRepo = studentClassRepo;
         }
 
         public StudentProfileViewModel? GetStudentProfile(string studentId, string teacherId)
@@ -204,6 +268,81 @@ namespace SIMS_FPT.Services
                 AssignmentHistory = history,
                 AverageScorePercent = avgPercent
             };
+        }
+
+        public InstructorStudentListViewModel GetManagedStudents(string teacherId, string? classId, string? searchTerm)
+        {
+            // 1. Get classes taught by this teacher
+            var teacherClasses = _classSubjectRepo.GetAll()
+                .Where(cs => cs.TeacherId == teacherId)
+                .Select(cs => cs.ClassId)
+                .Distinct()
+                .ToList();
+
+            var availableClasses = _classRepo.GetAll()
+                .Where(c => teacherClasses.Contains(c.ClassId))
+                .Select(c => new ClassFilterDto { ClassId = c.ClassId, ClassName = c.ClassName })
+                .ToList();
+
+            // 2. Determine which classes to fetch students from
+            var targetClassIds = string.IsNullOrEmpty(classId)
+                ? teacherClasses
+                : teacherClasses.Where(id => id == classId).ToList();
+
+            var studentList = new List<StudentListDto>();
+
+            // 3. Loop through classes and fetch students
+            foreach (var cid in targetClassIds)
+            {
+                var enrolled = _studentClassRepo.GetByClassId(cid);
+                var className = availableClasses.FirstOrDefault(c => c.ClassId == cid)?.ClassName ?? cid;
+
+                foreach (var record in enrolled)
+                {
+                    var s = _studentRepo.GetById(record.StudentId);
+                    if (s == null) continue;
+
+                    // Apply search filter (Case insensitive)
+                    // FIX: Use s.FullName instead of s.Name
+                    if (!string.IsNullOrEmpty(searchTerm))
+                    {
+                        bool matchName = (s.FullName ?? "").Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+                        bool matchEmail = (s.Email ?? "").Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+                        if (!matchName && !matchEmail) continue;
+                    }
+
+                    studentList.Add(new StudentListDto
+                    {
+                        StudentId = s.StudentId,
+                        // FIX: Use s.FullName instead of s.Name
+                        FullName = s.FullName,
+                        Email = s.Email,
+                        AvatarUrl = s.ImagePath,
+                        ClassId = cid,
+                        ClassName = className
+                    });
+                }
+            }
+
+            return new InstructorStudentListViewModel
+            {
+                Students = studentList.OrderBy(x => x.ClassName).ThenBy(x => x.FullName).ToList(),
+                Classes = availableClasses,
+                SelectedClassId = classId,
+                SearchTerm = searchTerm
+            };
+        }
+
+        public bool RemoveStudentFromClass(string teacherId, string classId, string studentId)
+        {
+            // Verify the teacher teaches this class
+            var isTeacherClass = _classSubjectRepo.GetAll()
+                .Any(cs => cs.TeacherId == teacherId && cs.ClassId == classId);
+
+            if (!isTeacherClass) return false;
+
+            _studentClassRepo.DeleteByClassAndStudent(classId, studentId);
+            return true;
         }
     }
 
@@ -288,7 +427,7 @@ namespace SIMS_FPT.Services
                 Submission = submission
             };
         }
-
+        
         public (bool Success, string Message, string? FilePath) SubmitAssignment(string assignmentId, string studentId, IFormFile uploadFile)
         {
             try
@@ -359,4 +498,5 @@ namespace SIMS_FPT.Services
             }
         }
     }
+
 }

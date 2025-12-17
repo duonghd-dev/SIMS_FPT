@@ -1,0 +1,135 @@
+﻿@model SIMS_FPT.Models.ViewModels.InstructorStudentListViewModel
+
+@{
+    ViewData["Title"] = "My Students";
+    Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
+}
+
+<div class="page-header mb-4">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title font-weight-bold text-dark">My Students</h3>
+            <span class="text-muted small text-uppercase">Manage students in your classes</span>
+        </div>
+    </div>
+</div>
+
+@* Filter Section *@
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card card-modern">
+            <div class="card-body">
+                <form method="get" class="row align-items-end">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label class="font-weight-bold small text-muted">Filter by Class</label>
+                        <select name="classId" class="form-control custom-select bg-light border-0 shadow-sm" onchange="this.form.submit()">
+                            <option value="">All Classes</option>
+                            @foreach (var c in Model.Classes)
+                            {
+                                if (c.ClassId == Model.SelectedClassId)
+                                {
+                                    <option value="@c.ClassId" selected>@c.ClassName</option>
+                                }
+                                else
+                                {
+                                    <option value="@c.ClassId">@c.ClassName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-5 mb-3 mb-md-0">
+                        <label class="font-weight-bold small text-muted">Search Student</label>
+                        <div class="input-group">
+                            <input type="text" name="search" value="@Model.SearchTerm" class="form-control bg-light border-0 shadow-sm" placeholder="Search by name or email...">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-md-right">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm shadow-sm rounded-pill px-3">Clear Filters</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Student List *@
+<div class="row">
+    <div class="col-12">
+        <div class="card card-modern">
+            <div class="card-header bg-transparent border-0 pt-4 pb-2">
+                <h5 class="card-title mb-0 font-weight-bold">Student List (@Model.Students.Count)</h5>
+            </div>
+            <div class="card-body pt-0">
+                <div class="table-responsive">
+                    <table class="table table-modern table-hover align-middle mb-0">
+                        <thead class="bg-light rounded">
+                            <tr>
+                                <th class="pl-3 rounded-left">Student</th>
+                                <th>Class</th>
+                                <th>Email</th>
+                                <th class="text-right pr-3 rounded-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Students.Any())
+                            {
+                                foreach (var s in Model.Students)
+                                {
+                                    <tr>
+                                        <td class="pl-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar avatar-sm mr-3">
+                                                    <img class="rounded-circle" src="@(string.IsNullOrEmpty(s.AvatarUrl) ? Url.Content("~/assets/img/default-avatar-1-32.svg") : Url.Content(s.AvatarUrl))" alt="Avatar" width="32" height="32">
+                                                </div>
+                                                <div>
+                                                    <a asp-action="Profile" asp-route-id="@s.StudentId" class="text-dark font-weight-bold">@s.FullName</a>
+                                                    <div class="small text-muted">ID: @s.StudentId</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-pill bg-soft-primary px-3 py-2">@s.ClassName</span>
+                                        </td>
+                                        <td class="text-muted">@s.Email</td>
+                                        <td class="text-right pr-3">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-white rounded-circle shadow-sm" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fas fa-ellipsis-v text-muted"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" asp-action="Profile" asp-route-id="@s.StudentId">
+                                                        <i class="fas fa-user-circle mr-2 text-primary"></i> View Profile
+                                                    </a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <form asp-action="Remove" method="post" class="d-inline">
+                                                        <input type="hidden" name="classId" value="@s.ClassId" />
+                                                        <input type="hidden" name="studentId" value="@s.StudentId" />
+                                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to remove @s.FullName from class @s.ClassName?');">
+                                                            <i class="fas fa-user-minus mr-2"></i> Remove from Class
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-muted">
+                                        <i class="fas fa-users-slash fa-2x mb-3"></i>
+                                        <p>No students found matching your criteria.</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

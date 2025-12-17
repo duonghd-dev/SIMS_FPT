@@ -1,18 +1,18 @@
-@model SIMS_FPT.Models.CourseMaterialModel
+﻿@model SIMS_FPT.Models.CourseMaterialModel
 
 @{
-    ViewData["Title"] = "Add Course Material";
+    ViewData["Title"] = "Edit Course Material";
     Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
 }
 
 <div class="page-header mb-4">
     <div class="row align-items-center">
         <div class="col">
-            <h3 class="page-title">Add Course Material</h3>
+            <h3 class="page-title">Edit Course Material</h3>
             <ul class="breadcrumb bg-transparent p-0">
                 <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-action="Index">Materials</a></li>
-                <li class="breadcrumb-item active">Add</li>
+                <li class="breadcrumb-item active">Edit</li>
             </ul>
         </div>
     </div>
@@ -22,11 +22,13 @@
     <div class="col-lg-10">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                <h5 class="card-title text-primary">New Material Details</h5>
+                <h5 class="card-title text-primary">Material Details</h5>
             </div>
             <div class="card-body">
-                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="MaterialId" />
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
                     @if (TempData["Error"] != null)
                     {
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -64,14 +66,14 @@
                         <div class="col-md-8">
                             <div class="form-group">
                                 <label asp-for="Title" class="form-label font-weight-bold">Title</label>
-                                <input asp-for="Title" class="form-control" placeholder="e.g. Week 1 Slides - Introduction" />
+                                <input asp-for="Title" class="form-control" placeholder="Enter material title..." />
                                 <span asp-validation-for="Title" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label asp-for="Category" class="form-label font-weight-bold">Category</label>
-                                <input asp-for="Category" class="form-control" placeholder="e.g. Week 1, Lecture, Lab" />
+                                <input asp-for="Category" class="form-control" placeholder="e.g. Lecture, Lab, Assignment" />
                                 <span asp-validation-for="Category" class="text-danger"></span>
                             </div>
                         </div>
@@ -80,13 +82,34 @@
                     <div class="card bg-light border-0 mb-4">
                         <div class="card-body">
                             <h6 class="text-muted text-uppercase mb-3 small font-weight-bold"><i class="fas fa-paperclip mr-2"></i> File Attachment</h6>
-                            <div class="form-group mb-0">
-                                <label class="form-label">Upload File (PDF/PPT/PPTX)</label>
-                                <div class="custom-file">
-                                    <input type="file" name="uploadFile" class="form-control p-1" style="height:auto;" />
-                                    <small class="text-muted mt-2 d-block">
-                                        <i class="fas fa-info-circle"></i> Supported formats: .pdf, .ppt, .pptx
-                                    </small>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Current File:</label>
+                                    @if (!string.IsNullOrEmpty(Model.FilePath))
+                                    {
+                                        <div class="p-2 bg-white border rounded d-flex align-items-center">
+                                            <i class="fas fa-file-alt text-primary mr-3 ml-2" style="font-size: 1.5rem;"></i>
+                                            <div class="overflow-hidden">
+                                                <a href="~/@Model.FilePath" target="_blank" class="text-dark font-weight-bold text-decoration-none">View Current Document</a>
+                                                <small class="d-block text-muted">Click to open in new tab</small>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-warning mb-0 p-2">
+                                            <small><i class="fas fa-exclamation-triangle"></i> No file currently uploaded.</small>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6 mt-3 mt-md-0">
+                                    <label class="form-label">Replace File (Optional):</label>
+                                    <div class="custom-file">
+                                        <input type="file" name="uploadFile" class="form-control p-1" style="height:auto;" />
+                                        <small class="text-muted mt-1 d-block">
+                                            <i class="fas fa-info-circle"></i> Uploading a new file will overwrite the existing one.
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -105,7 +128,7 @@
 
                     <div class="d-flex justify-content-end pt-3 border-top">
                         <a asp-action="Index" class="btn btn-light mr-2">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-plus mr-1"></i> Add Material</button>
+                        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save mr-1"></i> Save Changes</button>
                     </div>
                 </form>
             </div>
@@ -117,21 +140,13 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
         $(document).ready(function () {
-            // Check if SubjectId is already selected (e.g. error reload)
-            var initialSubject = $('#SubjectId').val();
-            if(!initialSubject) {
-                $('#ClassId').html('<option value="">-- Select Subject First --</option>');
-            }
-
+            // Re-use the AJAX logic for dependent dropdowns
             $('#SubjectId').change(function () {
                 var subjectId = $(this).val();
                 var classSelect = $('#ClassId');
-
                 classSelect.empty();
-
                 if (subjectId) {
                     classSelect.append('<option value="">Loading...</option>');
                     $.ajax({
