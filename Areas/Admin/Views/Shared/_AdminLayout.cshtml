@@ -141,7 +141,6 @@
                                 </div>
                             </div>
 
-                            <a class="dropdown-item" asp-area="Admin" asp-controller="Profile" asp-action="Index">Hồ sơ</a>
                             <a class="dropdown-item" asp-area="" asp-controller="Inbox" asp-action="Index">Hộp thư</a>
                             <a class="dropdown-item text-danger" asp-area="" asp-controller="Login" asp-action="Logout">Đăng
                                 xuất</a>
@@ -211,13 +210,13 @@
                         </a>
 
                         <ul>
-                            <li class="@(currentController == "List" ? "active" : "")">
+                            <li>
                                 <a asp-area="Admin" asp-controller="Student" asp-action="List">
                                     <span>Student List</span>
                                 </a>
                             </li>
 
-                            <li class="@(currentAction == "Add" ? "active" : "")">
+                            <li>
                                 <a asp-area="Admin" asp-controller="Student" asp-action="Add">
                                     Student Add
                                 </a>
