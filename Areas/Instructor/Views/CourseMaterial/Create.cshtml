@@ -1,4 +1,5 @@
 @model SIMS_FPT.Models.CourseMaterialModel
+
 @{
     ViewData["Title"] = "Add Course Material";
     Layout = "~/Areas/Instructor/Views/Shared/_InstructorLayout.cshtml";
@@ -9,8 +10,7 @@
         <div class="col">
             <h3 class="page-title">Add Course Material</h3>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home"
-                        asp-action="Dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-action="Index">Materials</a></li>
                 <li class="breadcrumb-item active">Add</li>
             </ul>
@@ -35,22 +35,26 @@
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                 </div>
+
+                @* [NEW] Subject Selection *@
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label">Class & Subject</label>
-
-                        <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.SubjectList">
-                            <option value="">-- Select a Class & Subject --</option>
+                        <label asp-for="SubjectId" class="form-label">Subject</label>
+                        <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.Subjects" id="SubjectId">
+                            <option value="">-- Select Subject --</option>
                         </select>
+                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                    </div>
+                </div>
 
-                        @if (!ViewData.ModelState.IsValid && ViewData.ModelState["SubjectId"]?.Errors.Count > 0)
-                        {
-                            <span class="text-danger">Class & Subject is required.</span>
-                        }
-                        else
-                        {
-                            <span asp-validation-for="SubjectId" class="text-danger"></span>
-                        }
+                @* [NEW] Class Selection (Dependent) *@
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="ClassId" class="form-label">Class</label>
+                        <select asp-for="ClassId" class="form-control" asp-items="ViewBag.Classes" id="ClassId">
+                            <option value="">-- Select Subject First --</option>
+                        </select>
+                        <span asp-validation-for="ClassId" class="text-danger"></span>
                     </div>
                 </div>
             </div>
@@ -67,7 +71,6 @@
                     <div class="form-group">
                         <label class="form-label">Upload File (PDF/PPT/PPTX)</label>
                         <input type="file" name="uploadFile" class="form-control" />
-                        <small class="text-muted">Must fill this is provide a video</small>
                         <small class="text-muted d-block">Allowed: .pdf, .ppt, .pptx</small>
                     </div>
                 </div>
@@ -91,4 +94,42 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function () {
+            // Check if SubjectId is already selected (e.g. error reload)
+            var initialSubject = $('#SubjectId').val();
+            if(!initialSubject) {
+                $('#ClassId').html('<option value="">-- Select Subject First --</option>');
+            }
+
+            $('#SubjectId').change(function () {
+                var subjectId = $(this).val();
+                var classSelect = $('#ClassId');
+
+                classSelect.empty();
+
+                if (subjectId) {
+                    classSelect.append('<option value="">Loading...</option>');
+                    $.ajax({
+                        url: '@Url.Action("GetClassesBySubject", "CourseMaterial", new { area = "Instructor" })',
+                        type: 'GET',
+                        data: { subjectId: subjectId },
+                        success: function (data) {
+                            classSelect.empty();
+                            classSelect.append('<option value="">-- Select Class --</option>');
+                            $.each(data, function (index, item) {
+                                classSelect.append($('<option></option>').val(item.id).text(item.name));
+                            });
+                        },
+                        error: function () {
+                            classSelect.html('<option value="">Error loading classes</option>');
+                        }
+                    });
+                } else {
+                    classSelect.append('<option value="">-- Select Subject First --</option>');
+                }
+            });
+        });
+    </script>
 }

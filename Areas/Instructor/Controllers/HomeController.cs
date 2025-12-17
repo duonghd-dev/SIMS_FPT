@@ -64,10 +64,7 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             return View(model);
         }
 
-        public IActionResult MyPayslips()
-        {
-            return View();
-        }
+  
 
         [HttpGet]
         public IActionResult Profile()

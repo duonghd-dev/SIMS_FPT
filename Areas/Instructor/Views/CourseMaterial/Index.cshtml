@@ -7,7 +7,7 @@
 <div class="page-header">
     <div class="row align-items-center">
         <div class="col">
-            <h3 class="page-title">Course Materials</h3>
+            <h  class="page-title">Course Materials</h>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
                 <li class="breadcrumb-item active">Materials</li>
@@ -19,27 +19,59 @@
     </div>
 </div>
 
-<div class="card">
+<div class="card shadow mb-4">
     <div class="card-body">
+
+        @* --- Filter Form --- *@
+        <form asp-action="Index" method="get" class="mb-4">
+            <div class="form-row align-items-end">
+                <div class="col-md-3 mb-2">
+                    <label class="font-weight-bold text-secondary small">Search</label>
+                    <input type="text" name="searchString" value="@ViewData["SearchString"]" class="form-control" placeholder="Search title..." />
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="font-weight-bold text-secondary small">Subject</label>
+                    <select name="subjectId" id="SubjectFilter" class="form-control" asp-items="ViewBag.Subjects">
+                        <option value="">-- All Subjects --</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="font-weight-bold text-secondary small">Class</label>
+                    <select name="classId" id="ClassFilter" class="form-control" asp-items="ViewBag.Classes">
+                        <option value="">-- All Classes --</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Filter</button>
+                </div>
+                <div class="col-md-1 mb-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100" title="Reset Filters"><i class="fas fa-undo"></i></a>
+                </div>
+            </div>
+        </form>
+        @* ------------------- *@
+
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success">@TempData["Success"]</div>
         }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
 
         @if (!Model.Any())
         {
-            <div class="text-muted">No materials uploaded yet.</div>
+            <div class="text-muted text-center py-4">No materials found.</div>
         }
         else
         {
-            var grouped = Model.GroupBy(m => m.Category ?? "Uncategorized")
-                               .OrderBy(g => g.Key);
-
+            var grouped = Model.GroupBy(m => m.Category ?? "Uncategorized").OrderBy(g => g.Key);
             foreach (var group in grouped)
             {
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="mb-0">@group.Key</h5>
+                        <h5 class="mb-0 text-primary font-weight-bold">@group.Key</h5>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered">
@@ -47,6 +79,7 @@
                                 <tr>
                                     <th>Title</th>
                                     <th>Subject</th>
+                                    <th>Class</th> @* Added Class Column *@
                                     <th>File</th>
                                     <th>Video</th>
                                     <th>Uploaded</th>
@@ -59,10 +92,11 @@
                                     <tr>
                                         <td>@item.Title</td>
                                         <td>@item.SubjectId</td>
+                                        <td>@item.ClassId</td>
                                         <td>
                                             @if (!string.IsNullOrEmpty(item.FilePath))
                                             {
-                                                <a href="~/@item.FilePath" target="_blank"><i class="fas fa-file"></i> Download</a>
+                                                <a href="~/@item.FilePath" target="_blank"><i class="fas fa-file-download text-info"></i> Download</a>
                                             }
                                             else
                                             {
@@ -72,7 +106,7 @@
                                         <td>
                                             @if (!string.IsNullOrEmpty(item.VideoUrl))
                                             {
-                                                <a href="@item.VideoUrl" target="_blank"><i class="fas fa-video"></i> Watch</a>
+                                                <a href="@item.VideoUrl" target="_blank"><i class="fab fa-youtube text-danger"></i> Watch</a>
                                             }
                                             else
                                             {
@@ -83,7 +117,7 @@
                                         <td>
                                             <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this material?');">
                                                 <input type="hidden" name="id" value="@item.MaterialId" />
-                                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
                                             </form>
                                         </td>
                                     </tr>
@@ -97,3 +131,32 @@
     </div>
 </div>
 
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+             $('#SubjectFilter').change(function() {
+                var subjectId = $(this).val();
+                var classSelect = $('#ClassFilter');
+                classSelect.empty();
+
+                if (subjectId) {
+                    classSelect.append('<option value="">Loading...</option>');
+                    $.ajax({
+                        url: '@Url.Action("GetClassesBySubject", "CourseMaterial", new { area = "Instructor" })',
+                        type: 'GET',
+                        data: { subjectId: subjectId },
+                        success: function(data) {
+                            classSelect.empty();
+                            classSelect.append('<option value="">-- All Classes --</option>');
+                            $.each(data, function(i, item) {
+                                classSelect.append($('<option>').val(item.id).text(item.name));
+                            });
+                        }
+                    });
+                } else {
+                     classSelect.append('<option value="">-- All Classes --</option>');
+                }
+             });
+        });
+    </script>
+}

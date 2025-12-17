@@ -1,6 +1,6 @@
 using CsvHelper;
 using CsvHelper.Configuration;
-using Microsoft.AspNetCore.Hosting; // Required for accessing the real project folder
+using Microsoft.AspNetCore.Hosting;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
 using System;
@@ -16,10 +16,8 @@ namespace SIMS_FPT.Data.Repositories
         private readonly string _filePath;
         private readonly CsvConfiguration _config;
 
-        // We inject 'IWebHostEnvironment' to find the true path of your project
         public CourseMaterialRepository(IWebHostEnvironment env)
         {
-            // This ensures we read/write to 'SIMS_FPT/CSV_DATA/course_materials.csv'
             _filePath = Path.Combine(env.ContentRootPath, "CSV_DATA", "course_materials.csv");
 
             _config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -29,14 +27,13 @@ namespace SIMS_FPT.Data.Repositories
                 HeaderValidated = null
             };
 
-            // Create the file with headers if it doesn't exist
             if (!File.Exists(_filePath))
             {
                 var dir = Path.GetDirectoryName(_filePath);
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
-                // Writing the headers you mentioned
-                File.WriteAllText(_filePath, "MaterialId,SubjectId,Title,FilePath,VideoUrl,Category,UploadDate" + Environment.NewLine);
+                // [UPDATED] Added ClassId to header
+                File.WriteAllText(_filePath, "MaterialId,SubjectId,ClassId,Title,FilePath,VideoUrl,Category,UploadDate" + Environment.NewLine);
             }
         }
 
@@ -52,7 +49,6 @@ namespace SIMS_FPT.Data.Repositories
             }
             catch
             {
-                // Returns empty list if file is empty or corrupted
                 return new List<CourseMaterialModel>();
             }
         }
@@ -73,18 +69,32 @@ namespace SIMS_FPT.Data.Repositories
         public List<CourseMaterialModel> GetBySubject(string subjectId) =>
             ReadAll().Where(m => m.SubjectId.Equals(subjectId, StringComparison.OrdinalIgnoreCase)).ToList();
 
-        public CourseMaterialModel GetById(string id) => ReadAll().FirstOrDefault(m => m.MaterialId.Equals(id, StringComparison.OrdinalIgnoreCase));
+        public CourseMaterialModel GetById(string id)
+        {
+            return ReadAll().FirstOrDefault(m => m.MaterialId == id);
+        }
 
         public void Add(CourseMaterialModel model)
         {
             var list = ReadAll();
-            // Assign a new ID if one is missing
             if (string.IsNullOrEmpty(model.MaterialId)) model.MaterialId = Guid.NewGuid().ToString();
 
             list.Add(model);
             WriteAll(list);
         }
 
+        public void Update(CourseMaterialModel model)
+        {
+            var list = ReadAll();
+            var index = list.FindIndex(m => m.MaterialId == model.MaterialId);
+
+            if (index != -1)
+            {
+                // Replace the item at the index
+                list[index] = model;
+                WriteAll(list);
+            }
+        }
         public void Delete(string id)
         {
             var list = ReadAll();

@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="~/assets/css/style.css">
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
 <body>
@@ -133,11 +134,41 @@
             @RenderBody()
         </div>
 
-        <footer>
-            <div class="text-center p-3">
-                <p>&copy; 2025 - SIMS_FPT</p>
+        <footer class="bg-white border-top mt-auto">
+            <div class="container-fluid py-3 px-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                        <p class="mb-0 text-muted small">
+                            &copy; @DateTime.Now.Year <strong>SIMS FPT</strong>. All rights reserved.
+                        </p>
+                    </div>
+
+                    <div class="col-md-6 text-center text-md-end">
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item">
+                                <a href="#" class="text-muted small text-decoration-none transition-hover">Privacy Policy</a>
+                            </li>
+                            <li class="list-inline-item ms-3">
+                                <a href="#" class="text-muted small text-decoration-none transition-hover">Terms of Use</a>
+                            </li>
+                            <li class="list-inline-item ms-3">
+                                <a href="#" class="text-muted small text-decoration-none transition-hover">Support</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </footer>
+
+        <style>
+            .transition-hover {
+                transition: color 0.2s ease;
+            }
+
+                .transition-hover:hover {
+                    color: var(--fpt-orange)
+                }
+        </style>
     </div>
 
     <script src="~/assets/js/jquery-3.6.0.min.js"></script>

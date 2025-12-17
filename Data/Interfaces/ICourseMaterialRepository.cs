@@ -9,6 +9,7 @@ namespace SIMS_FPT.Data.Interfaces
         List<CourseMaterialModel> GetBySubject(string subjectId);
         CourseMaterialModel GetById(string id);
         void Add(CourseMaterialModel model);
+        void Update(CourseMaterialModel model);
         void Delete(string id);
     }
 }

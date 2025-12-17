@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SIMS_FPT.Models;
 using SIMS_FPT.Services.Interfaces;
+using SIMS_FPT.Data.Interfaces; // [NEW] Added for repositories
 using System.Linq;
 using System.Security.Claims;
+using System.Collections.Generic;
+using System;
 
 namespace SIMS_FPT.Areas.Instructor.Controllers
 {
@@ -14,10 +17,20 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
     public class CourseMaterialController : Controller
     {
         private readonly IInstructorCourseMaterialService _materialService;
+        private readonly IClassRepository _classRepo; // [NEW]
+        private readonly IClassSubjectRepository _classSubjectRepo; // [NEW]
+        private readonly ISubjectRepository _subjectRepo; // [NEW]
 
-        public CourseMaterialController(IInstructorCourseMaterialService materialService)
+        public CourseMaterialController(
+            IInstructorCourseMaterialService materialService,
+            IClassRepository classRepo,
+            IClassSubjectRepository classSubjectRepo,
+            ISubjectRepository subjectRepo)
         {
             _materialService = materialService;
+            _classRepo = classRepo;
+            _classSubjectRepo = classSubjectRepo;
+            _subjectRepo = subjectRepo;
         }
 
         private string CurrentTeacherId
@@ -30,19 +43,110 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
             }
         }
 
-        public IActionResult Index()
+        // [HELPER] Load Subjects
+        private void LoadTeacherSubjects(string? selectedSubjectId = null)
+        {
+            var teacherId = CurrentTeacherId;
+            var teacherSubjectIds = _classSubjectRepo.GetByTeacherId(teacherId)
+                .Select(cs => cs.SubjectId)
+                .Distinct()
+                .ToList();
+
+            var subjects = _subjectRepo.GetAll()
+                .Where(s => teacherSubjectIds.Contains(s.SubjectId))
+                .Select(s => new
+                {
+                    SubjectId = s.SubjectId,
+                    DisplayText = $"{s.SubjectId} - {s.SubjectName}"
+                })
+                .ToList();
+
+            ViewBag.Subjects = new SelectList(subjects, "SubjectId", "DisplayText", selectedSubjectId);
+        }
+
+        // [HELPER] Load Classes for Subject
+        private void LoadClassesForSubject(string subjectId, string? selectedClassId = null)
+        {
+            if (string.IsNullOrEmpty(subjectId))
+            {
+                ViewBag.Classes = new SelectList(new List<object>(), "ClassId", "DisplayText");
+                return;
+            }
+
+            var teacherId = CurrentTeacherId;
+            var classIds = _classSubjectRepo.GetAll()
+                .Where(cs => cs.TeacherId == teacherId && cs.SubjectId == subjectId)
+                .Select(cs => cs.ClassId)
+                .Distinct()
+                .ToList();
+
+            var classes = _classRepo.GetAll()
+                .Where(c => classIds.Contains(c.ClassId))
+                .Select(c => new
+                {
+                    ClassId = c.ClassId,
+                    DisplayText = $"{c.ClassId} - {c.ClassName}"
+                })
+                .ToList();
+
+            ViewBag.Classes = new SelectList(classes, "ClassId", "DisplayText", selectedClassId);
+        }
+
+        // [AJAX]
+        [HttpGet]
+        public IActionResult GetClassesBySubject(string subjectId)
+        {
+            var teacherId = CurrentTeacherId;
+            var classIds = _classSubjectRepo.GetAll()
+                .Where(cs => cs.TeacherId == teacherId && cs.SubjectId == subjectId)
+                .Select(cs => cs.ClassId)
+                .Distinct()
+                .ToList();
+
+            var classes = _classRepo.GetAll()
+                .Where(c => classIds.Contains(c.ClassId))
+                .Select(c => new
+                {
+                    id = c.ClassId,
+                    name = $"{c.ClassId} - {c.ClassName}"
+                })
+                .ToList();
+
+            return Json(classes);
+        }
+
+        // [UPDATED] Index with Filter
+        public IActionResult Index(string? searchString, string? subjectId, string? classId)
         {
             var materials = _materialService.GetTeacherMaterials(CurrentTeacherId);
+
+            // Filter logic
+            if (!string.IsNullOrEmpty(searchString))
+                materials = materials.Where(m => m.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (!string.IsNullOrEmpty(subjectId))
+                materials = materials.Where(m => m.SubjectId == subjectId).ToList();
+
+            if (!string.IsNullOrEmpty(classId))
+                materials = materials.Where(m => m.ClassId == classId).ToList();
+
+            // Load Filter Dropdowns
+            LoadTeacherSubjects(subjectId);
+            LoadClassesForSubject(subjectId, classId);
+            ViewData["SearchString"] = searchString;
+
             return View(materials);
         }
 
+        // [UPDATED] Create GET
         public IActionResult Create()
         {
-            var list = _materialService.GetTeacherClassSubjectList(CurrentTeacherId);
-            ViewBag.SubjectList = list.Select(x => new SelectListItem { Value = x.SubjectId, Text = x.DisplayText }).ToList();
+            LoadTeacherSubjects();
+            ViewBag.Classes = new SelectList(new List<object>(), "ClassId", "DisplayText");
             return View();
         }
 
+        // [UPDATED] Create POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CourseMaterialModel model, IFormFile uploadFile)
@@ -64,8 +168,9 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
                 }
             }
 
-            var list = _materialService.GetTeacherClassSubjectList(CurrentTeacherId);
-            ViewBag.SubjectList = list.Select(x => new SelectListItem { Value = x.SubjectId, Text = x.DisplayText }).ToList();
+            // Reload dropdowns on error
+            LoadTeacherSubjects(model.SubjectId);
+            LoadClassesForSubject(model.SubjectId, model.ClassId);
             TempData["Error"] = "Please fix the errors below and try again.";
             return View(model);
         }
