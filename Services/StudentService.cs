@@ -37,7 +37,7 @@ namespace SIMS_FPT.Services
             // 1. Upload ảnh
             model.ImagePath = (model.StudentImageFile != null)
                 ? await UploadImage(model.StudentImageFile)
-                : "/assets/img/profiles/avatar-01.jpg";
+                : "/assets/img/default-avatar-1-32.svg";
 
             // 2. Lưu Student
             _studentRepo.Add(model);

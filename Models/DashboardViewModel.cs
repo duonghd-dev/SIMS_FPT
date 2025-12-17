@@ -17,6 +17,10 @@ namespace SIMS_FPT.Models
         public List<string> StudentClassLabels { get; set; } = new();
         public List<int> StudentClassData { get; set; } = new();
 
+        // 2.1 Department chart (dynamic)
+        public List<string> DepartmentChartLabels { get; set; } = new();
+        public List<int> DepartmentChartData { get; set; } = new();
+
         // 3. Table data
         public List<StudentCSVModel> NewestStudents { get; set; } = new();
     }

@@ -2,6 +2,7 @@
 using SIMS_FPT.Business.Interfaces;
 using SIMS_FPT.Models;
 using SIMS_FPT.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -49,7 +50,7 @@ namespace SIMS_FPT.Business.Services
             }
         }
 
-        public BulkGradeViewModel PrepareGradingView(string assignmentId, string currentTeacherId)
+        public BulkGradeViewModel? PrepareGradingView(string assignmentId, string currentTeacherId)
         {
             var assignment = _assignmentRepo.GetById(assignmentId);
             if (assignment == null) return null;
@@ -77,7 +78,7 @@ namespace SIMS_FPT.Business.Services
                 var studentInfo = _studentRepo.GetById(enrollment.StudentId);
                 if (studentInfo == null) continue; // Skip if student not found in main DB
 
-                var sub = submissions.FirstOrDefault(x => x.StudentId == enrollment.StudentId);
+                var sub = submissions.FirstOrDefault(x => x.StudentId.Equals(enrollment.StudentId, StringComparison.OrdinalIgnoreCase));
 
                 model.StudentGrades.Add(new StudentGradeItem
                 {

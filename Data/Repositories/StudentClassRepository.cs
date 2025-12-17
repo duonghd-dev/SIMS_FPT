@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -44,6 +45,7 @@ namespace SIMS_FPT.Data.Repositories
         private void WriteAll(List<StudentClassModel> list)
         {
             var dir = Path.GetDirectoryName(_filePath);
+            if (string.IsNullOrEmpty(dir)) dir = Directory.GetCurrentDirectory();
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
             using var writer = new StreamWriter(_filePath);
@@ -85,7 +87,28 @@ namespace SIMS_FPT.Data.Repositories
 
         public bool IsEnrolled(string classId, string studentId)
         {
-            return ReadAll().Any(x => x.ClassId == classId && x.StudentId == studentId);
+            return ReadAll().Any(x => x.ClassId.Equals(classId, StringComparison.OrdinalIgnoreCase) &&
+                                      x.StudentId.Equals(studentId, StringComparison.OrdinalIgnoreCase));
         }
+
+        // ... (các hàm GetAll, Add có sẵn giữ nguyên) ...
+
+        public void DeleteByClassAndStudent(string classId, string studentId)
+        {
+            var allRecords = ReadAll();
+            var recordToDelete = allRecords.FirstOrDefault(x => x.ClassId == classId && x.StudentId == studentId);
+
+            if (recordToDelete != null)
+            {
+                allRecords.Remove(recordToDelete);
+                // Ghi đè lại file CSV
+                using (var writer = new StreamWriter(_filePath))
+                using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
+                {
+                    csv.WriteRecords(allRecords);
+                }
+            }
+        }
+        // ...
     }
 }

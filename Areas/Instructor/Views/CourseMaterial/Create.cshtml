@@ -9,7 +9,8 @@
         <div class="col">
             <h3 class="page-title">Add Course Material</h3>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home"
+                        asp-action="Dashboard">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-action="Index">Materials</a></li>
                 <li class="breadcrumb-item active">Add</li>
             </ul>
@@ -36,13 +37,20 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="SubjectId" class="control-label">Class & Subject</label>
+                        <label class="control-label">Class & Subject</label>
 
                         <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.SubjectList">
-                            <option value="">-- Select a Class --</option>
+                            <option value="">-- Select a Class & Subject --</option>
                         </select>
 
-                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                        @if (!ViewData.ModelState.IsValid && ViewData.ModelState["SubjectId"]?.Errors.Count > 0)
+                        {
+                            <span class="text-danger">Class & Subject is required.</span>
+                        }
+                        else
+                        {
+                            <span asp-validation-for="SubjectId" class="text-danger"></span>
+                        }
                     </div>
                 </div>
             </div>

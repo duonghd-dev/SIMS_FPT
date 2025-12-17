@@ -43,6 +43,10 @@ namespace SIMS_FPT.Data.Repositories
 
         private void WriteAll(List<SubmissionModel> list)
         {
+            var dir = Path.GetDirectoryName(_filePath);
+            if (string.IsNullOrEmpty(dir)) dir = Directory.GetCurrentDirectory();
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
             using var writer = new StreamWriter(_filePath);
             using var csv = new CsvWriter(writer, _config);
             csv.WriteRecords(list);
@@ -50,7 +54,8 @@ namespace SIMS_FPT.Data.Repositories
 
         public SubmissionModel GetByStudentAndAssignment(string studentId, string assignmentId)
         {
-            return ReadAll().FirstOrDefault(s => s.StudentId == studentId && s.AssignmentId == assignmentId);
+            return ReadAll().FirstOrDefault(s => s.StudentId.Equals(studentId, StringComparison.OrdinalIgnoreCase) &&
+                                                  s.AssignmentId.Equals(assignmentId, StringComparison.OrdinalIgnoreCase));
         }
 
         public List<SubmissionModel> GetByAssignmentId(string assignmentId)
@@ -61,7 +66,8 @@ namespace SIMS_FPT.Data.Repositories
         public void SaveSubmission(SubmissionModel model)
         {
             var list = ReadAll();
-            var existing = list.FirstOrDefault(s => s.StudentId == model.StudentId && s.AssignmentId == model.AssignmentId);
+            var existing = list.FirstOrDefault(s => s.StudentId.Equals(model.StudentId, StringComparison.OrdinalIgnoreCase) &&
+                                                     s.AssignmentId.Equals(model.AssignmentId, StringComparison.OrdinalIgnoreCase));
 
             if (existing != null)
             {
@@ -91,8 +97,8 @@ namespace SIMS_FPT.Data.Repositories
             {
                 // Find match by StudentId and AssignmentId
                 var existing = allSubmissions.FirstOrDefault(s =>
-                    s.StudentId == sub.StudentId &&
-                    s.AssignmentId == sub.AssignmentId);
+                    s.StudentId.Equals(sub.StudentId, StringComparison.OrdinalIgnoreCase) &&
+                    s.AssignmentId.Equals(sub.AssignmentId, StringComparison.OrdinalIgnoreCase));
 
                 if (existing != null)
                 {

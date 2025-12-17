@@ -1,14 +1,8 @@
 Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
-1,duongteacher@gmail.com,AQAAAAIAAYagAAAAECvNtTM7bS0yTk5uaO6fov0CcXDiRHRMkuUP7XVWmqlV5/iu9iPgF0fQq3dhcDxtbA==,Instructor,,Duonggv,PBKDF2
-2,duongadmin@gmail.com,AQAAAAIAAYagAAAAEApWHEYImf/8wlPXshYO3IGPVomJ5T9rSfyKOXQbrKgJNbe0WSHZ2mjWFzmHFe3PLQ==,Admin,,DuongAdmin,PBKDF2
-3,duongstudent@gmail.com,AQAAAAIAAYagAAAAEFppbLfbNxEkJo/XpPpTnWOhRH+t4WBf0DGFhDPwc4U3b+be8VrRShGJebAq6BH5JQ==,Student,,Duongstudent,PBKDF2
-4,testing123@gmail.com,AQAAAAIAAYagAAAAEES/lLyKifGHGOs5Xj1csIOXnO2kK1Y8j5lfoMG7q3Exy+DDBA0Zgf++W5iPYxyEzQ==,Instructor,test,Testing123,PBKDF2
-24,phucxo262@gmail.com,BD00671,Student,BD00671,Phuc Nguyen Viet,PBKDF2
-25,phucadmin@gmail.com,123,Student,123,Phuc  Nguyen Viet,PBKDF2
-26,phucadmin1@gmail.com,123,Student,123,Phuc  Nguyen Viet,PBKDF2
-27,phuc@gmail.com,AQAAAAIAAYagAAAAEE8yba7Y5tEgx3pCnfTdl7uZjpuvEL8pWYVleSiqTGAbOdOVCDBU3SprnZm7DwAtEg==,Student,BD00672,"PHUC NGUYEN ",PBKDF2
-28,ntc915915@gmail.com,AQAAAAIAAYagAAAAENqcZ0kp/MdUVrIHmhBnan7YnGdfqJ5aSa6gTCJAPlligZweXD1x7XPzwYGcgWZ/RQ==,Instructor,TCH011,Long,PBKDF2
-29,bnm915915@gmail.com,AQAAAAIAAYagAAAAEPk/YohNIlVmy380c89XMricr/IQaBXImEP/bEA99j/2lPssS26YRBW2tM4P06yelw==,Student,BD008,Phu TuongLong,PBKDF2
-30,nguyenvietphuc@gmail.com,AQAAAAIAAYagAAAAEMkFHZIIEHhHFU0eUIN8caANmKXnMlVdNcxcJynaOOLSca6EEGZFKUYvcqoGzEadFQ==,Student,BD009,Phuc Viet,PBKDF2
-31,httduong@gmail.com,AQAAAAIAAYagAAAAEJu7RX8caC1xCUs8G9gBahWZGGDXt9zz2d4aezCV8DODacJ3bKb7ajOrUlFVFH30jw==,Student,BD007,Do Duong,PBKDF2
-32,123@gmail.com,AQAAAAIAAYagAAAAEDCNMjpeJnlTKU4G3bC8Gs1sqGVzna38dmA2oiiolepLD1MXcFrkiIKmriqHZQufhg==,Student,BD0010,Do An,PBKDF2
+3,st01@gmail.com,AQAAAAIAAYagAAAAEM3rcQv6+9hqBvAiF4YCEb4ziKjUbFFRYU+ln8YqfH9oTDrF+kaOzkOkox+QyUMXdQ==,Student,ST01,Duc Duong,PBKDF2
+1,admin@gmail.com,AQAAAAIAAYagAAAAEAWTCFnI4ErD04FnYb29qaBQI2/j8y8SMgklDhwgI9nDCekhCDpQDGocda/s84YqqA==,Admin,TC01,Duong,PBKDF2
+4,st02@gmail.com,AQAAAAIAAYagAAAAEPSkdYNp8O5a1vVaT2VYl0CBAIhwcIhvmzheQn0VdNXj47UfsRU5+1VzmIWg5VP2dg==,Student,ST02,Duc Duongg,PBKDF2
+5,st03@gmail.com,AQAAAAIAAYagAAAAEIQ/VhQuXLbYJbisQa6tR3SD2l3AeBF/kRJgL5jPPwcMkj2C5DP6ffWFMCRZlCv41A==,Student,ST03,Duc Duonggg,PBKDF2
+6,tc01@gmail.com,AQAAAAIAAYagAAAAEDpO1gclTabgyWhGw84Cb4xuS2t5AC40ngSv44Evxn9seYrJ8NdxhnBSGSQpqO5kvg==,Instructor,TC01,Duong,PBKDF2
+7,st05@gmail.com,AQAAAAIAAYagAAAAEBTVp835a5hPMfN2BS/XgvmMDishR/twfoVozHAoAZXrrHOwKJkRC3c4Y816CpNw8w==,Student,ST04,Duong Ducc,PBKDF2
+8,tc02@gmail.com,AQAAAAIAAYagAAAAECm1LySYNzV7qnL+WzNybkbJo7goNT1iRkzxp8o9z/a01D2qwjz1MNDNfy0A94B2Ag==,Instructor,TC02,Phuc,PBKDF2

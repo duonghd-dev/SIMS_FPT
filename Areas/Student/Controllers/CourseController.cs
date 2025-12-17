@@ -1,0 +1,61 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Models;
+using System.Collections.Generic;
+using System.Linq;
+using SIMS_FPT.Models.ViewModels;
+using System.Security.Claims;
+
+namespace SIMS_FPT.Areas.Student.Controllers
+{
+    [Area("Student")]
+    [Authorize(Roles = "Student")]
+    public class CourseController : Controller
+    {
+        private readonly IStudentClassRepository _studentClassRepo;
+        private readonly IClassRepository _classRepo;
+        private readonly ICourseMaterialRepository _materialRepo;
+        private readonly ISubjectRepository _subjectRepo;
+
+        public CourseController(IStudentClassRepository studentClassRepo,
+                                IClassRepository classRepo,
+                                ICourseMaterialRepository materialRepo, ISubjectRepository subjectRepo)
+        {
+            _studentClassRepo = studentClassRepo;
+            _classRepo = classRepo;
+            _materialRepo = materialRepo;
+            _subjectRepo = subjectRepo;
+        }
+
+        public IActionResult Index()
+        {
+            var studentId = User.FindFirst("LinkedId")?.Value;
+            if (string.IsNullOrEmpty(studentId)) return RedirectToAction("Dashboard", "Home");
+
+            var enrollments = _studentClassRepo.GetByStudentId(studentId);
+            var myCourses = new List<MyCourseViewModel>();
+
+            foreach (var enrollment in enrollments)
+            {
+                var classInfo = _classRepo.GetById(enrollment.ClassId);
+                if (classInfo != null)
+                {
+                    // Get materials for all subjects in this class (since a class can have multiple subjects now)
+                    var materials = _materialRepo.GetAll()
+                                    .OrderByDescending(m => m.UploadDate)
+                                    .ToList();
+
+                    myCourses.Add(new MyCourseViewModel
+                    {
+                        ClassInfo = classInfo,
+                        Materials = materials
+                    });
+                }
+            }
+
+            return View(myCourses);
+        }
+    }
+}
+

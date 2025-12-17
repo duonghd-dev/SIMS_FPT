@@ -102,7 +102,7 @@ namespace SIMS_FPT.Data.Repositories
 
         private string Format(AssignmentModel m)
         {
-            string Escape(string s) => s?.Replace("\"", "\"\"") ?? "";
+            string Escape(string s) => string.IsNullOrEmpty(s) ? string.Empty : s.Replace("\"", "\"\"");
             // Added ClassId at the end
             return $"{m.AssignmentId},{m.SubjectId},\"{Escape(m.Title)}\",\"{Escape(m.Description)}\",{m.DueDate:yyyy-MM-dd},{m.MaxPoints},\"{Escape(m.AllowedFileTypes)}\",{m.AreGradesPublished},{m.TeacherId},{m.ClassId}";
         }

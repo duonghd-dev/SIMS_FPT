@@ -1,5 +1,6 @@
 @using SIMS_FPT.Models
-@model ClassModel
+@using SIMS_FPT.Models.ViewModels
+@model ClassDetailViewModel
 
 @{
     ViewData["Title"] = "Add Class";
@@ -24,7 +25,20 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        <form asp-action="Add" method="post">
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                <h4 class="alert-heading">Validation Error!</h4>
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    @foreach (var error in modelState.Errors)
+                                    {
+                                        <p>@error.ErrorMessage</p>
+                                    }
+                                }
+                            </div>
+                        }
+                        <form asp-action="Add" method="post" id="classForm">
                             <div class="row">
                                 <div class="col-12">
                                     <h5 class="form-title"><span>Class Details</span></h5>
@@ -32,47 +46,53 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Class ID</label>
-                                        <input asp-for="ClassId" class="form-control" required>
-                                        <span asp-validation-for="ClassId" class="text-danger"></span>
+                                        <input asp-for="Class.ClassId" class="form-control" required>
+                                        <span asp-validation-for="Class.ClassId" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Class Name</label>
-                                        <input asp-for="ClassName" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Subject</label>
-                                        <select asp-for="SubjectName" class="form-control" asp-items="ViewBag.Subjects" required>
-                                            <option value="">-- Select Subject --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Teacher</label>
-                                        <select asp-for="TeacherName" class="form-control" asp-items="ViewBag.Teachers" required>
-                                            <option value="">-- Select Teacher --</option>
-                                        </select>
+                                        <input asp-for="Class.ClassName" class="form-control" required>
+                                        <span asp-validation-for="Class.ClassName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Semester</label>
-                                        <input asp-for="Semester" class="form-control" placeholder="e.g. Spring2025" required>
+                                        <input asp-for="Class.Semester" class="form-control"
+                                            placeholder="e.g., Fall2024" required>
+                                        <span asp-validation-for="Class.Semester" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
-                                        <label>No. of Students</label>
-                                        <input asp-for="NumberOfStudents" type="number" class="form-control" required>
+                                        <label>Number of Students</label>
+                                        <input asp-for="Class.NumberOfStudents" type="number" class="form-control"
+                                            value="0" required>
+                                        <span asp-validation-for="Class.NumberOfStudents" class="text-danger"></span>
                                     </div>
                                 </div>
 
+                                <div class="col-12 mt-3">
+                                    <h5 class="form-title"><span>Subject-Teacher Assignments</span></h5>
+                                    <small class="form-text text-muted mb-3">Add subjects and their teachers for this
+                                        class</small>
+                                </div>
+
+                                <div class="col-12" id="subjectTeacherContainer">
+                                    <!-- Subject-Teacher pairs will be added dynamically -->
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <button type="button" class="btn btn-success" id="addPairBtn">
+                                        <i class="fas fa-plus"></i> Add Subject-Teacher
+                                    </button>
+                                </div>
+
                                 <div class="col-12">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-primary">Add Class</button>
+                                    <a asp-action="List" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </div>
                         </form>
@@ -82,3 +102,87 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var allSubjects = @Html.Raw(Json.Serialize(ViewBag.AllSubjects ?? new List<object>()));
+            var allTeachers = @Html.Raw(Json.Serialize(ViewBag.AllTeachers ?? new List<object>()));
+            var pairIndex = 0;
+
+            function addSubjectTeacherPair() {
+                var html = `
+                        <div class="row mb-3 subject-teacher-pair" data-index="${pairIndex}">
+                            <div class="col-12 col-sm-5">
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <select name="SubjectIds" class="form-control subject-select" required>
+                                        <option value="">-- Select Subject --</option>
+                                        ${allSubjects.map(s => `<option value="${s.subjectId}">${s.subjectId} - ${s.subjectName}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-5">
+                                <div class="form-group">
+                                    <label>Teacher</label>
+                                    <select name="TeacherIds" class="form-control teacher-select" required>
+                                        <option value="">-- Select Subject First --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-2">
+                                <label>&nbsp;</label>
+                                <button type="button" class="btn btn-danger btn-block remove-pair">Remove</button>
+                            </div>
+                        </div>
+                    `;
+                $('#subjectTeacherContainer').append(html);
+                pairIndex++;
+            }
+
+            // Add first pair on load
+            addSubjectTeacherPair();
+
+            // Add pair button
+            $('#addPairBtn').on('click', function () {
+                addSubjectTeacherPair();
+            });
+
+            // Remove pair
+            $(document).on('click', '.remove-pair', function () {
+                if ($('.subject-teacher-pair').length > 1) {
+                    $(this).closest('.subject-teacher-pair').remove();
+                } else {
+                    alert('At least one Subject-Teacher pair is required!');
+                }
+            });
+
+            // Subject change -> filter teachers
+            $(document).on('change', '.subject-select', function () {
+                var selectedSubject = $(this).val();
+                var teacherSelect = $(this).closest('.subject-teacher-pair').find('.teacher-select');
+                teacherSelect.empty();
+
+                if (!selectedSubject) {
+                    teacherSelect.append('<option value="">-- Select Subject First --</option>');
+                    return;
+                }
+
+                teacherSelect.append('<option value="">-- Select Teacher --</option>');
+                var hasTeachers = false;
+
+                $.each(allTeachers, function (index, teacher) {
+                    if (teacher.subjectIds && teacher.subjectIds.includes(selectedSubject)) {
+                        teacherSelect.append(`<option value="${teacher.id}">${teacher.name}</option>`);
+                        hasTeachers = true;
+                    }
+                });
+
+                if (!hasTeachers) {
+                    teacherSelect.empty();
+                    teacherSelect.append('<option value="">-- No teachers assigned to this subject --</option>');
+                }
+            });
+        });
+    </script>
+}

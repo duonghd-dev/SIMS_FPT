@@ -37,7 +37,7 @@ namespace SIMS_FPT.Services
             // 1. Upload image
             model.ImagePath = (model.TeacherImageFile != null)
                 ? await UploadImage(model.TeacherImageFile)
-                : "/assets/img/profiles/avatar-02.jpg";
+                : "/assets/img/default-avatar-1-32.svg";
 
             // 2. Save Teacher to CSV
             _repo.Add(model);

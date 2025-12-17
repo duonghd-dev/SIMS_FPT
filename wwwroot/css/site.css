@@ -183,7 +183,6 @@ footer a:hover {
   color: var(--fpt-orange);
 }
 
-<style >
 /* Unique Page Styling */
 :root {
     --primary-color: #4361ee;
@@ -286,5 +285,3 @@ footer a:hover {
     color: white;
     border: none;
 }
-
-</style >

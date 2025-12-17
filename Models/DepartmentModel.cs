@@ -1,34 +1,39 @@
 using CsvHelper.Configuration.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SIMS_FPT.Models
 {
     public class DepartmentModel
     {
         [Name("department_id")]
-        public string DepartmentId { get; set; }
+        [Required(ErrorMessage = "Department ID is required.")]
+        public string? DepartmentId { get; set; }
 
         [Name("department_name")]
-        public string DepartmentName { get; set; }
+        [Required(ErrorMessage = "Department Name is required.")]
+        public string? DepartmentName { get; set; }
 
         [Name("head_of_department")]
-        public string HeadOfDepartment { get; set; }
+        [Required(ErrorMessage = "Head of Department is required.")]
+        public string? HeadOfDepartment { get; set; }
 
         [Name("start_date")]
         public DateTime? StartDate { get; set; }
 
         [Name("no_of_students")]
+        [Range(0, int.MaxValue, ErrorMessage = "Number of students cannot be negative.")]
         public int NoOfStudents { get; set; }
     }
 
     // ViewModel dùng cho trang Detail
     public class DepartmentDetailViewModel
     {
-        public DepartmentModel Department { get; set; }
-        public List<TeacherCSVModel> Teachers { get; set; }
+        public DepartmentModel Department { get; set; } = new DepartmentModel();
+        public List<TeacherCSVModel> Teachers { get; set; } = new List<TeacherCSVModel>();
 
         // --- BỔ SUNG THUỘC TÍNH NÀY ĐỂ SỬA LỖI ---
-        public List<SubjectModel> Subjects { get; set; }
+        public List<SubjectModel> Subjects { get; set; } = new List<SubjectModel>();
     }
 }

@@ -32,12 +32,14 @@
                                     <div class="form-group">
                                         <label>Subject ID</label>
                                         <input asp-for="SubjectId" class="form-control" required>
+                                        <span asp-validation-for="SubjectId" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Subject Name</label>
                                         <input asp-for="SubjectName" class="form-control" required>
+                                        <span asp-validation-for="SubjectName" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
@@ -52,7 +54,41 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Credits</label>
-                                        <input asp-for="Credits" type="number" class="form-control" required>
+                                        <input asp-for="Credits" type="number" class="form-control" min="1" max="10"
+                                            placeholder="1-10" required>
+                                        <small class="form-text text-muted">Must be between 1 and 10</small>
+                                        <span asp-validation-for="Credits" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Teachers</label>
+                                        <input type="text" id="teacherSearch" class="form-control mb-2"
+                                            placeholder="Search teachers by ID or name...">
+                                        <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                                            <div id="noTeachersMessage" class="text-muted text-center"
+                                                style="display: none;">
+                                                Please select a department first
+                                            </div>
+                                            @if (ViewBag.AllTeachers != null)
+                                            {
+                                                @foreach (var teacher in ViewBag.AllTeachers)
+                                                {
+                                                    <div class="form-check teacher-item" data-department="@teacher.DepartmentId"
+                                                        style="display: none;">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            name="SelectedTeacherIds" value="@teacher.Value"
+                                                            id="teacher_@teacher.Value"
+                                                            data-teacher-text="@teacher.Text.ToLower()">
+                                                        <label class="form-check-label" for="teacher_@teacher.Value">
+                                                            @teacher.Text
+                                                        </label>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                        <small class="form-text text-muted">Select a department to see available
+                                            teachers</small>
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -66,3 +102,61 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Filter teachers by department
+            $('#DepartmentId').on('change', function () {
+                var selectedDept = $(this).val();
+                if (selectedDept) {
+                    $('#noTeachersMessage').hide();
+                    var hasTeachers = false;
+                    $('.teacher-item').each(function () {
+                        var teacherDept = $(this).data('department');
+                        if (teacherDept === selectedDept) {
+                            $(this).show();
+                            hasTeachers = true;
+                        } else {
+                            $(this).hide();
+                            $(this).find('input[type="checkbox"]').prop('checked', false);
+                        }
+                    });
+                    if (!hasTeachers) {
+                        $('#noTeachersMessage').text('No teachers found in this department').show();
+                    }
+                } else {
+                    $('.teacher-item').hide();
+                    $('.teacher-item input[type="checkbox"]').prop('checked', false);
+                    $('#noTeachersMessage').text('Please select a department first').show();
+                }
+                // Clear search
+                $('#teacherSearch').val('');
+            });
+
+            // Search teachers
+            $('#teacherSearch').on('keyup', function () {
+                var searchText = $(this).val().toLowerCase();
+                var selectedDept = $('#DepartmentId').val();
+                $('.teacher-item').each(function () {
+                    var teacherDept = $(this).data('department');
+                    if (teacherDept === selectedDept || !selectedDept) {
+                        var teacherText = $(this).find('input').data('teacher-text');
+                        if (teacherText.indexOf(searchText) > -1) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    }
+                });
+            });
+
+            // Show message on load
+            if (!$('#DepartmentId').val()) {
+                $('#noTeachersMessage').show();
+            } else {
+                $('#DepartmentId').trigger('change');
+            }
+        });
+    </script>
+}

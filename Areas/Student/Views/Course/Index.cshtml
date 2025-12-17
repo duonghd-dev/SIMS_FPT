@@ -1,0 +1,95 @@
+@model List<SIMS_FPT.Models.ViewModels.MyCourseViewModel>
+
+@{
+    ViewData["Title"] = "My Courses & Materials";
+    Layout = "~/Areas/Student/Views/Shared/_StudentLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">My Courses & Materials</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Learning Materials</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                @if (Model.Count == 0)
+                {
+                    <div class="alert alert-info">You haven't enrolled in any classes yet.</div>
+                }
+                else
+                {
+                    <div class="accordion" id="accordionCourses">
+                        @foreach (var item in Model)
+                        {
+                            <div class="card mb-3">
+                                <div class="card-header" id="heading-@item.ClassInfo.ClassId">
+                                    <h5 class="mb-0">
+                                        <button
+                                            class="btn btn-link text-decoration-none d-block w-100 text-start text-dark fw-bold"
+                                            type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse-@item.ClassInfo.ClassId">
+                                            <i class="fas fa-book-open me-2"></i>
+                                            @item.ClassInfo.ClassName
+                                        </button>
+                                    </h5>
+                                </div>
+
+                                <div id="collapse-@item.ClassInfo.ClassId" class="collapse show"
+                                    data-bs-parent="#accordionCourses">
+                                    <div class="card-body">
+                                        @if (item.Materials.Count == 0)
+                                        {
+                                            <p class="text-muted fst-italic">No materials uploaded specifically for this class.</p>
+                                        }
+                                        else
+                                        {
+                                            <div class="table-responsive">
+                                                <table class="table table-hover mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Title</th>
+                                                            <th>Type</th>
+                                                            <th>Upload Date</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var mat in item.Materials)
+                                                        {
+                                                            <tr>
+                                                                <td>@mat.Title</td>
+                                                                <td>
+                                                                    <span class="badge bg-info">File</span>
+                                                                </td>
+                                                                <td>@mat.UploadDate.ToString("dd/MM/yyyy")</td>
+                                                                <td>
+                                                                    <a href="~/@mat.FilePath" target="_blank"
+                                                                        class="btn btn-sm btn-primary">
+                                                                        <i class="fas fa-download"></i> View/Download
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

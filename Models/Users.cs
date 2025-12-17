@@ -8,19 +8,19 @@ namespace SIMS_FPT.Models
         public int Id { get; set; }
 
         [Name("Email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Name("Password")]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         [Name("Role")]
-        public string Role { get; set; }
+        public string Role { get; set; } = string.Empty;
 
         [Name("LinkedId")]
-        public string LinkedId { get; set; }
+        public string LinkedId { get; set; } = string.Empty;
 
         [Name("FullName")]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         [Name("HashAlgorithm")]
         public string HashAlgorithm { get; set; } = "PBKDF2";

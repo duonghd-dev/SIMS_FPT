@@ -2,38 +2,38 @@
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Areas.Admin.Controllers;
-using SIMS_FPT.Data.Interfaces;
+using SIMS_FPT.Services.Interfaces;
 
 namespace SIMS_FPT.Tests
 {
     [TestFixture]
     public class SubjectControllerTests
     {
-        private Mock<ISubjectRepository> _mockRepo;
-        private Mock<IDepartmentRepository> _mockDeptRepo;
-        private SubjectController _controller;
+        private Mock<IAdminSubjectService> _mockService = null!;
+        private SubjectController _controller = null!;
 
         [SetUp]
         public void Setup()
         {
-            _mockRepo = new Mock<ISubjectRepository>();
-            _mockDeptRepo = new Mock<IDepartmentRepository>();
-            _controller = new SubjectController(_mockRepo.Object, _mockDeptRepo.Object);
+            _mockService = new Mock<IAdminSubjectService>();
+            _controller = new SubjectController(_mockService.Object, null!, null!);
         }
 
-        // TC03: Delete Course by ID
+        // TC03: Delete Subject by ID
         [Test]
-        public void TC03_DeleteSubject_CallsRepositoryDelete()
+        public void TC03_DeleteSubject_CallsServiceDelete()
         {
             // Arrange
             string subjectId = "SUB001";
+            _mockService.Setup(s => s.DeleteSubject(subjectId)).Returns((true, "Deleted"));
 
             // Act
             var result = _controller.Delete(subjectId) as RedirectToActionResult;
 
             // Assert
-            Assert.That(result.ActionName, Is.EqualTo("List"));
-            _mockRepo.Verify(r => r.Delete(subjectId), Times.Once);
+            Assert.That(result!, Is.Not.Null);
+            Assert.That(result!.ActionName, Is.EqualTo("List"));
+            _mockService.Verify(s => s.DeleteSubject(subjectId), Times.Once);
         }
     }
 }

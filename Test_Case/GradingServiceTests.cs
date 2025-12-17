@@ -11,11 +11,11 @@ namespace SIMS_FPT.Tests
     [TestFixture]
     public class GradingServiceTests
     {
-        private Mock<IAssignmentRepository> _assignRepo;
-        private Mock<ISubmissionRepository> _subRepo;
-        private Mock<IStudentRepository> _studentRepo;
-        private Mock<IStudentClassRepository> _studentClassRepo;
-        private GradingService _service;
+        private Mock<IAssignmentRepository> _assignRepo = null!;
+        private Mock<ISubmissionRepository> _subRepo = null!;
+        private Mock<IStudentRepository> _studentRepo = null!;
+        private Mock<IStudentClassRepository> _studentClassRepo = null!;
+        private GradingService _service = null!;
 
         [SetUp]
         public void Setup()
@@ -44,14 +44,11 @@ namespace SIMS_FPT.Tests
                     new StudentGradeItem { StudentId = "ST01", Grade = 8.5, Feedback = "Good job" }
                 }
             };
-
             _assignRepo.Setup(r => r.GetById("ASM01")).Returns(new AssignmentModel());
             _subRepo.Setup(r => r.GetByStudentAndAssignment("ST01", "ASM01"))
                     .Returns(new SubmissionModel { StudentId = "ST01", AssignmentId = "ASM01" });
-
             // Act
             _service.ProcessGrades(model);
-
             // Assert
             // Verify SaveSubmission was called with grade 8.5
             _subRepo.Verify(r => r.SaveSubmission(It.Is<SubmissionModel>(

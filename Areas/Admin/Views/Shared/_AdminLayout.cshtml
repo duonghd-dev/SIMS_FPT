@@ -11,7 +11,7 @@
     <!-- Default ASP.NET -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SIMS_FPT.styles.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/SIMS_FPT.styles.css" asp-append-version="true" /> *@
 
     <!-- Template Assets -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
@@ -24,18 +24,21 @@
 
 
 <body>
+    @{
+        var isAuth = User?.Identity?.IsAuthenticated == true;
+    }
     <header class="sticky-top">
-        <div class="header" style="@(!User.Identity.IsAuthenticated ? "justify-content:flex-end;" : "")">
+        <div class="header" style="@(isAuth ? "" : "justify-content:flex-end;")">
 
-            @if (User.Identity.IsAuthenticated)
+            @if (isAuth)
             {
                 <!-- LEFT LOGO -->
                 <div class="header-left">
                     <a asp-area="Admin" asp-controller="Home" asp-action="Dashboard" class="logo">
-                        <img src="~/assets/img/logo.png" alt="Logo">
+                        <img src="~/assets/img/LogoFPT.png" alt="Logo">
                     </a>
                     <a asp-area="Admin" asp-controller="Home" asp-action="Dashboard" class="logo logo-small">
-                        <img src="~/assets/img/logo-small.png" alt="Logo" width="30" height="30">
+                        <img src="~/assets/img/LogoFPT.png" alt="Logo" width="30" height="30">
                     </a>
                 </div>
 
@@ -80,7 +83,7 @@
                                             <div class="media">
                                                 <span class="avatar avatar-sm">
                                                     <img class="avatar-img rounded-circle"
-                                                        src="~/assets/img/profiles/avatar-02.jpg" alt="User">
+                                                        src="~/assets/img/default-avatar-1-32.svg" alt="User">
                                                 </span>
 
                                                 <div class="media-body">
@@ -108,14 +111,15 @@
                     <li class="nav-item dropdown has-arrow">
                         <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                             <span class="user-img">
-                                <img class="rounded-circle" src="~/assets/img/profiles/avatar-01.jpg" width="31" alt="User">
+                                <img class="rounded-circle" src="~/assets/img/default-avatar-1-32.svg" width="31"
+                                    alt="User">
                             </span>
                         </a>
 
                         <div class="dropdown-menu">
                             <div class="user-header">
                                 <div class="avatar avatar-sm">
-                                    <img src="~/assets/img/profiles/avatar-01.jpg" class="avatar-img rounded-circle"
+                                    <img src="~/assets/img/default-avatar-1-32.svg" class="avatar-img rounded-circle"
                                         alt="User">
                                 </div>
 
@@ -216,12 +220,6 @@
                             <li class="@(currentAction == "Add" ? "active" : "")">
                                 <a asp-area="Admin" asp-controller="Student" asp-action="Add">
                                     Student Add
-                                </a>
-                            </li>
-                            <!-- Student Enrollment -->
-                            <li class="@(currentController == "Class" && currentAction == "List" ? "active" : "")">
-                                <a asp-area="Admin" asp-controller="Class" asp-action="List">
-                                    <span>Student Enrollment</span>
                                 </a>
                             </li>
                         </ul>

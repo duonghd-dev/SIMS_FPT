@@ -27,8 +27,8 @@
             <div class="col-md-12">
                 <form asp-action="List" method="get">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="className"
-                            placeholder="Search by ID or Name..." value="@ViewBag.SearchTerm">
+                        <input type="text" class="form-control" name="className" placeholder="Search by ID or Name..."
+                            value="@ViewBag.SearchTerm">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="submit">Search</button>
                             <a asp-action="List" class="btn btn-secondary ml-1">Reset</a>
@@ -63,9 +63,9 @@
                                                     <h2 class="table-avatar">
                                                         <a href="#" class="avatar avatar-sm mr-2">
                                                             <img class="avatar-img rounded-circle"
-                                                                src="@(string.IsNullOrEmpty(item.ImagePath) ? "/assets/img/profiles/avatar-01.jpg" : item.ImagePath)"
+                                                                src="@(string.IsNullOrEmpty(item.ImagePath) ? "/assets/img/default-avatar-1-32.svg" : item.ImagePath)"
                                                                 alt="Avatar"
-                                                                onerror="this.src='/assets/img/profiles/avatar-01.jpg'">
+                                                                onerror="this.src='/assets/img/default-avatar-1-32.svg'">
                                                         </a>
                                                         <a asp-action="Detail" asp-route-id="@item.StudentId">@item.FullName</a>
                                                     </h2>

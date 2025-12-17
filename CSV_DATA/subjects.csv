@@ -1,12 +1,3 @@
-subject_id,subject_name,department_id,credits
-SUB001,Programming Fundamentals,DEP001,3
-SUB002,Data Structures,DEP001,4
-SUB003,Database Systems,DEP002,3
-SUB004,Operating Systems,DEP002,4
-SUB005,Microeconomics,DEP003,3
-SUB006,Digital Electronics,DEP004,3
-SUB007,Thermodynamics,DEP005,4
-SUB008,English Communication,DEP006,2
-SUB009,Marketing Principles,DEP007,3
-SUB010,Machine Learning,DEP010,4
-
+subject_id,subject_name,department_id,credits,teacher_ids
+SJ01,Database,DEP01,5,TC01
+SJ02,Database,DEP01,4,"TC01,TC02"

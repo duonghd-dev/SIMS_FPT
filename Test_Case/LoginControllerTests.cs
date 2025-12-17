@@ -10,21 +10,23 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
 using System.Threading.Tasks;
 using System;
-
 namespace SIMS_FPT.Tests
 {
     [TestFixture]
     public class LoginControllerTests
     {
-        private Mock<IUserRepository> _mockUserRepo;
-        private LoginController _controller;
-
+        private Mock<IUserRepository> _mockUserRepo = null!;
+        private Mock<IStudentRepository> _mockStudentRepo = null!;
+        private Mock<ITeacherRepository> _mockTeacherRepo = null!;
+        private LoginController _controller = null!;
         [SetUp]
         public void Setup()
         {
             // 1. Mock Repository
             _mockUserRepo = new Mock<IUserRepository>();
-            _controller = new LoginController(_mockUserRepo.Object);
+            _mockStudentRepo = new Mock<IStudentRepository>();
+            _mockTeacherRepo = new Mock<ITeacherRepository>();
+            _controller = new LoginController(_mockUserRepo.Object, _mockStudentRepo.Object, _mockTeacherRepo.Object);
 
             // 2. Mock HttpContext and ServiceProvider
             var mockHttpContext = new Mock<HttpContext>();
@@ -50,21 +52,17 @@ namespace SIMS_FPT.Tests
                             .Returns(urlHelper.Object);
             serviceProvider.Setup(s => s.GetService(typeof(IUrlHelperFactory)))
                            .Returns(urlHelperFactory.Object);
-
             // 3. Connect ServiceProvider to HttpContext
             mockHttpContext.Setup(x => x.RequestServices).Returns(serviceProvider.Object);
-
             // 4. Assign Context to Controller
             _controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = mockHttpContext.Object
             };
-
             // 5. Explicitly assign properties to avoid lazy-loading issues in some base methods
             _controller.TempData = tempData.Object;
             _controller.Url = urlHelper.Object;
         }
-
         // TC01: Verify Account Authentication (Invalid Login)
         [Test]
         public async Task TC01_Login_WithInvalidCredentials_ReturnsViewWithError()
@@ -73,15 +71,11 @@ namespace SIMS_FPT.Tests
             string email = "wrong@test.com";
             string password = "wrong";
             _mockUserRepo.Setup(r => r.Login(email, password)).Returns((Users)null);
-
-           
             var result = await _controller.Login(email, password) as ViewResult;
-
             // Assert
             Assert.That(result, Is.Not.Null, "Result should be a ViewResult");
-            Assert.That(result.ViewData["Error"], Is.EqualTo("Invalid email or password!"));
+            Assert.That(result!.ViewData["Error"], Is.EqualTo("Invalid email or password!"));
         }
-
         // TC07: User Role Authorization Check (Redirect Logic)
         [Test]
         public async Task TC07_Login_AsStudent_RedirectsToStudentDashboard()
@@ -92,17 +86,14 @@ namespace SIMS_FPT.Tests
             // Important: HashAlgorithm must match logic in Repo or be handled. 
             // Since we mocked Repo.Login to return this USER directly, the internal password check in Repo is bypassed.
             var studentUser = new Users { Email = email, Role = "Student", FullName = "Test Student" };
-
             _mockUserRepo.Setup(r => r.Login(email, password)).Returns(studentUser);
-
             // Act
             var result = await _controller.Login(email, password) as RedirectToActionResult;
-
             // Assert
             Assert.That(result, Is.Not.Null, "Result should be a RedirectToActionResult");
-            Assert.That(result.ActionName, Is.EqualTo("Dashboard"));
+            Assert.That(result!.ActionName, Is.EqualTo("Dashboard"));
             Assert.That(result.ControllerName, Is.EqualTo("Home"));
-            Assert.That(result.RouteValues["area"], Is.EqualTo("Student"), "Student should be redirected to Student Area");
+            Assert.That(result.RouteValues!["area"], Is.EqualTo("Student"), "Student should be redirected to Student Area");
         }
     }
 }

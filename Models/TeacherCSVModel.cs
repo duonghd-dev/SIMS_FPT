@@ -8,28 +8,28 @@ namespace SIMS_FPT.Models
     public class TeacherCSVModel
     {
         [Name("teacher_id")]
-        public string TeacherId { get; set; }
+        public string TeacherId { get; set; } = string.Empty;
 
         [Name("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Name("department_id")]
         public string? DepartmentId { get; set; }
 
         [Name("gender")]
-        public string Gender { get; set; }
+        public string Gender { get; set; } = string.Empty;
 
         [Name("date_of_birth")]
         public DateTime? DateOfBirth { get; set; }
 
         [Name("mobile")]
-        public string Mobile { get; set; }
+        public string Mobile { get; set; } = string.Empty;
 
         [Name("joining_date")]
         public DateTime? JoiningDate { get; set; }
 
         [Name("qualification")]
-        public string Qualification { get; set; }
+        public string Qualification { get; set; } = string.Empty;
 
         [Name("experience")]
         public string? Experience { get; set; }
@@ -39,7 +39,7 @@ namespace SIMS_FPT.Models
         public string? Username { get; set; }
 
         [Name("email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Name("password")]
         public string? Password { get; set; }

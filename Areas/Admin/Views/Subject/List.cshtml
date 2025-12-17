@@ -41,6 +41,7 @@
                                         <th>Name</th>
                                         <th>Department ID</th>
                                         <th>Credits</th>
+                                        <th>Teachers</th>
                                         <th class="text-right">Action</th>
                                     </tr>
                                 </thead>
@@ -56,6 +57,39 @@
                                                 </td>
                                                 <td>@item.DepartmentId</td>
                                                 <td>@item.Credits</td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(item.TeacherIds))
+                                                    {
+                                                        var teacherIds = item.TeacherIds.Split(',',
+                                                        StringSplitOptions.RemoveEmptyEntries);
+                                                        var teacherNames = ViewBag.TeacherNames as Dictionary<string, string>;
+                                                        var teacherList = new List<string>();
+
+                                                        @foreach (var teacherId in teacherIds)
+                                                        {
+                                                            var teacherName = teacherNames != null &&
+                                                            teacherNames.ContainsKey(teacherId.Trim())
+                                                            ? teacherNames[teacherId.Trim()]
+                                                            : teacherId.Trim();
+                                                            teacherList.Add(teacherName);
+                                                        }
+
+                                                        var count = teacherList.Count;
+                                                        var tooltipText = string.Join("\n", teacherList);
+
+                                                        <span class="badge badge-primary" data-toggle="tooltip" data-placement="top"
+                                                            data-html="true" title="@string.Join("<br>", teacherList)"
+                                                            style="cursor: help;">
+                                                            <i class="fas fa-user-friends"></i> @count @(count == 1 ? "teacher" :
+                                                                                                            "teachers")
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted"><i class="fas fa-user-slash"></i> No teachers
+                                                            assigned</span>
+                                                    }
+                                                </td>
                                                 <td class="text-right">
                                                     <div class="actions">
                                                         <a asp-action="Edit" asp-route-id="@item.SubjectId"
@@ -87,3 +121,11 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

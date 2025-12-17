@@ -8,20 +8,20 @@ namespace SIMS_FPT.Models
     public class StudentCSVModel
     {
         [Name("student_id")]
-        public string StudentId { get; set; }
+        public string StudentId { get; set; } = string.Empty;
 
         [Name("email")]
-        public string Email { get; set; }
-        
+        public string Email { get; set; } = string.Empty;
+
 
         [Name("first_name")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [Name("last_name")]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [Name("gender")]
-        public string Gender { get; set; }
+        public string Gender { get; set; } = string.Empty;
 
         [Name("date_of_birth")]
         public DateTime DateOfBirth { get; set; }

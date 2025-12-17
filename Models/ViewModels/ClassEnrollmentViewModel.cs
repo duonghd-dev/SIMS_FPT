@@ -5,7 +5,7 @@ namespace SIMS_FPT.Models.ViewModels
     public class ClassEnrollmentViewModel
     {
         // Thông tin lớp học hiện tại
-        public ClassModel ClassInfo { get; set; }
+        public ClassModel ClassInfo { get; set; } = new ClassModel();
 
         // Danh sách sinh viên ĐÃ vào lớp này
         public List<StudentCSVModel> EnrolledStudents { get; set; } = new List<StudentCSVModel>();
