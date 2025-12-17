@@ -71,9 +71,9 @@ namespace SIMS_FPT.Data.Repositories
         public List<CourseMaterialModel> GetAll() => ReadAll();
 
         public List<CourseMaterialModel> GetBySubject(string subjectId) =>
-            ReadAll().Where(m => m.SubjectId == subjectId).ToList();
+            ReadAll().Where(m => m.SubjectId.Equals(subjectId, StringComparison.OrdinalIgnoreCase)).ToList();
 
-        public CourseMaterialModel GetById(string id) => ReadAll().FirstOrDefault(m => m.MaterialId == id);
+        public CourseMaterialModel GetById(string id) => ReadAll().FirstOrDefault(m => m.MaterialId.Equals(id, StringComparison.OrdinalIgnoreCase));
 
         public void Add(CourseMaterialModel model)
         {

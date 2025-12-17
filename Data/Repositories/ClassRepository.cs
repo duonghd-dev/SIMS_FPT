@@ -4,6 +4,7 @@ using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -71,7 +72,7 @@ namespace SIMS_FPT.Data.Repositories
         public List<ClassModel> GetAll() => ReadAll();
 
         // Chức năng: Xem chi tiết
-        public ClassModel GetById(string id) => ReadAll().FirstOrDefault(c => c.ClassId == id);
+        public ClassModel GetById(string id) => ReadAll().FirstOrDefault(c => c.ClassId.Equals(id, StringComparison.OrdinalIgnoreCase));
 
         // Chức năng: Tạo lớp
         public void Add(ClassModel m)

@@ -2,6 +2,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -59,7 +60,7 @@ namespace SIMS_FPT.Data.Repositories
 
         public DepartmentModel GetById(string id)
         {
-            return ReadAll().FirstOrDefault(d => d.DepartmentId == id);
+            return ReadAll().FirstOrDefault(d => d.DepartmentId.Equals(id, StringComparison.OrdinalIgnoreCase));
         }
 
         public void Add(DepartmentModel model)

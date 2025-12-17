@@ -2,6 +2,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -53,7 +54,7 @@ namespace SIMS_FPT.Data.Repositories
 
         public List<StudentCSVModel> GetAll() => ReadAll();
 
-        public StudentCSVModel GetById(string id) => ReadAll().FirstOrDefault(s => s.StudentId == id);
+        public StudentCSVModel GetById(string id) => ReadAll().FirstOrDefault(s => s.StudentId.Equals(id, StringComparison.OrdinalIgnoreCase));
 
         public List<StudentCSVModel> GetBySubject(string subjectId)
         {

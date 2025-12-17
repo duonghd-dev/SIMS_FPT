@@ -77,12 +77,12 @@ namespace SIMS_FPT.Data.Repositories
 
         public List<StudentClassModel> GetByClassId(string classId)
         {
-            return ReadAll().Where(x => x.ClassId == classId).ToList();
+            return ReadAll().Where(x => x.ClassId.Equals(classId, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         public List<StudentClassModel> GetByStudentId(string studentId)
         {
-            return ReadAll().Where(x => x.StudentId == studentId).ToList();
+            return ReadAll().Where(x => x.StudentId.Equals(studentId, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         public bool IsEnrolled(string classId, string studentId)
@@ -96,7 +96,8 @@ namespace SIMS_FPT.Data.Repositories
         public void DeleteByClassAndStudent(string classId, string studentId)
         {
             var allRecords = ReadAll();
-            var recordToDelete = allRecords.FirstOrDefault(x => x.ClassId == classId && x.StudentId == studentId);
+            var recordToDelete = allRecords.FirstOrDefault(x => x.ClassId.Equals(classId, StringComparison.OrdinalIgnoreCase) &&
+                                                                 x.StudentId.Equals(studentId, StringComparison.OrdinalIgnoreCase));
 
             if (recordToDelete != null)
             {

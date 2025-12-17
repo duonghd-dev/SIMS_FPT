@@ -89,8 +89,8 @@ namespace SIMS_FPT.Data.Repositories
             File.WriteAllLines(_csvFilePath, newLines);
         }
 
-        public AssignmentModel GetById(string id) => GetAll().FirstOrDefault(x => x.AssignmentId == id);
-        public List<AssignmentModel> GetBySubject(string subjectId) => GetAll().Where(x => x.SubjectId == subjectId).ToList();
+        public AssignmentModel GetById(string id) => GetAll().FirstOrDefault(x => x.AssignmentId.Equals(id, StringComparison.OrdinalIgnoreCase));
+        public List<AssignmentModel> GetBySubject(string subjectId) => GetAll().Where(x => x.SubjectId.Equals(subjectId, StringComparison.OrdinalIgnoreCase)).ToList();
 
         public void Delete(string id)
         {

@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Hosting; // Added for IWebHostEnvironment
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -58,7 +59,7 @@ namespace SIMS_FPT.Data.Repositories
         // Fix 3: Clean implementation of GetAll using the helper
         public List<SubjectModel> GetAll() => ReadAll();
 
-        public SubjectModel GetById(string id) => ReadAll().FirstOrDefault(s => s.SubjectId == id);
+        public SubjectModel GetById(string id) => ReadAll().FirstOrDefault(s => s.SubjectId.Equals(id, StringComparison.OrdinalIgnoreCase));
 
         public void Add(SubjectModel m)
         {
