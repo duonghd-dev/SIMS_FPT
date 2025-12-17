@@ -3,6 +3,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
+using System;
 using System.Globalization;
 
 namespace SIMS_FPT.Data.Repositories
@@ -33,17 +34,17 @@ namespace SIMS_FPT.Data.Repositories
 
         public List<ClassSubjectModel> GetByClassId(string classId)
         {
-            return GetAll().Where(cs => cs.ClassId == classId).ToList();
+            return GetAll().Where(cs => cs.ClassId.Equals(classId, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         public List<ClassSubjectModel> GetBySubjectId(string subjectId)
         {
-            return GetAll().Where(cs => cs.SubjectId == subjectId).ToList();
+            return GetAll().Where(cs => cs.SubjectId.Equals(subjectId, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         public List<ClassSubjectModel> GetByTeacherId(string teacherId)
         {
-            return GetAll().Where(cs => cs.TeacherId == teacherId).ToList();
+            return GetAll().Where(cs => cs.TeacherId.Equals(teacherId, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         public ClassSubjectModel? GetByIds(string classId, string subjectId)

@@ -288,8 +288,8 @@
                                             <h2 class="table-avatar">
                                                 <a asp-area="Instructor" asp-controller="Student" asp-action="Profile"
                                                     asp-route-id="@s.StudentId" class="avatar avatar-sm mr-2">
-                                                    <img class="avatar-img rounded-circle" src="~/assets/img/603A6862.JPG"
-                                                        alt="User Image">
+                                                    <img class="avatar-img rounded-circle"
+                                                        src="~/assets/img/default-avatar-1-32.svg" alt=" User Image">
                                                 </a>
                                                 <a asp-area="Instructor" asp-controller="Student" asp-action="Profile"
                                                     asp-route-id="@s.StudentId">
@@ -423,6 +423,46 @@
                 };
                 var chartSub = new ApexCharts(document.querySelector("#submissionChart"), submissionOptions);
                 chartSub.render();
+            }
+
+            // 4. SAMPLE MONTHLY STATS CHART (Bar Chart)
+            if (document.querySelector("#sample-chart")) {
+                var sampleOptions = {
+                    series: [{
+                        name: 'Submissions',
+                        data: [@Model.TotalSubmissions, @Model.TotalGraded, @Model.TotalSubmissions - @Model.TotalGraded, @Model.TeachingClasses.Count, @Model.StudentOptions.Count]
+                    }],
+                    chart: {
+                        height: 300,
+                        type: 'bar',
+                        toolbar: { show: false }
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '55%',
+                            endingShape: 'rounded',
+                            distributed: true
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true
+                    },
+                    xaxis: {
+                        categories: ['Total Submissions', 'Graded', 'Pending', 'Classes', 'Students']
+                    },
+                    colors: ['#4e73df', '#1cc88a', '#f6c23e', '#858796', '#e74a3b'],
+                    legend: {
+                        show: false
+                    },
+                    yaxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    }
+                };
+                var chartSample = new ApexCharts(document.querySelector("#sample-chart"), sampleOptions);
+                chartSample.render();
             }
         });
     </script>

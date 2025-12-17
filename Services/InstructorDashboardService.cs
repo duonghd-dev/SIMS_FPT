@@ -48,13 +48,13 @@ namespace SIMS_FPT.Services
 
             // Get assignments owned by instructor
             var teacherAssignments = _assignmentRepo.GetAll()
-                .Where(a => a.TeacherId == teacherId)
+                .Where(a => a.TeacherId.Equals(teacherId, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(a => a.DueDate)
                 .ToList();
 
             // Get classes where teacher teaches
             var teacherClassIds = _classSubjectRepo.GetAll()
-                .Where(cs => cs.TeacherId == teacherId)
+                .Where(cs => cs.TeacherId.Equals(teacherId, StringComparison.OrdinalIgnoreCase))
                 .Select(cs => cs.ClassId)
                 .Distinct()
                 .ToList();
@@ -106,7 +106,7 @@ namespace SIMS_FPT.Services
 
             // Select student
             var selectedStudent = !string.IsNullOrEmpty(studentId)
-                ? students.FirstOrDefault(s => s.StudentId == studentId)
+                ? students.FirstOrDefault(s => s.StudentId.Equals(studentId, StringComparison.OrdinalIgnoreCase))
                 : students.FirstOrDefault();
 
             if (selectedStudent == null && students.Any())
@@ -154,7 +154,139 @@ namespace SIMS_FPT.Services
                 .Take(5)
                 .ToList();
 
+            // Populate chart data
+            PopulateChartData(model, teacherAssignments, selectedStudent);
+
+            // Identify at-risk students
+            model.AtRiskStudents = IdentifyAtRiskStudents(students, teacherAssignments);
+
             return model;
+        }
+
+        private List<AtRiskStudent> IdentifyAtRiskStudents(List<StudentCSVModel> students, List<AssignmentModel> assignments)
+        {
+            var atRiskList = new List<AtRiskStudent>();
+
+            foreach (var student in students)
+            {
+                var studentSubmissions = new List<SubmissionModel>();
+
+                // Get all submissions for this student across all teacher's assignments
+                foreach (var assn in assignments)
+                {
+                    var subs = _submissionRepo.GetByAssignmentId(assn.AssignmentId ?? string.Empty);
+                    var studentSub = subs.FirstOrDefault(s => s.StudentId.Equals(student.StudentId, StringComparison.OrdinalIgnoreCase));
+                    if (studentSub != null)
+                    {
+                        studentSubmissions.Add(studentSub);
+                    }
+                }
+
+                // Calculate metrics
+                int totalAssignments = assignments.Count;
+                int submittedCount = studentSubmissions.Count;
+                int gradedCount = studentSubmissions.Count(s => s.Grade.HasValue);
+
+                // Calculate average grade
+                double avgGrade = 0;
+                if (gradedCount > 0)
+                {
+                    avgGrade = studentSubmissions.Where(s => s.Grade.HasValue).Average(s => s.Grade ?? 0);
+                }
+
+                // Identify risk factors
+                string riskReason = "";
+                string riskLevel = "";
+
+                // High Risk: Missing more than 30% of assignments
+                if (totalAssignments > 0 && submittedCount < totalAssignments * 0.7)
+                {
+                    riskReason = $"Missing {totalAssignments - submittedCount}/{totalAssignments} assignments";
+                    riskLevel = "High";
+                }
+                // High Risk: Average grade below 50
+                else if (gradedCount > 0 && avgGrade < 50)
+                {
+                    riskReason = $"Low average grade ({avgGrade:F1}/100)";
+                    riskLevel = "High";
+                }
+                // Medium Risk: Average grade between 50-60
+                else if (gradedCount > 0 && avgGrade < 60)
+                {
+                    riskReason = $"Below average performance ({avgGrade:F1}/100)";
+                    riskLevel = "Medium";
+                }
+
+                // Add to at-risk list if any risk detected
+                if (!string.IsNullOrEmpty(riskReason))
+                {
+                    atRiskList.Add(new AtRiskStudent
+                    {
+                        StudentId = student.StudentId ?? "",
+                        StudentName = student.FullName ?? "Unknown",
+                        Reason = riskReason,
+                        RiskLevel = riskLevel
+                    });
+                }
+            }
+
+            // Return top 5 highest risk students
+            return atRiskList
+                .OrderBy(s => s.RiskLevel == "High" ? 0 : 1)
+                .Take(5)
+                .ToList();
+        }
+
+        private void PopulateChartData(InstructorDashboardViewModel model, List<AssignmentModel> assignments, StudentCSVModel? selectedStudent)
+        {
+            // 1. Performance Chart Data
+            if (selectedStudent != null && assignments.Any())
+            {
+                var recentAssignments = assignments
+                    .OrderByDescending(a => a.DueDate)
+                    .Take(5)
+                    .OrderBy(a => a.DueDate)
+                    .ToList();
+
+                foreach (var assn in recentAssignments)
+                {
+                    model.PerformanceLabels.Add(assn.Title.Length > 15 ? assn.Title.Substring(0, 15) + "..." : assn.Title);
+
+                    // Get all submissions for this assignment
+                    var allSubs = _submissionRepo.GetByAssignmentId(assn.AssignmentId ?? string.Empty);
+
+                    // Calculate class average
+                    var gradedSubs = allSubs.Where(s => s.Grade.HasValue).ToList();
+                    double classAvg = gradedSubs.Any() ? gradedSubs.Average(s => s.Grade ?? 0) : 0;
+                    model.ClassAverageSeries.Add(Math.Round(classAvg, 1));
+
+                    // Get selected student's grade
+                    var studentSub = allSubs.FirstOrDefault(s => s.StudentId.Equals(selectedStudent.StudentId, StringComparison.OrdinalIgnoreCase));
+                    double studentGrade = studentSub?.Grade ?? 0;
+                    model.StudentSeries.Add(Math.Round(studentGrade, 1));
+                }
+            }
+            else
+            {
+                // Default empty data if no student or assignments
+                model.PerformanceLabels = new List<string> { "No Data" };
+                model.ClassAverageSeries = new List<double> { 0 };
+                model.StudentSeries = new List<double> { 0 };
+            }
+
+            // 2. Submission Chart Data
+            var totalSubmissions = 0;
+            var totalGraded = 0;
+
+            foreach (var assn in assignments)
+            {
+                var subs = _submissionRepo.GetByAssignmentId(assn.AssignmentId ?? string.Empty);
+                totalSubmissions += subs.Count;
+                totalGraded += subs.Count(s => s.Grade.HasValue);
+            }
+
+            model.TotalSubmissions = totalSubmissions;
+            model.TotalGraded = totalGraded;
         }
 
         private string CalculateTimeAgo(DateTime? date)
