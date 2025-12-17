@@ -62,7 +62,7 @@ namespace SIMS_FPT.Services
             foreach (var dept in departments)
             {
                 var key = dept.DepartmentId ?? string.Empty;
-                dept.NoOfStudents = deptStudentCounts.TryGetValue(key, out var count) ? count : 0;
+                dept.NumberOfStudents = deptStudentCounts.TryGetValue(key, out var count) ? count : 0;
             }
 
             var departmentStats = deptStudentCounts

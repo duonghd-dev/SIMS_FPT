@@ -44,7 +44,10 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>Head of Department</label>
-                                        <input asp-for="HeadOfDepartment" class="form-control">
+                                        <select asp-for="HeadOfDepartment" class="form-control"
+                                            asp-items="ViewBag.DeptTeachers">
+                                            <option value="">-- Select Head of Department --</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
@@ -57,9 +60,9 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label>No of Students</label>
-                                        <input asp-for="NoOfStudents" type="number" class="form-control" min="0">
+                                        <input asp-for="NumberOfStudents" type="number" class="form-control" min="0">
                                         <small class="form-text text-muted">Must be 0 or greater</small>
-                                        <span asp-validation-for="NoOfStudents" class="text-danger small"></span>
+                                        <span asp-validation-for="NumberOfStudents" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-12">
