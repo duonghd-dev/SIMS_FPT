@@ -50,6 +50,60 @@ namespace SIMS_FPT.Services
                 .OrderByDescending(m => m.UploadDate)
                 .ToList();
         }
+        public CourseMaterialModel GetMaterialById(string id)
+        {
+            // Fix: Use _materialRepo instead of _repo
+            return _materialRepo.GetById(id);
+        }
+
+        public (bool success, string message) UpdateMaterial(CourseMaterialModel model, IFormFile? newFile, string teacherId)
+        {
+            // Fix: Use _materialRepo instead of _repo
+            var existing = _materialRepo.GetById(model.MaterialId);
+            if (existing == null) return (false, "Material not found.");
+
+            // Update allowed fields
+            existing.Title = model.Title;
+            existing.SubjectId = model.SubjectId;
+            existing.ClassId = model.ClassId;
+            existing.Category = model.Category;
+            existing.VideoUrl = model.VideoUrl;
+            // Note: We generally don't update UploadDate to preserve history, or update it if required.
+
+            // Handle File Replacement
+            if (newFile != null && newFile.Length > 0)
+            {
+                // 1. Delete old file if it exists
+                if (!string.IsNullOrEmpty(existing.FilePath))
+                {
+                    // Fix: Use _env instead of just 'env' or undefined var
+                    var oldPath = Path.Combine(_env.WebRootPath, existing.FilePath.TrimStart('/'));
+                    if (File.Exists(oldPath))
+                    {
+                        File.Delete(oldPath);
+                    }
+                }
+
+                // 2. Save new file
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "materials", model.SubjectId);
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + newFile.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    newFile.CopyTo(fileStream);
+                }
+
+                // Update path in model
+                existing.FilePath = "uploads/materials/" + model.SubjectId + "/" + uniqueFileName;
+            }
+
+            // Fix: Use _materialRepo
+            _materialRepo.Update(existing);
+            return (true, "Material updated successfully.");
+        }
 
         public List<(string SubjectId, string DisplayText)> GetTeacherClassSubjectList(string teacherId)
         {
@@ -288,7 +342,7 @@ namespace SIMS_FPT.Services
                 Submission = submission
             };
         }
-
+        
         public (bool Success, string Message, string? FilePath) SubmitAssignment(string assignmentId, string studentId, IFormFile uploadFile)
         {
             try

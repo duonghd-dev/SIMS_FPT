@@ -12,6 +12,8 @@ namespace SIMS_FPT.Services.Interfaces
         (bool Success, string Message) DeleteMaterial(string materialId, string teacherId);
         List<string> GetTeacherSubjectIds(string teacherId);
         List<(string SubjectId, string DisplayText)> GetTeacherClassSubjectList(string teacherId);
+        CourseMaterialModel GetMaterialById(string id);
+        (bool success, string message) UpdateMaterial(CourseMaterialModel model, IFormFile? newFile, string teacherId);
     }
 
     public interface IInstructorStudentService

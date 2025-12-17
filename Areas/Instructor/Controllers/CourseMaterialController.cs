@@ -186,5 +186,50 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
             return RedirectToAction("Index");
         }
+        public IActionResult Edit(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var material = _materialService.GetMaterialById(id);
+            if (material == null) return NotFound();
+
+            // Load dropdowns with the current material's selections
+            LoadTeacherSubjects(material.SubjectId);
+            LoadClassesForSubject(material.SubjectId, material.ClassId);
+
+            return View(material);
+        }
+
+        // [NEW] Edit POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(CourseMaterialModel model, IFormFile? uploadFile)
+        {
+            // Remove validations for fields that might not be re-submitted or are read-only
+            ModelState.Remove("UploadDate");
+            // If the user doesn't upload a new file, FilePath might be null in the form, 
+            // but we keep the old one in the service. 
+            // If your model requires FilePath, remove that validation here if uploadFile is null.
+
+            if (ModelState.IsValid)
+            {
+                var (success, message) = _materialService.UpdateMaterial(model, uploadFile, CurrentTeacherId);
+                if (success)
+                {
+                    TempData["Success"] = message;
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, message);
+                }
+            }
+
+            // Reload dropdowns on error
+            LoadTeacherSubjects(model.SubjectId);
+            LoadClassesForSubject(model.SubjectId, model.ClassId);
+            TempData["Error"] = "Failed to update material. Please check inputs.";
+            return View(model);
+        }
     }
 }

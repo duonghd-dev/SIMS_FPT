@@ -7,7 +7,7 @@
 <div class="page-header">
     <div class="row align-items-center">
         <div class="col">
-            <h  class="page-title">Course Materials</h>
+            <h3 class="page-title">Course Materials</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Instructor" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
                 <li class="breadcrumb-item active">Materials</li>
@@ -79,7 +79,7 @@
                                 <tr>
                                     <th>Title</th>
                                     <th>Subject</th>
-                                    <th>Class</th> @* Added Class Column *@
+                                    <th>Class</th>
                                     <th>File</th>
                                     <th>Video</th>
                                     <th>Uploaded</th>
@@ -115,10 +115,18 @@
                                         </td>
                                         <td>@item.UploadDate.ToString("dd MMM yyyy")</td>
                                         <td>
-                                            <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this material?');">
-                                                <input type="hidden" name="id" value="@item.MaterialId" />
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                                            </form>
+                                            <div class="btn-group">
+                                                @* [NEW] Edit Button *@
+                                                <a asp-action="Edit" asp-route-id="@item.MaterialId" class="btn btn-sm btn-outline-primary mr-1" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+
+                                                @* Delete Form *@
+                                                <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this material?');" style="display:inline;">
+                                                    <input type="hidden" name="id" value="@item.MaterialId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 }

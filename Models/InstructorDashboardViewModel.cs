@@ -5,11 +5,9 @@ namespace SIMS_FPT.Models.ViewModels
     public class InstructorDashboardViewModel
     {
         public List<RecentActivityItem> RecentActivities { get; set; } = new List<RecentActivityItem>();
-
-
         public List<ClassScheduleItem> TodayClasses { get; set; } = new List<ClassScheduleItem>();
 
-        // NEW: List of all classes taught by the instructor
+        //List of all classes taught by the instructor
         public List<TeachingClassInfo> TeachingClasses { get; set; } = new List<TeachingClassInfo>();
         public List<AtRiskStudent> AtRiskStudents { get; set; } = new List<AtRiskStudent>();
 
