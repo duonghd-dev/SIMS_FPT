@@ -11,5 +11,7 @@ namespace SIMS_FPT.Data.Interfaces
 
         // Fix for CS0535: Ensure this is defined here
         void UpdateGrades(List<SubmissionModel> submissions);
+        // --- BỔ SUNG DÒNG NÀY ---
+        void Delete(string submissionId);
     }
 }

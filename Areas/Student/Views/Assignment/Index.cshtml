@@ -1,5 +1,4 @@
 @model List<SIMS_FPT.Models.ViewModels.StudentAssignmentViewModel>
-
 @{
     ViewData["Title"] = "My Assignments";
     Layout = "~/Areas/Student/Views/Shared/_StudentLayout.cshtml";
@@ -24,6 +23,42 @@
             <div class="alert alert-success">@TempData["Success"]</div>
         }
 
+        <div class="row filter-row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="get" asp-action="Index">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Subject</label>
+                                        <select class="form-control" name="subjectId" asp-items="ViewBag.Subjects" onchange="this.form.submit()">
+                                            <option value="">Select Subject</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Class</label>
+                                        <select class="form-control" name="classId" asp-items="ViewBag.Classes">
+                                            <option value="">Select Class</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button type="submit" class="btn btn-primary btn-block">Search</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="card card-table">
@@ -41,7 +76,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (Model.Count == 0)
+                                    @if (Model == null || Model.Count == 0)
                                     {
                                         <tr>
                                             <td colspan="6" class="text-center">No assignments available.</td>
@@ -51,14 +86,10 @@
                                     {
                                         @foreach (var item in Model)
                                         {
-                                            // Sử dụng thuộc tính trong Model của bạn để check trạng thái
                                             bool isOverdue = !item.HasSubmission && DateTime.Now > item.Assignment.DueDate;
-
                                             <tr>
                                                 <td>@item.ClassName</td>
-                                                <td>
-                                                    <strong>@item.Assignment.Title</strong>
-                                                </td>
+                                                <td><strong>@item.Assignment.Title</strong></td>
                                                 <td>
                                                     <span class="@(isOverdue ? "text-danger" : "")">
                                                         @item.Assignment.DueDate.ToString("dd/MM/yyyy HH:mm")

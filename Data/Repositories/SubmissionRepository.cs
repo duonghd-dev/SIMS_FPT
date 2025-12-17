@@ -122,5 +122,18 @@ namespace SIMS_FPT.Data.Repositories
             // 3. Write the updated list back to CSV once
             WriteAll(allSubmissions);
         }
+        // --- BỔ SUNG HÀM NÀY VÀO CUỐI CLASS ---
+        public void Delete(string submissionId)
+        {
+            var list = ReadAll();
+            // Tìm bài nộp cần xóa
+            var itemToRemove = list.FirstOrDefault(s => s.SubmissionId == submissionId);
+
+            if (itemToRemove != null)
+            {
+                list.Remove(itemToRemove);
+                WriteAll(list); // Ghi lại danh sách mới đã xóa item
+            }
+        }
     }
 }
