@@ -1,2 +1,4 @@
 student_id,email,first_name,last_name,gender,date_of_birth,image_path
-ST01,st01@gmail.com,Duc,Duong,Male,05/25/2003 00:00:00,/images/b28ce190-53e2-453f-8219-d08597fac0f1_293019880_1765101050496669_4445945294180322917_n.jpg
+st01,st01@gmail.com,Duc,Duong,Male,05/25/2003 00:00:00,/images/cf4b4ca2-1bad-4f49-972c-097b8c9a40c0_BD00535_HDD.jpg
+ST02,st02@gmail.com,Duc,Duongg,Male,05/25/2003 00:00:00,/images/9f676868-42ab-4d7b-8c25-772117925694_325700066_1597839120657766_2298339440994368593_n.jpg
+ST03,st03@gmail.com,Duc,Duonggg,Male,05/25/2003 00:00:00,/images/64747cec-7608-4c84-9de6-f023ba9f6f60_293073094_1765101337163307_4070013434240391625_n.jpg

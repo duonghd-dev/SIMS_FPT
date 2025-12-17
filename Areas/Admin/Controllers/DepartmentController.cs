@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIMS_FPT.Data.Interfaces;
-using SIMS_FPT.Helpers;
 using SIMS_FPT.Models;
-using System.Collections.Generic;
+using SIMS_FPT.Services.Interfaces;
 using System.Linq;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
@@ -12,24 +11,20 @@ namespace SIMS_FPT.Areas.Admin.Controllers
     [Area("Admin")]
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _deptRepo;
+        private readonly IAdminDepartmentService _deptService;
         private readonly ITeacherRepository _teacherRepo;
         private readonly ISubjectRepository _subjectRepo;
 
-        // Cập nhật Constructor để nhận thêm TeacherRepo
-        public DepartmentController(IDepartmentRepository deptRepo, ITeacherRepository teacherRepo, ISubjectRepository subjectRepo)
+        public DepartmentController(IAdminDepartmentService deptService, ITeacherRepository teacherRepo, ISubjectRepository subjectRepo)
         {
-            _deptRepo = deptRepo;
+            _deptService = deptService;
             _teacherRepo = teacherRepo;
             _subjectRepo = subjectRepo;
         }
 
-
-
-
         public IActionResult List()
         {
-            return View(_deptRepo.GetAll());
+            return View(_deptService.GetAllDepartments());
         }
 
         [HttpGet]
@@ -41,30 +36,13 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Add(DepartmentModel model)
         {
-            // Validate Department ID format
-            if (string.IsNullOrWhiteSpace(model.DepartmentId) || !ValidationHelper.IsValidId(model.DepartmentId))
-            {
-                ModelState.AddModelError("DepartmentId", "Department ID must be 3-20 alphanumeric characters!");
-                return View(model);
-            }
-
-            // Check for duplicate ID
-            if (!string.IsNullOrWhiteSpace(model.DepartmentId) && _deptRepo.GetById(model.DepartmentId) != null)
-            {
-                ModelState.AddModelError("DepartmentId", "Department ID already exists in the system!");
-                return View(model);
-            }
-
-            // Validate number of students
-            if (!ValidationHelper.IsValidPositiveNumber(model.NoOfStudents))
-            {
-                ModelState.AddModelError("NoOfStudents", "Number of students must be 0 or greater!");
-            }
-
             if (ModelState.IsValid)
             {
-                _deptRepo.Add(model);
-                return RedirectToAction("List");
+                var (success, message) = _deptService.AddDepartment(model);
+                if (success)
+                    return RedirectToAction("List");
+                else
+                    ModelState.AddModelError("", message);
             }
             return View(model);
         }
@@ -72,7 +50,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(string id)
         {
-            var item = _deptRepo.GetById(id);
+            var item = _deptService.GetDepartmentById(id);
             if (item == null) return NotFound();
             return View(item);
         }
@@ -82,22 +60,24 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _deptRepo.Update(model);
-                return RedirectToAction("List");
+                var (success, message) = _deptService.UpdateDepartment(model);
+                if (success)
+                    return RedirectToAction("List");
+                else
+                    ModelState.AddModelError("", message);
             }
             return View(model);
         }
 
         public IActionResult Delete(string id)
         {
-            _deptRepo.Delete(id);
+            var (success, message) = _deptService.DeleteDepartment(id);
             return RedirectToAction("List");
         }
 
-        // --- TÍNH NĂNG MỚI: Xem chi tiết Khoa & Danh sách Giảng viên ---
         public IActionResult Detail(string id)
         {
-            var dept = _deptRepo.GetById(id);
+            var dept = _deptService.GetDepartmentById(id);
             if (dept == null) return NotFound();
 
             var deptTeachers = _teacherRepo.GetAll().Where(t => t.DepartmentId == id).ToList();

@@ -4,11 +4,28 @@ using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Data.Repositories;
 using SIMS_FPT.Models;
 using SIMS_FPT.Services;
+using SIMS_FPT.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ------------------------------------------------------
-// 1. Đăng ký Repository
+// 1. Đăng ký Services
+// ------------------------------------------------------
+builder.Services.AddScoped<ICsvService, CsvService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IAdminClassService, AdminClassService>();
+builder.Services.AddScoped<IAdminSubjectService, AdminSubjectService>();
+builder.Services.AddScoped<IAdminDepartmentService, AdminDepartmentService>();
+builder.Services.AddScoped<IAdminInstructorService, AdminInstructorService>();
+builder.Services.AddScoped<IAdminStudentService, AdminStudentService>();
+builder.Services.AddScoped<IInstructorDashboardService, InstructorDashboardService>();
+builder.Services.AddScoped<IInstructorAssignmentService, InstructorAssignmentService>();
+builder.Services.AddScoped<IInstructorCourseMaterialService, InstructorCourseMaterialService>();
+builder.Services.AddScoped<IInstructorStudentService, InstructorStudentService>();
+builder.Services.AddScoped<IStudentAssignmentService, StudentAssignmentService>();
+
+// ------------------------------------------------------
+// 2. Đăng ký Repository
 // Mỗi lần Controller cần IUserRepository -> tạo UsersRepository
 // ------------------------------------------------------
 builder.Services.AddScoped<IUserRepository, UsersRepository>();

@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIMS_FPT.Data.Interfaces;
-using SIMS_FPT.Models.ViewModels;
-using System.Linq;
+using SIMS_FPT.Services.Interfaces;
 using System.Security.Claims;
 
 namespace SIMS_FPT.Areas.Instructor.Controllers
@@ -11,17 +9,11 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
     [Authorize]
     public class StudentController : Controller
     {
-        private readonly IStudentRepository _studentRepo;
-        private readonly IAssignmentRepository _assignmentRepo;
-        private readonly ISubmissionRepository _submissionRepo;
+        private readonly IInstructorStudentService _studentService;
 
-        public StudentController(IStudentRepository studentRepo,
-                                 IAssignmentRepository assignmentRepo,
-                                 ISubmissionRepository submissionRepo)
+        public StudentController(IInstructorStudentService studentService)
         {
-            _studentRepo = studentRepo;
-            _assignmentRepo = assignmentRepo;
-            _submissionRepo = submissionRepo;
+            _studentService = studentService;
         }
 
         private string CurrentTeacherId
@@ -36,40 +28,9 @@ namespace SIMS_FPT.Areas.Instructor.Controllers
 
         public IActionResult Profile(string id)
         {
-            var student = _studentRepo.GetById(id);
-            if (student == null) return NotFound();
-
-            var teacherId = CurrentTeacherId;
-            var teacherAssignments = _assignmentRepo.GetAll().Where(a => a.TeacherId == teacherId).ToList();
-            if (!teacherAssignments.Any())
-            {
+            var vm = _studentService.GetStudentProfile(id, CurrentTeacherId);
+            if (vm == null)
                 return RedirectToAction("AccessDenied", "Login", new { area = "" });
-            }
-
-            var history = teacherAssignments.Select(a =>
-            {
-                var sub = _submissionRepo.GetByStudentAndAssignment(student.StudentId ?? "", a.AssignmentId ?? "");
-                return new AssignmentHistoryItem
-                {
-                    AssignmentId = a.AssignmentId ?? "",
-                    AssignmentTitle = a.Title ?? "Untitled",
-                    SubjectId = a.SubjectId ?? "",
-                    Grade = sub?.Grade ?? null,
-                    MaxPoints = a.MaxPoints,
-                    TeacherComments = sub?.TeacherComments ?? ""
-                };
-            }).ToList();
-
-            double totalScore = history.Where(h => h.Grade.HasValue).Sum(h => h.Grade!.Value);
-            double totalMax = history.Sum(h => h.MaxPoints);
-            double avgPercent = totalMax > 0 ? (totalScore / totalMax) * 100 : 0;
-
-            var vm = new StudentProfileViewModel
-            {
-                Student = student,
-                AssignmentHistory = history,
-                AverageScorePercent = avgPercent
-            };
 
             return View(vm);
         }

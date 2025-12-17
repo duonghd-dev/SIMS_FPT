@@ -6,6 +6,7 @@ using SIMS_FPT.Areas.Admin.Controllers;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
 using SIMS_FPT.Services;
+using SIMS_FPT.Services.Interfaces;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -14,22 +15,14 @@ namespace SIMS_FPT.Tests
     [TestFixture]
     public class StudentControllerTests
     {
-        private Mock<IStudentRepository> _mockRepo = null!;
-        private Mock<StudentService> _mockService = null!; // Ensure StudentService methods used are virtual if mocking directly
+        private Mock<IAdminStudentService> _mockService = null!;
         private StudentController _controller = null!;
 
         [SetUp]
         public void Setup()
         {
-            _mockRepo = new Mock<IStudentRepository>();
-
-            var userRepo = new Mock<IUserRepository>();
-            var env = new Mock<IWebHostEnvironment>();
-            env.SetupGet(e => e.WebRootPath).Returns(Directory.GetCurrentDirectory());
-
-            _mockService = new Mock<StudentService>(_mockRepo.Object, userRepo.Object, env.Object);
-
-            _controller = new StudentController(_mockRepo.Object, _mockService.Object);
+            _mockService = new Mock<IAdminStudentService>();
+            _controller = new StudentController(_mockService.Object);
         }
 
         // TC02: Add New Student with Data Validation
@@ -53,18 +46,19 @@ namespace SIMS_FPT.Tests
 
         // TC06: Delete Student and Cascading Data Integrity
         [Test]
-        public void TC06_DeleteStudent_CallsRepositoryDelete()
+        public async Task TC06_DeleteStudent_CallsServiceDelete()
         {
             // Arrange
             string studentId = "ST999";
+            _mockService.Setup(s => s.DeleteStudent(studentId)).ReturnsAsync((true, "Success"));
 
             // Act
-            var result = _controller.DeleteStudent(studentId) as RedirectToActionResult;
+            var result = await _controller.DeleteStudent(studentId) as RedirectToActionResult;
 
             // Assert
             Assert.That(result!, Is.Not.Null);
             Assert.That(result!.ActionName, Is.EqualTo("List"));
-            _mockRepo.Verify(r => r.Delete(studentId), Times.Once, "Repository Delete should be called exactly once");
+            _mockService.Verify(s => s.DeleteStudent(studentId), Times.Once);
         }
     }
 }
