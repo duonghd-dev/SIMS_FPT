@@ -141,10 +141,11 @@
                                 </div>
                             </div>
 
-                            <a class="dropdown-item" asp-area="Admin" asp-controller="Profile" asp-action="Index">Hồ sơ</a>
-                            <a class="dropdown-item" asp-area="" asp-controller="Inbox" asp-action="Index">Hộp thư</a>
-                            <a class="dropdown-item text-danger" asp-area="" asp-controller="Login" asp-action="Logout">Đăng
-                                xuất</a>
+                            <a class="dropdown-item" asp-area="Student" asp-controller="Home" asp-action="Profile">My
+                                Profile</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="Inbox" asp-action="Index">Mailbox</a>
+                            <a class="dropdown-item text-danger" asp-area="" asp-controller="Login" asp-action="Logout">Log
+                                out</a>
                         </div>
                     </li>
                 </ul>
@@ -198,6 +199,12 @@
                     <li class="@(currentController == "Home" ? "active" : "")">
                         <a asp-area="Student" asp-controller="Home" asp-action="Dashboard">
                             <i class="fas fa-home"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                   <li class="@(currentController == "Home" ? "active" : "")">
+                        <a asp-area="Student" asp-controller="Home" asp-action="Profile">
+                            <i class="fas fa-user-cog"></i> <span>My Profile</span>
                         </a>
                     </li>
 

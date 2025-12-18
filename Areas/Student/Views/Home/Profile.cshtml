@@ -1,0 +1,165 @@
+@model SIMS_FPT.Models.ViewModels.StudentProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Areas/Student/Views/Shared/_StudentLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col">
+                    <h3 class="page-title">Profile</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Profile</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["SuccessInfo"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessInfo"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["SuccessPass"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessPass"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="profile-header">
+                    <div class="row align-items-center">
+                        <div class="col-auto profile-image">
+                            <a href="#">
+                                <img class="rounded-circle" alt="User Image" src="@(string.IsNullOrEmpty(Model.AvatarPath) ? "/assets/img/default-avatar-1-32.svg" : Model.AvatarPath)">
+                            </a>
+                        </div>
+                        <div class="col ms-md-n2 profile-user-info">
+                            <h4 class="user-name mb-0">@Model.FullName</h4>
+                            <h6 class="text-muted">Student ID: @Model.StudentId</h6>
+                            <div class="user-Location"><i class="fas fa-map-marker-alt"></i> @(Model.Address ?? "No address updated")</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-menu">
+                    <ul class="nav nav-tabs nav-tabs-solid">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#per_details_tab">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#password_tab">Password</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tab-content profile-tab-cont">
+
+                    @* --- Tab 1: Personal Details --- *@
+                    <div class="tab-pane fade show active" id="per_details_tab">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title d-flex justify-content-between">
+                                            <span>Personal Details</span>
+                                        </h5>
+                                        <form asp-action="Profile" method="post" enctype="multipart/form-data">
+                                            <input type="hidden" asp-for="StudentId" />
+                                            <input type="hidden" asp-for="Email" />
+                                            <input type="hidden" asp-for="AvatarPath" />
+
+                                            <div class="row">
+                                                <div class="col-md-6 form-group">
+                                                    <label asp-for="FullName" class="fw-bold"></label>
+                                                    <input asp-for="FullName" class="form-control" />
+                                                    <span asp-validation-for="FullName" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <label asp-for="DOB" class="fw-bold"></label>
+                                                    <input asp-for="DOB" class="form-control" type="date" />
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <label asp-for="Email" class="fw-bold"></label>
+                                                    <input asp-for="Email" class="form-control" readonly style="background-color: #e9ecef;" />
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <label asp-for="PhoneNumber" class="fw-bold"></label>
+                                                    <input asp-for="PhoneNumber" class="form-control" />
+                                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <label asp-for="Gender" class="fw-bold"></label>
+                                                    <select asp-for="Gender" class="form-control">
+                                                        <option value="Male">Male</option>
+                                                        <option value="Female">Female</option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12 form-group">
+                                                    <label asp-for="Address" class="fw-bold"></label>
+                                                    <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                                                </div>
+                                                <div class="col-md-12 form-group mt-3">
+                                                    <label class="fw-bold">Change Avatar</label>
+                                                    <input type="file" name="avatarFile" class="form-control" accept="image/*" />
+                                                </div>
+                                            </div>
+                                            <div class="text-end mt-4">
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* --- Tab 2: Change Password --- *@
+                    <div id="password_tab" class="tab-pane fade">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Change Password</h5>
+                                <div class="row">
+                                    <div class="col-md-10 col-lg-6">
+                                        <form asp-action="Profile" method="post">
+                                            @* Cần gửi lại các field bắt buộc của Model để ModelState Valid *@
+                                            <input type="hidden" asp-for="FullName" />
+                                            <input type="hidden" asp-for="StudentId" />
+                                            
+                                            <div class="form-group">
+                                                <label asp-for="CurrentPassword"></label>
+                                                <input asp-for="CurrentPassword" class="form-control" required />
+                                                <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="NewPassword"></label>
+                                                <input asp-for="NewPassword" class="form-control" required />
+                                                <span asp-validation-for="NewPassword" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ConfirmNewPassword"></label>
+                                                <input asp-for="ConfirmNewPassword" class="form-control" required />
+                                                <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                                            </div>
+                                            <button class="btn btn-primary" type="submit">Save Password</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
