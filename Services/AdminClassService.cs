@@ -116,11 +116,56 @@ namespace SIMS_FPT.Services
                 if (string.IsNullOrEmpty(classModel.Semester))
                     return (false, "Semester is required");
 
-                if (classModel.NumberOfStudents <= 0)
-                    return (false, "Number of students must be at least 1");
-
                 if (subjectIds == null || !subjectIds.Any() || teacherIds == null || !teacherIds.Any())
                     return (false, "At least one Subject-Teacher pair is required");
+
+                // Validate subject-teacher pairs
+                var allSubjects = _subjectRepo.GetAll()
+                    .Where(s => !string.IsNullOrWhiteSpace(s.SubjectId))
+                    .ToDictionary(s => s.SubjectId!, s => s);
+                var allTeachers = _teacherRepo.GetAll()
+                    .Where(t => !string.IsNullOrWhiteSpace(t.TeacherId))
+                    .ToDictionary(t => t.TeacherId!, t => t);
+
+                for (int i = 0; i < subjectIds.Count && i < teacherIds.Count; i++)
+                {
+                    var sid = subjectIds[i];
+                    var tid = teacherIds[i];
+
+                    if (!allSubjects.ContainsKey(sid))
+                        return (false, $"Subject '{sid}' not found");
+                    if (!allTeachers.ContainsKey(tid))
+                        return (false, $"Teacher '{tid}' not found");
+
+                    var subject = allSubjects[sid];
+                    var teacher = allTeachers[tid];
+
+                    // Teacher must be assigned to subject
+                    var subjectTeacherIds = (subject.TeacherIds ?? string.Empty)
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim())
+                        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                    if (!subjectTeacherIds.Contains(tid))
+                        return (false, $"Teacher '{tid}' is not assigned to Subject '{sid}'");
+
+                    // Department consistency check: subject & teacher must belong to class department
+                    var sDept = subject.DepartmentId ?? string.Empty;
+                    var tDept = teacher.DepartmentId ?? string.Empty;
+                    if (!string.Equals(sDept, classModel.DepartmentId, StringComparison.OrdinalIgnoreCase))
+                        return (false, $"Subject '{sid}' does not belong to Department '{classModel.DepartmentId}'");
+                    if (!string.Equals(tDept, classModel.DepartmentId, StringComparison.OrdinalIgnoreCase))
+                        return (false, $"Teacher '{tid}' does not belong to Department '{classModel.DepartmentId}'");
+                }
+
+                // Ensure subjects belong to selected Department
+                foreach (var sid in subjectIds)
+                {
+                    var subject = allSubjects[sid];
+                    var sDept = subject.DepartmentId ?? string.Empty;
+                    if (!string.Equals(sDept, classModel.DepartmentId ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+                        return (false, $"Subject '{sid}' does not belong to Department '{classModel.DepartmentId}'");
+                }
 
                 // Add class
                 _classRepo.Add(classModel);
@@ -158,11 +203,43 @@ namespace SIMS_FPT.Services
                 if (string.IsNullOrEmpty(classModel.Semester))
                     return (false, "Semester is required");
 
-                if (classModel.NumberOfStudents <= 0)
-                    return (false, "Number of students must be at least 1");
-
                 if (subjectIds == null || !subjectIds.Any() || teacherIds == null || !teacherIds.Any())
                     return (false, "At least one Subject-Teacher pair is required");
+
+                // Validate subject-teacher pairs
+                var allSubjects = _subjectRepo.GetAll()
+                    .Where(s => !string.IsNullOrWhiteSpace(s.SubjectId))
+                    .ToDictionary(s => s.SubjectId!, s => s);
+                var allTeachers = _teacherRepo.GetAll()
+                    .Where(t => !string.IsNullOrWhiteSpace(t.TeacherId))
+                    .ToDictionary(t => t.TeacherId!, t => t);
+
+                for (int i = 0; i < subjectIds.Count && i < teacherIds.Count; i++)
+                {
+                    var sid = subjectIds[i];
+                    var tid = teacherIds[i];
+
+                    if (!allSubjects.ContainsKey(sid))
+                        return (false, $"Subject '{sid}' not found");
+                    if (!allTeachers.ContainsKey(tid))
+                        return (false, $"Teacher '{tid}' not found");
+
+                    var subject = allSubjects[sid];
+                    var teacher = allTeachers[tid];
+
+                    var subjectTeacherIds = (subject.TeacherIds ?? string.Empty)
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim())
+                        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                    if (!subjectTeacherIds.Contains(tid))
+                        return (false, $"Teacher '{tid}' is not assigned to Subject '{sid}'");
+
+                    var sDept = subject.DepartmentId ?? string.Empty;
+                    var tDept = teacher.DepartmentId ?? string.Empty;
+                    if (!string.Equals(sDept, tDept, StringComparison.OrdinalIgnoreCase))
+                        return (false, $"Teacher '{tid}' does not belong to Subject '{sid}' department");
+                }
 
                 // Update class
                 _classRepo.Update(classModel);

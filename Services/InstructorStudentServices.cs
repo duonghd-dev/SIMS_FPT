@@ -427,7 +427,6 @@ namespace SIMS_FPT.Services
                 Submission = submission
             };
         }
-        
         public (bool Success, string Message, string? FilePath) SubmitAssignment(string assignmentId, string studentId, IFormFile uploadFile)
         {
             try
@@ -495,6 +494,30 @@ namespace SIMS_FPT.Services
             catch (Exception ex)
             {
                 return (false, $"Error: {ex.Message}", null);
+            }
+        }
+
+        // --- BỔ SUNG HÀM NÀY VÀO TRONG CLASS ---
+        // Trong class StudentAssignmentService
+        public bool DeleteSubmission(string assignmentId, string studentId)
+        {
+            try
+            {
+                // 1. Tìm bài nộp trong Database
+                var submission = _submissionRepo.GetByStudentAndAssignment(studentId, assignmentId);
+
+                // 2. Nếu tìm thấy thì xóa
+                if (submission != null)
+                {
+                    // Gọi hàm Delete vừa tạo ở Bước 2
+                    _submissionRepo.Delete(submission.SubmissionId);
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

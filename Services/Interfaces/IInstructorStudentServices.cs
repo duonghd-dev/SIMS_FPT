@@ -30,5 +30,7 @@ namespace SIMS_FPT.Services.Interfaces
         StudentAssignmentViewModel? GetAssignmentForSubmission(string assignmentId, string studentId);
         (bool Success, string Message, string? FilePath) SubmitAssignment(string assignmentId, string studentId, IFormFile uploadFile);
         bool IsStudentEligible(string studentId, string assignmentId);
+        // --- THÊM DÒNG NÀY ---
+        bool DeleteSubmission(string assignmentId, string studentId);
     }
 }

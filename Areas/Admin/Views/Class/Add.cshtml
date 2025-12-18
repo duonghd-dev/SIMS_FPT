@@ -67,9 +67,17 @@
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
+                                        <label>Department</label>
+                                        <select asp-for="Class.DepartmentId" class="form-control"
+                                            asp-items="ViewBag.Departments" required id="deptSelect">
+                                            <option value="">-- Select Department --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
                                         <label>Number of Students</label>
-                                        <input asp-for="Class.NumberOfStudents" type="number" class="form-control"
-                                            value="0" required>
+                                        <input asp-for="Class.NumberOfStudents" class="form-control" type="number" required>
                                         <span asp-validation-for="Class.NumberOfStudents" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -108,34 +116,38 @@
         $(document).ready(function () {
             var allSubjects = @Html.Raw(Json.Serialize(ViewBag.AllSubjects ?? new List<object>()));
             var allTeachers = @Html.Raw(Json.Serialize(ViewBag.AllTeachers ?? new List<object>()));
+            var allClasses = @Html.Raw(Json.Serialize(ViewBag.AllClasses ?? new List<object>()));
+            var allDepartments = @Html.Raw(Json.Serialize(ViewBag.Departments ?? new List<object>()));
             var pairIndex = 0;
+            var departmentCapacity = {};
+            var currentUsedCapacity = {};
 
             function addSubjectTeacherPair() {
                 var html = `
-                        <div class="row mb-3 subject-teacher-pair" data-index="${pairIndex}">
-                            <div class="col-12 col-sm-5">
-                                <div class="form-group">
-                                    <label>Subject</label>
-                                    <select name="SubjectIds" class="form-control subject-select" required>
-                                        <option value="">-- Select Subject --</option>
-                                        ${allSubjects.map(s => `<option value="${s.subjectId}">${s.subjectId} - ${s.subjectName}</option>`).join('')}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-5">
-                                <div class="form-group">
-                                    <label>Teacher</label>
-                                    <select name="TeacherIds" class="form-control teacher-select" required>
-                                        <option value="">-- Select Subject First --</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-2">
-                                <label>&nbsp;</label>
-                                <button type="button" class="btn btn-danger btn-block remove-pair">Remove</button>
-                            </div>
-                        </div>
-                    `;
+                                    <div class="row mb-3 subject-teacher-pair" data-index="${pairIndex}">
+                                        <div class="col-12 col-sm-5">
+                                            <div class="form-group">
+                                                <label>Subject</label>
+                                                <select name="SubjectIds" class="form-control subject-select" required>
+                                                    <option value="">-- Select Subject --</option>
+                                                    ${allSubjects.map(s => `<option value="${s.subjectId}">${s.subjectId} - ${s.subjectName}</option>`).join('')}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-5">
+                                            <div class="form-group">
+                                                <label>Teacher</label>
+                                                <select name="TeacherIds" class="form-control teacher-select" required>
+                                                    <option value="">-- Select Subject First --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-2">
+                                            <label>&nbsp;</label>
+                                            <button type="button" class="btn btn-danger btn-block remove-pair">Remove</button>
+                                        </div>
+                                    </div>
+                                `;
                 $('#subjectTeacherContainer').append(html);
                 pairIndex++;
             }
@@ -157,10 +169,21 @@
                 }
             });
 
-            // Subject change -> filter teachers
+            // When department changes, clear and rebuild pairs, load capacity info
+            $('#deptSelect').on('change', function () {
+                var selectedDept = $(this).val();
+                if (!selectedDept) return;
+                $('#subjectTeacherContainer').empty();
+                pairIndex = 0;
+                addSubjectTeacherPair();
+                loadDepartmentCapacity(selectedDept);
+            });
+
+            // Subject change -> filter teachers by department
             $(document).on('change', '.subject-select', function () {
                 var selectedSubject = $(this).val();
                 var teacherSelect = $(this).closest('.subject-teacher-pair').find('.teacher-select');
+                var selectedDept = $('#deptSelect').val();
                 teacherSelect.empty();
 
                 if (!selectedSubject) {
@@ -172,7 +195,8 @@
                 var hasTeachers = false;
 
                 $.each(allTeachers, function (index, teacher) {
-                    if (teacher.subjectIds && teacher.subjectIds.includes(selectedSubject)) {
+                    // Filter by: subject assigned to teacher AND teacher in selected department
+                    if (teacher.subjectIds && teacher.subjectIds.includes(selectedSubject) && teacher.deptId === selectedDept) {
                         teacherSelect.append(`<option value="${teacher.id}">${teacher.name}</option>`);
                         hasTeachers = true;
                     }
@@ -180,7 +204,80 @@
 
                 if (!hasTeachers) {
                     teacherSelect.empty();
-                    teacherSelect.append('<option value="">-- No teachers assigned to this subject --</option>');
+                    teacherSelect.append('<option value="">-- No teachers in this department for this subject --</option>');
+                }
+            });
+
+            // Populate subject options dynamically based on selected department
+            $(document).on('focus', '.subject-select', function () {
+                var selectedDept = $('#deptSelect').val();
+                if (!selectedDept) {
+                    alert('Please select a Department first');
+                    return;
+                }
+                var $select = $(this);
+                $select.empty();
+                $select.append('<option value="">-- Select Subject --</option>');
+
+                $.each(allSubjects, function (index, subject) {
+                    // Only show subjects from selected department
+                    if (subject.departmentId === selectedDept) {
+                        $select.append(`<option value="${subject.subjectId}">${subject.subjectId} - ${subject.subjectName}</option>`);
+                    }
+                });
+            });
+
+            // Load department capacity information
+            function loadDepartmentCapacity(deptId) {
+                // Find department in allDepartments
+                var dept = null;
+                $.each(allDepartments, function(idx, d) {
+                    if (d.value === deptId) {
+                        dept = d;
+                        return false;
+                    }
+                });
+                
+                if (dept) {
+                    // Calculate current used capacity for this department
+                    var usedCapacity = 0;
+                    $.each(allClasses, function(idx, cls) {
+                        if (cls.departmentId === deptId) {
+                            usedCapacity += parseInt(cls.numberOfStudents) || 0;
+                        }
+                    });
+                    
+                    departmentCapacity[deptId] = parseInt(dept.text.split(' - ')[0]) || 0;
+                    currentUsedCapacity[deptId] = usedCapacity;
+                    
+                    var availableCapacity = departmentCapacity[deptId] - usedCapacity;
+                    console.log('Department: ' + deptId + ', Capacity: ' + departmentCapacity[deptId] + 
+                        ', Used: ' + usedCapacity + ', Available: ' + availableCapacity);
+                }
+            }
+
+            // Validate student count when input changes
+            $('input[asp-for="Class.NumberOfStudents"]').on('change, blur', function() {
+                var selectedDept = $('#deptSelect').val();
+                var studentCount = parseInt($(this).val()) || 0;
+                
+                if (!selectedDept) {
+                    alert('Please select a Department first');
+                    return;
+                }
+                
+                var capacity = departmentCapacity[selectedDept] || 0;
+                var usedCapacity = currentUsedCapacity[selectedDept] || 0;
+                var availableCapacity = capacity - usedCapacity;
+                
+                if (studentCount > availableCapacity) {
+                    alert('Number of students cannot exceed available capacity!\n' +
+                        'Department Capacity: ' + capacity + '\n' +
+                        'Currently Used: ' + usedCapacity + '\n' +
+                        'Available: ' + availableCapacity);
+                    $(this).val('');
+                    $(this).focus();
+                    return false;
                 }
             });
         });

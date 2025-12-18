@@ -138,15 +138,21 @@
             $('#teacherSearch').on('keyup', function () {
                 var searchText = $(this).val().toLowerCase();
                 var selectedDept = $('#DepartmentId').val();
+                if (!selectedDept) {
+                    // Do not show teachers until a department is selected
+                    return;
+                }
                 $('.teacher-item').each(function () {
                     var teacherDept = $(this).data('department');
-                    if (teacherDept === selectedDept || !selectedDept) {
+                    if (teacherDept === selectedDept) {
                         var teacherText = $(this).find('input').data('teacher-text');
                         if (teacherText.indexOf(searchText) > -1) {
                             $(this).show();
                         } else {
                             $(this).hide();
                         }
+                    } else {
+                        $(this).hide();
                     }
                 });
             });

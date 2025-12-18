@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SIMS_FPT.Data.Interfaces;
 using SIMS_FPT.Models;
 using SIMS_FPT.Services.Interfaces;
@@ -52,6 +53,12 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         {
             var item = _deptService.GetDepartmentById(id);
             if (item == null) return NotFound();
+            // Populate teachers of this department for dropdown selection of HeadOfDepartment
+            var deptTeachers = _teacherRepo.GetAll()
+                .Where(t => string.Equals(t.DepartmentId ?? string.Empty, id, StringComparison.OrdinalIgnoreCase))
+                .Select(t => new { Value = t.TeacherId, Text = $"{t.TeacherId} - {t.Name}" })
+                .ToList();
+            ViewBag.DeptTeachers = new SelectList(deptTeachers, "Value", "Text", item.HeadOfDepartment);
             return View(item);
         }
 
@@ -80,8 +87,12 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             var dept = _deptService.GetDepartmentById(id);
             if (dept == null) return NotFound();
 
-            var deptTeachers = _teacherRepo.GetAll().Where(t => t.DepartmentId == id).ToList();
-            var deptSubjects = _subjectRepo.GetAll().Where(s => s.DepartmentId == id).ToList();
+            var deptTeachers = _teacherRepo.GetAll()
+                .Where(t => string.Equals(t.DepartmentId ?? string.Empty, id, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            var deptSubjects = _subjectRepo.GetAll()
+                .Where(s => string.Equals(s.DepartmentId ?? string.Empty, id, StringComparison.OrdinalIgnoreCase))
+                .ToList();
             var viewModel = new DepartmentDetailViewModel
             {
                 Department = dept,

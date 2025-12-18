@@ -1,3 +1,4 @@
 teacher_id,name,department_id,gender,date_of_birth,mobile,joining_date,qualification,experience,username,email,password,address,city,state,country,image
 TC01,Duong,DEP01,Male,05/25/2003 00:00:00,0702374978,12/17/2025 00:00:00,Information Technolory,12,,tc01@gmail.com,,Da Nang,Da Nang,Lien Chieu,Viet Nam,/images/1d91d4e5-6407-4b0b-b61a-5dc66c46562d_293073094_1765101337163307_4070013434240391625_n.jpg
 TC02,Phuc,DEP01,Male,05/25/2003 00:00:00,0702374972,12/17/2025 00:00:00,Database,12,,tc02@gmail.com,TC01,Da Nang,Da Nang,Lien Chieu,Viet Nam,/assets/img/default-avatar-1-32.svg
+TC03,Long,DEP20,Male,12/03/2025 00:00:00,0702374970,01/01/2026 00:00:00,Information Technolory,12,,tc03@gmail.com,TC01,Đà Nẵng,Đà Nẵng,Đà Nẵng,Vietnam,/assets/img/default-avatar-1-32.svg

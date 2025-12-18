@@ -22,9 +22,9 @@ namespace SIMS_FPT.Models
         [Name("start_date")]
         public DateTime? StartDate { get; set; }
 
-        [Name("no_of_students")]
+        [Name("number_of_students")]
         [Range(0, int.MaxValue, ErrorMessage = "Number of students cannot be negative.")]
-        public int NoOfStudents { get; set; }
+        public int NumberOfStudents { get; set; }
     }
 
     // ViewModel dùng cho trang Detail

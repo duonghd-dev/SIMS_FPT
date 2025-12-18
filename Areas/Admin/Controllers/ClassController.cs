@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SIMS_FPT.Data.Interfaces;
@@ -9,6 +10,7 @@ using System.Linq;
 
 namespace SIMS_FPT.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class ClassController : Controller
     {
@@ -16,17 +18,20 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         private readonly IClassRepository _classRepo;
         private readonly ISubjectRepository _subjectRepo;
         private readonly ITeacherRepository _teacherRepo;
+        private readonly IDepartmentRepository _deptRepo;
 
         public ClassController(
             IAdminClassService classService,
             IClassRepository classRepo,
             ISubjectRepository subjectRepo,
-            ITeacherRepository teacherRepo)
+            ITeacherRepository teacherRepo,
+            IDepartmentRepository deptRepo)
         {
             _classService = classService;
             _classRepo = classRepo;
             _subjectRepo = subjectRepo;
             _teacherRepo = teacherRepo;
+            _deptRepo = deptRepo;
         }
 
         // 1. List all classes
@@ -40,7 +45,30 @@ namespace SIMS_FPT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            ViewBag.AllSubjects = _subjectRepo.GetAll();
+            var departments = _deptRepo.GetAll();
+            ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName");
+
+            // Pass departments with capacity info for validation
+            var deptList = departments.Select(d => new { value = d.DepartmentId, text = $"{d.NumberOfStudents} - {d.DepartmentName}" }).ToList();
+            ViewBag.DepartmentCapacity = deptList;
+
+            var subjects = _subjectRepo.GetAll().Select(s => new
+            {
+                subjectId = s.SubjectId,
+                subjectName = s.SubjectName,
+                departmentId = s.DepartmentId ?? ""
+            }).ToList();
+            ViewBag.AllSubjects = subjects;
+
+            // Load all classes for capacity calculation
+            var allClasses = _classRepo.GetAll().Select(c => new
+            {
+                classId = c.ClassId,
+                numberOfStudents = c.NumberOfStudents,
+                departmentId = c.DepartmentId ?? ""
+            }).ToList();
+            ViewBag.AllClasses = allClasses;
+
             LoadAllTeachersWithSubjects();
             return View(new ClassDetailViewModel { Class = new ClassModel() });
         }
@@ -55,6 +83,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             if (string.IsNullOrWhiteSpace(model.ClassId) || !ValidationHelper.IsValidId(model.ClassId))
             {
                 ModelState.AddModelError("ClassId", "Class ID must be 3-20 alphanumeric characters!");
+                ViewBag.Departments = new SelectList(_deptRepo.GetAll(), "DepartmentId", "DepartmentName", model.DepartmentId);
                 ViewBag.AllSubjects = _subjectRepo.GetAll();
                 LoadAllTeachersWithSubjects();
                 return View(new ClassDetailViewModel { Class = model });
@@ -64,6 +93,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             if (!string.IsNullOrWhiteSpace(model.ClassId) && _classRepo.GetById(model.ClassId) != null)
             {
                 ModelState.AddModelError("ClassId", "Class ID already exists in the system!");
+                ViewBag.Departments = new SelectList(_deptRepo.GetAll(), "DepartmentId", "DepartmentName", model.DepartmentId);
                 ViewBag.AllSubjects = _subjectRepo.GetAll();
                 LoadAllTeachersWithSubjects();
                 return View(new ClassDetailViewModel { Class = model });
@@ -71,18 +101,52 @@ namespace SIMS_FPT.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var (success, message) = _classService.AddClass(model, SubjectIds ?? new List<string>(), TeacherIds ?? new List<string>());
-                if (success)
+                // Validate that total students in department doesn't exceed capacity
+                var dept = _deptRepo.GetById(model.DepartmentId);
+                if (dept != null)
                 {
-                    return RedirectToAction("List");
+                    var existingClasses = _classRepo.GetAll()
+                        .Where(c => c.DepartmentId == model.DepartmentId)
+                        .ToList();
+
+                    var totalStudents = existingClasses.Sum(c => c.NumberOfStudents) + model.NumberOfStudents;
+
+                    if (totalStudents > dept.NumberOfStudents)
+                    {
+                        var currentUsed = existingClasses.Sum(c => c.NumberOfStudents);
+                        var available = dept.NumberOfStudents - currentUsed;
+                        ModelState.AddModelError("NumberOfStudents",
+                            $"Total students in department cannot exceed {dept.NumberOfStudents}. " +
+                            $"Currently used: {currentUsed}, Available: {available}");
+                    }
                 }
-                else
+
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", message);
+                    var (success, message) = _classService.AddClass(model, SubjectIds ?? new List<string>(), TeacherIds ?? new List<string>());
+                    if (success)
+                    {
+                        return RedirectToAction("List");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", message);
+                    }
                 }
             }
 
+            var depts = _deptRepo.GetAll();
+            ViewBag.Departments = new SelectList(depts, "DepartmentId", "DepartmentName", model.DepartmentId);
+            var deptList = depts.Select(d => new { value = d.DepartmentId, text = $"{d.NumberOfStudents} - {d.DepartmentName}" }).ToList();
+            ViewBag.DepartmentCapacity = deptList;
             ViewBag.AllSubjects = _subjectRepo.GetAll();
+            var allClasses = _classRepo.GetAll().Select(c => new
+            {
+                classId = c.ClassId,
+                numberOfStudents = c.NumberOfStudents,
+                departmentId = c.DepartmentId ?? ""
+            }).ToList();
+            ViewBag.AllClasses = allClasses;
             LoadAllTeachersWithSubjects();
             return View(new ClassDetailViewModel { Class = model });
         }
@@ -94,7 +158,32 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             var viewModel = _classService.GetClassWithDetails(id);
             if (viewModel == null) return NotFound();
 
-            ViewBag.AllSubjects = _subjectRepo.GetAll();
+            var departments = _deptRepo.GetAll();
+            ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", viewModel.Class?.DepartmentId);
+
+            // Pass departments with capacity info for validation
+            var deptList = departments.Select(d => new { value = d.DepartmentId, text = $"{d.NumberOfStudents} - {d.DepartmentName}" }).ToList();
+            ViewBag.DepartmentCapacity = deptList;
+
+            var subjects = _subjectRepo.GetAll().Select(s => new
+            {
+                subjectId = s.SubjectId,
+                subjectName = s.SubjectName,
+                departmentId = s.DepartmentId ?? ""
+            }).ToList();
+            ViewBag.AllSubjects = subjects;
+
+            // Load all classes for capacity calculation (excluding current class)
+            var allClasses = _classRepo.GetAll()
+                .Where(c => c.ClassId != id)
+                .Select(c => new
+                {
+                    classId = c.ClassId,
+                    numberOfStudents = c.NumberOfStudents,
+                    departmentId = c.DepartmentId ?? ""
+                }).ToList();
+            ViewBag.AllClasses = allClasses;
+
             LoadAllTeachersWithSubjects();
             return View(viewModel);
         }
@@ -107,18 +196,54 @@ namespace SIMS_FPT.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var (success, message) = _classService.UpdateClass(model, SubjectIds ?? new List<string>(), TeacherIds ?? new List<string>());
-                if (success)
+                // Validate that total students in department doesn't exceed capacity
+                var dept = _deptRepo.GetById(model.DepartmentId);
+                if (dept != null)
                 {
-                    return RedirectToAction("List");
+                    var existingClasses = _classRepo.GetAll()
+                        .Where(c => c.DepartmentId == model.DepartmentId && c.ClassId != model.ClassId)
+                        .ToList();
+
+                    var totalStudents = existingClasses.Sum(c => c.NumberOfStudents) + model.NumberOfStudents;
+
+                    if (totalStudents > dept.NumberOfStudents)
+                    {
+                        var currentUsed = existingClasses.Sum(c => c.NumberOfStudents);
+                        var available = dept.NumberOfStudents - currentUsed;
+                        ModelState.AddModelError("NumberOfStudents",
+                            $"Total students in department cannot exceed {dept.NumberOfStudents}. " +
+                            $"Currently used: {currentUsed}, Available: {available}");
+                    }
                 }
-                else
+
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", message);
+                    var (success, message) = _classService.UpdateClass(model, SubjectIds ?? new List<string>(), TeacherIds ?? new List<string>());
+                    if (success)
+                    {
+                        return RedirectToAction("List");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", message);
+                    }
                 }
             }
 
+            var depts = _deptRepo.GetAll();
+            ViewBag.Departments = new SelectList(depts, "DepartmentId", "DepartmentName", model?.DepartmentId);
+            var deptList = depts.Select(d => new { value = d.DepartmentId, text = $"{d.NumberOfStudents} - {d.DepartmentName}" }).ToList();
+            ViewBag.DepartmentCapacity = deptList;
             ViewBag.AllSubjects = _subjectRepo.GetAll();
+            var allClasses = _classRepo.GetAll()
+                .Where(c => c.ClassId != model?.ClassId)
+                .Select(c => new
+                {
+                    classId = c.ClassId,
+                    numberOfStudents = c.NumberOfStudents,
+                    departmentId = c.DepartmentId ?? ""
+                }).ToList();
+            ViewBag.AllClasses = allClasses;
             LoadAllTeachersWithSubjects();
             return View(viewModel);
         }
@@ -163,6 +288,7 @@ namespace SIMS_FPT.Areas.Admin.Controllers
             {
                 Id = t.TeacherId,
                 Name = $"{t.TeacherId} - {t.Name}",
+                DeptId = t.DepartmentId ?? "",
                 SubjectIds = allSubjects
                     .Where(s => !string.IsNullOrEmpty(s.TeacherIds) &&
                                 s.TeacherIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
