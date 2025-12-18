@@ -1,5 +1,5 @@
 Id,Email,Password,Role,LinkedId,FullName,HashAlgorithm
-3,ST01@gmail.com,AQAAAAIAAYagAAAAEM3rcQv6+9hqBvAiF4YCEb4ziKjUbFFRYU+ln8YqfH9oTDrF+kaOzkOkox+QyUMXdQ==,Student,ST01,Duc Duong,PBKDF2
+3,ST01@gmail.com,AQAAAAIAAYagAAAAEGWgC46fGZZamA/jeaZ1Vw5xbXnrBnnQoZs+p2EXGEiXVR9QuvlpuZOzeIlYSEjHFA==,Student,ST01,Duc Duong,PBKDF2
 1,admin@gmail.com,AQAAAAIAAYagAAAAEAWTCFnI4ErD04FnYb29qaBQI2/j8y8SMgklDhwgI9nDCekhCDpQDGocda/s84YqqA==,Admin,TC01,Duong,PBKDF2
 4,st02@gmail.com,AQAAAAIAAYagAAAAEPSkdYNp8O5a1vVaT2VYl0CBAIhwcIhvmzheQn0VdNXj47UfsRU5+1VzmIWg5VP2dg==,Student,ST02,Duc Duongg,PBKDF2
 5,st03@gmail.com,AQAAAAIAAYagAAAAEIQ/VhQuXLbYJbisQa6tR3SD2l3AeBF/kRJgL5jPPwcMkj2C5DP6ffWFMCRZlCv41A==,Student,ST03,Duc Duonggg,PBKDF2

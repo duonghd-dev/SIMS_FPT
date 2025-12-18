@@ -7,6 +7,8 @@
 
 <div class="page-wrapper">
     <div class="content container-fluid">
+        
+        @* Header *@
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
@@ -30,58 +32,97 @@
                     <div class="accordion" id="accordionCourses">
                         @foreach (var item in Model)
                         {
-                            <div class="card mb-3">
-                                <div class="card-header" id="heading-@item.ClassInfo.ClassId">
+                            <div class="card mb-3 shadow-sm">
+                                @* Card Header - Tên lớp học *@
+                                <div class="card-header bg-white" id="heading-@item.ClassInfo.ClassId">
                                     <h5 class="mb-0">
-                                        <button
-                                            class="btn btn-link text-decoration-none d-block w-100 text-start text-dark fw-bold"
-                                            type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse-@item.ClassInfo.ClassId">
-                                            <i class="fas fa-book-open me-2"></i>
-                                            @item.ClassInfo.ClassName
+                                        <button class="btn btn-link text-decoration-none d-block w-100 text-start text-dark fw-bold"
+                                                type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse-@item.ClassInfo.ClassId">
+                                            <i class="fas fa-book-open me-2 text-primary"></i>
+                                            @item.ClassInfo.ClassName <span class="text-muted small">(@item.ClassInfo.ClassId)</span>
                                         </button>
                                     </h5>
                                 </div>
 
+                                @* Card Body - Nội dung tài liệu *@
                                 <div id="collapse-@item.ClassInfo.ClassId" class="collapse show"
-                                    data-bs-parent="#accordionCourses">
+                                     data-bs-parent="#accordionCourses">
                                     <div class="card-body">
+                                        
                                         @if (item.Materials.Count == 0)
                                         {
-                                            <p class="text-muted fst-italic">No materials uploaded specifically for this class.</p>
+                                            <p class="text-muted fst-italic text-center py-3">No materials uploaded specifically for this class.</p>
                                         }
                                         else
                                         {
-                                            <div class="table-responsive">
-                                                <table class="table table-hover mb-0">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Title</th>
-                                                            <th>Type</th>
-                                                            <th>Upload Date</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach (var mat in item.Materials)
-                                                        {
-                                                            <tr>
-                                                                <td>@mat.Title</td>
-                                                                <td>
-                                                                    <span class="badge bg-info">File</span>
-                                                                </td>
-                                                                <td>@mat.UploadDate.ToString("dd/MM/yyyy")</td>
-                                                                <td>
-                                                                    <a href="~/@mat.FilePath" target="_blank"
-                                                                        class="btn btn-sm btn-primary">
-                                                                        <i class="fas fa-download"></i> View/Download
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                            @* [LOGIC MỚI] Nhóm tài liệu theo Category *@
+                                            var grouped = item.Materials.GroupBy(m => m.Category ?? "Uncategorized").OrderBy(g => g.Key);
+
+                                            foreach (var group in grouped)
+                                            {
+                                                <div class="mb-4">
+                                                    @* Tên danh mục (ví dụ: Slide, Video, Lab...) *@
+                                                    <div class="d-flex justify-content-between align-items-center mb-2 px-2 border-bottom pb-1">
+                                                        <h6 class="mb-0 text-primary font-weight-bold text-uppercase">
+                                                            <i class="fas fa-layer-group mr-2"></i>@group.Key
+                                                        </h6>
+                                                    </div>
+
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-bordered mb-0">
+                                                            <thead class="thead-light bg-light">
+                                                                <tr>
+                                                                    <th style="width: 30%;">Title</th>
+                                                                    <th style="width: 15%;">Subject</th>
+                                                                    <th style="width: 15%;" class="text-center">File (Slide/Doc)</th>
+                                                                    <th style="width: 15%;" class="text-center">Video (Link)</th>
+                                                                    <th style="width: 15%;">Upload Date</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var mat in group)
+                                                                {
+                                                                    <tr>
+                                                                        <td class="fw-bold">@mat.Title</td>
+                                                                        <td><span class="badge bg-secondary">@mat.SubjectId</span></td>
+                                                                        
+                                                                        @* Cột File *@
+                                                                        <td class="text-center">
+                                                                            @if (!string.IsNullOrEmpty(mat.FilePath))
+                                                                            {
+                                                                                <a href="~/@mat.FilePath" target="_blank" class="btn btn-sm btn-outline-info" title="Download">
+                                                                                    <i class="fas fa-file-download"></i> Download
+                                                                                </a>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span class="text-muted">-</span>
+                                                                            }
+                                                                        </td>
+
+                                                                        @* Cột Video *@
+                                                                        <td class="text-center">
+                                                                            @if (!string.IsNullOrEmpty(mat.VideoUrl))
+                                                                            {
+                                                                                <a href="@mat.VideoUrl" target="_blank" class="btn btn-sm btn-outline-danger" title="Watch Video">
+                                                                                    <i class="fab fa-youtube"></i> Watch
+                                                                                </a>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span class="text-muted">-</span>
+                                                                            }
+                                                                        </td>
+
+                                                                        <td>@mat.UploadDate.ToString("dd MMM yyyy")</td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            }
                                         }
                                     </div>
                                 </div>

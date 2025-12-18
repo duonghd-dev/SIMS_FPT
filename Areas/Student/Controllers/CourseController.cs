@@ -41,8 +41,11 @@ namespace SIMS_FPT.Areas.Student.Controllers
                 var classInfo = _classRepo.GetById(enrollment.ClassId);
                 if (classInfo != null)
                 {
-                    // Get materials for all subjects in this class (since a class can have multiple subjects now)
+                    // [CHỈNH SỬA QUAN TRỌNG]
+                    // Chỉ lấy tài liệu CỦA LỚP ĐÓ (Where ClassId == ...)
+                    // Thay vì lấy GetAll() toàn bộ như cũ
                     var materials = _materialRepo.GetAll()
+                                    .Where(m => m.ClassId == classInfo.ClassId)
                                     .OrderByDescending(m => m.UploadDate)
                                     .ToList();
 
